@@ -41,7 +41,7 @@ Formato de cada pregunta:
 
 ### [ABIERTA] P04 — Rate limiting en serverless
 - Contexto: el endpoint de RSVP necesita un límite por IP. En memoria no es fiable con varias instancias.
-- Pregunta: ¿dónde guardamos los contadores?
+- Pregunta: ¿dónde guardamos los contadores? ¿Y de qué cabecera leemos la IP real del cliente tras el proxy del hosting? Hoy, en local, se usa la IP de la conexión y se ignora `X-Forwarded-For` porque se podría falsificar.
 - Opciones y recomendación: una tabla en Supabase (sin servicios nuevos), un KV del proveedor de hosting, o Upstash.
 - Bloquea: Fase 8.
 - Respuesta:

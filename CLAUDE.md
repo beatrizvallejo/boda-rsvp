@@ -82,7 +82,7 @@ Requiere Node 22 (`.nvmrc`; Nuxt 4.5 pide `^22.19 || ^24.11 || >=26`): `nvm use`
 - dev: `pnpm dev`
 - dev:mobile: `pnpm dev:mobile` (escucha en `0.0.0.0:3000`; abre `http://<IP-local>:3000` en el móvil)
 - build / preview: `pnpm build` · `pnpm preview`
-- seed / reset de datos locales: (pendiente, Fase 2)
+- seed / reset de datos locales: `pnpm seed` (vacía `.data/db` y carga `server/fixtures/`; tokens legibles, p. ej. `/r/seed-garcia-lopez-0000000000000000000000000`) · `pnpm reset` (solo vacía)
 - typecheck: `pnpm typecheck` (`nuxt typecheck` con `vue-tsc`)
 - lint: `pnpm lint` (ESLint + `prettier --check`) · `pnpm lint:fix` para corregir
 - test e2e: `pnpm test:e2e` (contra `http://localhost:3000` o `PLAYWRIGHT_BASE_URL`; proyectos `android-360`, `iphone`, `desktop`)

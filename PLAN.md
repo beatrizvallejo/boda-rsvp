@@ -53,7 +53,7 @@ Referencias transversales: `docs/mobile-checklist.md`, `docs/whatsapp.md`. Las p
 
 ---
 
-## [ ] Fase 2 — Contrato de datos y adaptadores locales
+## [x] Fase 2 — Contrato de datos y adaptadores locales
 
 **Preguntas de entrada**
 - Presenta el modelo de datos derivado del brief (entidades, campos, restricciones) y el contrato de la API (endpoints con su entrada y salida). Pide confirmación antes de implementar.

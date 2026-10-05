@@ -33,3 +33,14 @@ Formato: `- AAAA-MM-DD · Fase N · Decisión — motivo`
 - 2026-10-05 · Fase 1 · Borrado de datos el 31/10/2027, incluidos teléfonos y emails — recomendación aceptada.
 - 2026-10-05 · Fase 1 · Por ahora no hay aviso de privacidad (decisión de los novios); se revisa en la Fase 6 — se guardan teléfonos, emails y comentarios, así que se recomendará uno breve.
 - 2026-10-05 · Fase 1 · El brief es provisional en algunos puntos: los novios prevén editar o completar respuestas más adelante; se actualizarán `docs/brief.md` y estas decisiones cuando ocurra.
+- 2026-10-05 · Fase 2 · Modelo en Zod (`shared/schemas/`) como única fuente: `Invitation`, `Rsvp` (una por invitación, con `updatedBy` guest/admin) y `MessageTemplate` (tipo × idioma) — las migraciones de la Fase 8 se derivan de ahí.
+- 2026-10-05 · Fase 2 · Token de invitación de 32 bytes aleatorios en base64url (256 bits); los fixtures usan tokens legibles `seed-…` solo en local — supera el mínimo de 128 bits.
+- 2026-10-05 · Fase 2 · La respuesta pública de `GET /api/rsvp/:token` no incluye teléfono, token ni etiqueta interna del grupo — minimización de datos.
+- 2026-10-05 · Fase 2 · Si `attending = false`, el servidor anula acompañante, niños y catering — coherencia con el formulario de la Fase 1.
+- 2026-10-05 · Fase 2 · Reenviar una respuesta idéntica no guarda ni avisa; los cambios hechos por los novios desde el panel no generan aviso e ignoran la fecha límite — evita emails redundantes y permite registrar respuestas tardías.
+- 2026-10-05 · Fase 2 · Honeypot `website` en el RSVP: si llega relleno, responde 204 sin guardar — defensa barata frente a bots sin captcha.
+- 2026-10-05 · Fase 2 · Cuerpos: `Content-Type: application/json` y `Content-Length` obligatorios, máximo 64 KB; nombres sin caracteres de control ni bidireccionales — endurecimiento de la entrada.
+- 2026-10-05 · Fase 2 · Rate limit en memoria con la IP de la conexión, ignorando `X-Forwarded-For` (falsificable); la solución de producción queda en P04 — no bloquea el desarrollo local.
+- 2026-10-05 · Fase 2 · Panel protegido dos veces: middleware sobre `/api/admin/*` y `requireAdmin()` en cada handler — defensa en profundidad.
+- 2026-10-05 · Fase 2 · Adaptadores sin valor por defecto en producción; con `AUTH_ADAPTER=dev` el servidor no arranca (comprobado con `node .output/server/index.mjs`).
+- 2026-10-05 · Fase 2 · Revisión de `security-reviewer` omitida en el cierre por decisión del usuario.
