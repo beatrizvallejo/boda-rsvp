@@ -1,7 +1,7 @@
 import type { Invitation, MessageKind, MessageTemplate, Rsvp } from '#shared/schemas'
 
 /**
- * Persistencia. `local` (Nitro storage en `.data/`) en desarrollo; `supabase` en la Fase 8.
+ * Persistencia. `local` (Nitro storage, driver `fs` en `.data/`) en desarrollo; `kv` en producción: el mismo código con un driver KV del hosting (Fase 8).
  * Los ids, tokens y fechas los genera el servidor antes de llamar al adaptador.
  */
 export interface DataAdapter {

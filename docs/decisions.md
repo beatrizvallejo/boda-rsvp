@@ -44,3 +44,8 @@ Formato: `- AAAA-MM-DD · Fase N · Decisión — motivo`
 - 2026-10-05 · Fase 2 · Panel protegido dos veces: middleware sobre `/api/admin/*` y `requireAdmin()` en cada handler — defensa en profundidad.
 - 2026-10-05 · Fase 2 · Adaptadores sin valor por defecto en producción; con `AUTH_ADAPTER=dev` el servidor no arranca (comprobado con `node .output/server/index.mjs`).
 - 2026-10-05 · Fase 2 · Revisión de `security-reviewer` omitida en el cierre por decisión del usuario.
+- 2026-10-05 · Simplificación · Prima la sencillez: es una web familiar. Se revisa la arquitectura tras la Fase 2 — petición del usuario.
+- 2026-10-05 · Simplificación · Fuera rate limit y honeypot (sustituye a las entradas de la Fase 2) — con tokens de 256 bits nadie llega al formulario sin enlace. Se retira P04.
+- 2026-10-05 · Simplificación · Lectura del cuerpo con `readBody` + Zod; fuera `Content-Type`/`Content-Length` obligatorios, el límite de 64 KB y el filtro de caracteres de control — las longitudes máximas de los esquemas bastan y hay menos sitios donde fallar.
+- 2026-10-05 · Simplificación · Producción sin Supabase: datos con el mismo Nitro storage y un driver KV (`DATA_ADAPTER=kv`), panel con contraseña compartida + cookie sellada (`AUTH_ADAPTER=password`, se construye en la Fase 5). Pendiente de confirmar por devops en P02; se retira P07.
+- 2026-10-05 · Simplificación · Fase 6 reducida: un e2e del flujo completo en `android-360` y revisión manual en móvil real; sin Lighthouse ni auditoría de accesibilidad como requisito.

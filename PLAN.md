@@ -69,7 +69,7 @@ Referencia del modelo, a adaptar:
 - Esquemas Zod compartidos y tipos derivados. Son la única fuente del modelo.
 - Interfaces de los adaptadores `data`, `auth` y `notifier`, y sus implementaciones locales (`local`, `dev`, `console`), con selección por variable de entorno.
 - La salvaguarda que impide arrancar en producción con `AUTH_ADAPTER=dev`.
-- Endpoints de `server/api/*` según el contrato, de momento con un rate limit en memoria (en producción lo decide devops: P04).
+- Endpoints de `server/api/*` según el contrato. Sin rate limit ni honeypot: los tokens de 256 bits no se pueden adivinar (simplificación del 05/10/2026).
 - Fixtures realistas con casos límite: nombres largos, diacríticos rumanos (ș, ț, ă, î, â), sin acompañante, respuestas negativas y pendientes. Scripts `seed` y `reset`.
 - Instala `@nuxtjs/i18n` (el brief fija ES + RO). Cada `Invitation` guarda su idioma (`es`/`ro`) y un teléfono opcional. Las `MessageTemplate` existen por tipo e idioma.
 - Actualiza `docs/produccion.md` con el modelo y el contrato. Devops lo necesitará para la Fase 8.
@@ -131,7 +131,8 @@ Referencia del modelo, a adaptar:
 - Plantillas de mensaje (ver `docs/whatsapp.md`).
 
 **Tareas**
-- `/admin` protegido por el adaptador `auth`. En desarrollo, `dev` da acceso directo; la UI de login (magic link) se construye ya, aunque funcione de verdad en la Fase 8.
+- `/admin` protegido por el adaptador `auth`. En desarrollo, `dev` da acceso directo.
+- Adaptador `auth: password` y su pantalla de login: contraseña compartida (`ADMIN_PASSWORD`, comparada en tiempo constante) y cookie de sesión sellada con `useSession` de h3 (`httpOnly`, `Secure`, `SameSite=Lax`). Funciona ya en local, sin servicios externos.
 - Listado móvil como lista apilada, con búsqueda y filtros (incluido "Pendientes"), contadores y exportación CSV con neutralización de fórmulas.
 - Modo invitación:
   - importación CSV y generación de enlaces;
@@ -153,14 +154,12 @@ Referencia del modelo, a adaptar:
 - Responsable de los datos para el aviso de privacidad.
 
 **Tareas**
-- `e2e-tester` completo, contra los adaptadores locales y con `reset` + `seed` antes de cada ejecución. Proyectos Android 360, iPhone y escritorio.
-- Comprobaciones móviles automáticas: sin scroll horizontal, inputs a 16px o más, objetivos táctiles a 44px o más.
-- Lighthouse en modo móvil con los objetivos del checklist.
-- Revisión de accesibilidad.
+- Un test e2e del flujo completo (abrir el enlace → confirmar → editar → verlo en el panel), con `reset` + `seed` antes, en el proyecto `android-360`. Incluye las comprobaciones móviles básicas: sin scroll horizontal, inputs a 16px o más y objetivos táctiles a 44px o más.
+- Revisión manual en un móvil real (`dev:mobile`) y en escritorio, con `docs/mobile-checklist.md`.
 - Aviso de privacidad (borrador para que lo revise el usuario, no asesoramiento legal).
 - Revisa `docs/produccion.md` y `docs/devops-preguntas.md` para que estén completos y listos para la Fase 7.
 
-**Terminado cuando**: e2e en verde en todos los proyectos, Lighthouse móvil dentro de objetivos y el usuario valida. La web está terminada salvo la infraestructura.
+**Terminado cuando**: el e2e está en verde, la revisión manual no deja problemas abiertos y el usuario valida. La web está terminada salvo la infraestructura.
 
 ---
 
@@ -169,7 +168,7 @@ Referencia del modelo, a adaptar:
 ## [ ] Fase 7 — Traspaso a devops
 
 **Tareas**
-- Completa `docs/produccion.md`: modelo de datos final, contrato de la API, adaptadores a implementar, variables de entorno, requisitos (rate limiting, cron anti-pausa, redirecciones de auth) y fecha límite de lanzamiento (antes del primer envío de invitaciones).
+- Completa `docs/produccion.md`: modelo de datos final, contrato de la API, adaptadores a implementar, variables de entorno, requisitos (driver KV, contraseña del panel y secreto de sesión) y fecha límite de lanzamiento (antes del primer envío de invitaciones).
 - Ejecuta `/preguntas-devops` para generar el mensaje.
 - Cuando lleguen las respuestas, ejecuta `/respuestas-devops`.
 
@@ -182,30 +181,24 @@ Referencia del modelo, a adaptar:
 > Esta fase puede llevarla devops directamente con Claude Code. En ese caso, las preguntas de infraestructura se le hacen a él.
 
 **Tareas** (según lo decidido en `docs/devops-preguntas.md`):
-- Configura el MCP de Supabase en `.mcp.json` con el acceso acordado (P07).
-- Migraciones SQL derivadas de los esquemas Zod. RLS en todas las tablas: sin acceso `anon`, lectura del panel solo para emails de la allowlist y escrituras solo desde el servidor.
-- Adaptador `data: supabase` con la misma interfaz. Los tests de contrato deben pasar con ambos adaptadores.
-- Adaptador `auth: supabase` (magic link + allowlist) y conexión de la UI de login ya construida.
+- Adaptador `data: kv`: el mismo código que `local`, con el montaje `db` de Nitro storage apuntando al KV acordado (P02) en producción. El e2e debe pasar con los dos.
 - Adaptador `notifier: gmail` (o el que se decida en P05), con `replyTo` del invitado.
-- Rate limiting en el almacenamiento acordado (P04).
-- Cron anti-pausa protegido con `CRON_SECRET`, si se decidió en P02.
-- Turnstile solo si el brief dice formulario abierto.
+- Copia de seguridad acordada en P03.
 
 **Revisión**: `security-reviewer` completo.
 
-**Terminado cuando**: la aplicación funciona con los tres adaptadores reales en un entorno de preview y la revisión no tiene hallazgos críticos.
+**Terminado cuando**: la aplicación funciona con los adaptadores de producción (`kv`, `password`, `gmail`) en un entorno de preview y la revisión no tiene hallazgos críticos.
 
 ---
 
 ## [ ] Fase 9 — Lanzamiento
 
 **Tareas**
-- Variables de entorno de producción en el hosting. `NOTIFY_TO` con los emails de los novios.
-- Borra los datos de prueba e inserta los admins y las plantillas.
+- Variables de entorno de producción en el hosting. `NOTIFY_TO` con los emails de los novios, `ADMIN_PASSWORD` y `NUXT_SESSION_PASSWORD`.
+- Borra los datos de prueba y carga las plantillas iniciales.
 - **Validación de WhatsApp en preview**, con una URL de prueba distinta de la definitiva: el usuario se envía un enlace a sí mismo y revisa título, descripción e imagen. Después hace el flujo completo dentro del navegador in-app de WhatsApp, en iOS y en Android si es posible.
 - Deploy a producción. Prueba completa: RSVP de prueba → email recibido → visible en el panel → borrar la prueba.
-- MCP de Supabase en solo lectura, si así se acordó.
 - `security-reviewer` final: revisión del bundle de cliente en busca de secretos.
-- Registra en `docs/decisions.md` el recordatorio post-boda: borrado de datos (incluidos teléfonos), revocar la contraseña de aplicación y pausar o eliminar el proyecto.
+- Registra en `docs/decisions.md` el recordatorio post-boda: borrado de datos (incluidos teléfonos), revocar la contraseña de aplicación de Gmail y eliminar el KV y el proyecto del hosting.
 
 **Terminado cuando**: la validación de WhatsApp y la prueba de producción pasan, y el usuario y devops lo validan.

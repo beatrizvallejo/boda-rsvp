@@ -60,7 +60,7 @@
   > Keko și Ro
 
 ## Panel
-- Emails con acceso: Keko y Ro (2 cuentas, sin más personas). Las direcciones no se guardan en el repo: se configuran como allowlist en la Fase 9.
+- Emails con acceso: Keko y Ro (2 cuentas, sin más personas). Las direcciones no se guardan en el repo: se configuran en `NOTIFY_TO` en la Fase 9. Al panel se entra con una contraseña compartida (simplificación del 05/10/2026).
 - Métricas:
   - asistencia: confirmados, no vienen y pendientes, en invitaciones y en personas;
   - personas que vienen: adultos y niños por separado;

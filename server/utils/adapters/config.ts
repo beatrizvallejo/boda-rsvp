@@ -1,8 +1,8 @@
 // Selección de adaptadores por variable de entorno (ver la tabla de "Arquitectura" en CLAUDE.md).
 // Se leen de `process.env` en tiempo de ejecución, no en el build.
 
-export const DATA_ADAPTERS = ['local', 'supabase'] as const
-export const AUTH_ADAPTERS = ['dev', 'supabase'] as const
+export const DATA_ADAPTERS = ['local', 'kv'] as const
+export const AUTH_ADAPTERS = ['dev', 'password'] as const
 export const NOTIFIER_ADAPTERS = ['console', 'gmail'] as const
 
 export interface AdapterConfig {
@@ -39,7 +39,7 @@ export function resolveAdapterConfig(
   if (auth === 'dev' && !isDev) {
     throw new Error(
       '[adapters] AUTH_ADAPTER=dev no está permitido en producción: daría acceso al panel sin login. ' +
-        'Usa AUTH_ADAPTER=supabase.',
+        'Usa AUTH_ADAPTER=password.',
     )
   }
   return {

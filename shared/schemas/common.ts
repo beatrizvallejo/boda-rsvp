@@ -5,18 +5,8 @@ export const localeSchema = z.enum(LOCALES)
 
 export const isoDateSchema = z.iso.datetime({ offset: true })
 
-// Caracteres de control (incluidos saltos de línea) y controles bidireccionales: permitirían falsear
-// líneas en el aviso de texto plano, en el log o en el CSV.
-const CONTROL_CHARS = /[\p{Cc}\u200E\u200F\u202A-\u202E\u2066-\u2069]/u
-const CONTROL_CHARS_EXCEPT_NEWLINE = /[^\P{Cc}\n]|[\u200E\u200F\u202A-\u202E\u2066-\u2069]/u
-
 /** Nombre de una persona: se recorta y se limita a 80 caracteres (admite diacríticos rumanos). */
-export const personNameSchema = z
-  .string()
-  .trim()
-  .min(1)
-  .max(80)
-  .refine((value) => !CONTROL_CHARS.test(value), { message: 'Caracteres no permitidos' })
+export const personNameSchema = z.string().trim().min(1).max(80)
 
 export const guestNamesSchema = z.array(personNameSchema).min(1).max(8)
 
@@ -24,15 +14,7 @@ export const guestNamesSchema = z.array(personNameSchema).min(1).max(8)
 export function optionalTextSchema(max: number) {
   return z.preprocess(
     (value) => (typeof value === 'string' && value.trim() === '' ? null : value),
-    z
-      .string()
-      .trim()
-      .max(max)
-      .refine((value) => !CONTROL_CHARS_EXCEPT_NEWLINE.test(value.replace(/\r\n/g, '\n')), {
-        message: 'Caracteres no permitidos',
-      })
-      .transform((value) => value.replace(/\r\n/g, '\n'))
-      .nullable(),
+    z.string().trim().max(max).nullable(),
   )
 }
 

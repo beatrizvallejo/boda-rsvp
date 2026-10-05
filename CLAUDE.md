@@ -9,8 +9,8 @@ Boda el sábado 31 de julio de 2027 en Rumanía.
 ## Quién trabaja aquí y cómo se reparte el trabajo
 
 - **Fases 0–6: frontend y diseño.** Las lleva una frontend developer con experiencia: no le expliques lo básico de Vue o Nuxt. Toda la aplicación funciona en local **sin servicios externos**, gracias a adaptadores locales (ver "Arquitectura").
-- **Fases 7–9: puesta en producción.** Infraestructura, base de datos real, email y deploy, con un compañero de devops.
-- **Preguntas de infraestructura** (hosting, Supabase, backups, DNS, rate limiting, email en producción…):
+- **Fases 7–9: puesta en producción.** Infraestructura, almacén de datos (KV), email y deploy, con un compañero de devops.
+- **Preguntas de infraestructura** (hosting, almacén KV, backups, DNS, email en producción…):
   - No se las hagas a la persona de frontend ni bloquees el trabajo por ellas.
   - Añádelas a `docs/devops-preguntas.md` con el formato del archivo, avisa en una línea de que las has añadido y continúa con el adaptador local.
   - Si quien trabaja en la sesión es el propio devops (te lo dirá), pregúntale directamente y registra la respuesta en ese archivo.
@@ -35,14 +35,16 @@ Boda el sábado 31 de julio de 2027 en Rumanía.
 
 ## Arquitectura
 
+- **Principio: sencillez.** Es una web familiar, no un producto: prima que funcione bien con las mínimas piezas. Sin servicios externos salvo hosting, KV y email; nada de defensas o capas pensadas para tráfico hostil si el diseño ya lo evita (p. ej., tokens de 256 bits en lugar de rate limit).
+
 - **Nuxt 4** (Vue 3, TypeScript estricto, SSR).
 - **El frontend solo habla con `server/api/*`.** Nunca accede directamente a una base de datos ni a un servicio externo. El contrato de la API (rutas, entradas y salidas) se define con esquemas Zod compartidos y no cambia al pasar a producción.
 - **Adaptadores** en `server/utils/adapters/`. Cada uno tiene una interfaz TypeScript y se elige por variable de entorno:
 
 | Adaptador | Desarrollo (fases 0–6) | Producción (fase 8) |
 |---|---|---|
-| `data` (`DATA_ADAPTER`) | `local`: Nitro storage con driver `fs` en `.data/` | `supabase` |
-| `auth` (`AUTH_ADAPTER`) | `dev`: acceso al panel sin login | `supabase`: magic link + allowlist |
+| `data` (`DATA_ADAPTER`) | `local`: Nitro storage con driver `fs` en `.data/` | `kv`: el mismo código con un driver KV del hosting |
+| `auth` (`AUTH_ADAPTER`) | `dev`: acceso al panel sin login | `password`: contraseña compartida de los novios + cookie de sesión firmada (se construye en la Fase 5) |
 | `notifier` (`NOTIFIER_ADAPTER`) | `console`: imprime el aviso en el log | `gmail`: `nodemailer` + Gmail SMTP |
 
 - **Salvaguarda del adaptador `dev` de auth:** si el servidor arranca en producción (`!import.meta.dev`) con `AUTH_ADAPTER=dev`, debe lanzar un error y no arrancar. Nunca debe existir un acceso sin login en producción.

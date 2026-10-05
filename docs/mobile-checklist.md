@@ -36,7 +36,7 @@ El diseño se construye para 360–430px y se amplía desde ahí. Nunca al revé
 ## Rendimiento (en móvil y con 4G)
 - Imágenes con `@nuxt/image` (o equivalente) en AVIF o WebP, con `srcset` y `sizes`. La imagen principal se precarga y el resto usa `loading="lazy"`.
 - Fuentes: como mucho 2 familias, en `woff2`, con subset latino, `font-display: swap` y la principal precargada.
-- Objetivo con Lighthouse en modo móvil: LCP < 2,5 s, CLS < 0,1 y JavaScript inicial mínimo. La página de RSVP no necesita librerías pesadas.
+- Referencia (Lighthouse móvil opcional, no es requisito de cierre): LCP < 2,5 s, CLS < 0,1 y JavaScript inicial mínimo. La página de RSVP no necesita librerías pesadas.
 
 ## Accesibilidad mínima
 - Contraste AA, foco visible y labels reales (no solo placeholder).

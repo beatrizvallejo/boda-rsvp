@@ -29,12 +29,6 @@ export const rsvpInputSchema = z
 export type RsvpInput = z.input<typeof rsvpInputSchema>
 export type RsvpData = z.output<typeof rsvpInputSchema>
 
-/**
- * Honeypot de `PUT /api/rsvp/:token`: campo `website` oculto que una persona nunca rellena. El servidor
- * lo comprueba antes de validar con `rsvpInputSchema` y, si viene relleno, responde 204 sin guardar.
- */
-export const HONEYPOT_FIELD = 'website'
-
 export const rsvpSchema = z.object({
   invitationId: z.uuid(),
   attending: z.boolean(),

@@ -25,25 +25,17 @@ Formato de cada pregunta:
 - Bloquea: Fase 9.
 - Respuesta:
 
-### [ABIERTA] P02 — Supabase: número de proyectos y plan
-- Contexto: tráfico muy bajo y vida útil hasta agosto de 2027. El plan Free pausa los proyectos con poca actividad durante 7 días.
-- Pregunta: ¿un único proyecto vale? ¿Cómo evitamos la pausa: cron diario, plan Pro durante los meses de RSVP, o ambos?
-- Opciones y recomendación: un proyecto, más cron desde el lanzamiento, más Pro durante los meses de envíos y respuestas.
+### [ABIERTA] P02 — Almacén de datos (KV) en lugar de Supabase
+- Contexto: el 05/10/2026 se decidió simplificar: sin Supabase. Los datos (decenas de invitaciones y respuestas) se guardan con Nitro storage, el mismo código que en local, cambiando solo el driver. El panel usa una contraseña compartida y cookie de sesión, sin proveedor de auth.
+- Pregunta: ¿te parece bien? ¿Qué KV usamos?
+- Opciones y recomendación: el KV del hosting elegido en P01 o Upstash Redis (gratuito, con driver oficial de unstorage). Recomendado: Upstash si el hosting es Vercel.
 - Bloquea: Fase 8.
 - Respuesta:
-
 ### [ABIERTA] P03 — Backups
-- Contexto: las respuestas de los invitados son el único dato valioso.
-- Pregunta: ¿qué estrategia de backup usamos según el plan elegido?
-- Opciones y recomendación: backups del plan, si los incluye, o un `pg_dump` periódico a un almacenamiento externo.
+- Contexto: las respuestas de los invitados son el único dato valioso. El panel tendrá exportación CSV.
+- Pregunta: ¿basta con la copia automática del KV (si la tiene) más descargas periódicas del CSV, o prefieres algo automatizado?
+- Opciones y recomendación: copia del proveedor + CSV manual semanal durante los meses de respuestas.
 - Bloquea: Fase 9.
-- Respuesta:
-
-### [ABIERTA] P04 — Rate limiting en serverless
-- Contexto: el endpoint de RSVP necesita un límite por IP. En memoria no es fiable con varias instancias.
-- Pregunta: ¿dónde guardamos los contadores? ¿Y de qué cabecera leemos la IP real del cliente tras el proxy del hosting? Hoy, en local, se usa la IP de la conexión y se ignora `X-Forwarded-For` porque se podría falsificar.
-- Opciones y recomendación: una tabla en Supabase (sin servicios nuevos), un KV del proveedor de hosting, o Upstash.
-- Bloquea: Fase 8.
 - Respuesta:
 
 ### [ABIERTA] P05 — Email de aviso a los novios
@@ -60,9 +52,4 @@ Formato de cada pregunta:
 - Bloquea: Fase 9.
 - Respuesta:
 
-### [ABIERTA] P07 — Acceso de Claude a producción
-- Contexto: Claude puede usar el MCP de Supabase para crear migraciones y comprobar las reglas de acceso (RLS).
-- Pregunta: ¿le das acceso al proyecto? ¿Pasamos a solo lectura tras el lanzamiento? ¿O prefieres aplicar tú las migraciones?
-- Opciones y recomendación: acceso de escritura hasta el lanzamiento y solo lectura después.
-- Bloquea: Fase 8.
-- Respuesta:
+> P04 (rate limiting) y P07 (acceso de Claude a Supabase) se retiraron el 05/10/2026 al simplificar la arquitectura: ya no hay rate limit ni Supabase.
