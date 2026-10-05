@@ -30,7 +30,7 @@ Referencias transversales: `docs/mobile-checklist.md`, `docs/whatsapp.md`. Las p
 
 ---
 
-## [ ] Fase 1 — Briefing (sin código)
+## [x] Fase 1 — Briefing (sin código)
 
 **Preguntas de entrada** (en tandas)
 1. Datos básicos: nombres de los novios, ciudad y lugar en Rumanía, dirección para mapas, horarios (hora local) y fecha límite para confirmar. La fecha y el país ya están en el brief.
@@ -71,7 +71,7 @@ Referencia del modelo, a adaptar:
 - La salvaguarda que impide arrancar en producción con `AUTH_ADAPTER=dev`.
 - Endpoints de `server/api/*` según el contrato, de momento con un rate limit en memoria (en producción lo decide devops: P04).
 - Fixtures realistas con casos límite: nombres largos, diacríticos rumanos (ș, ț, ă, î, â), sin acompañante, respuestas negativas y pendientes. Scripts `seed` y `reset`.
-- Instala `@nuxtjs/i18n` si el brief tiene más de un idioma.
+- Instala `@nuxtjs/i18n` (el brief fija ES + RO). Cada `Invitation` guarda su idioma (`es`/`ro`) y un teléfono opcional. Las `MessageTemplate` existen por tipo e idioma.
 - Actualiza `docs/produccion.md` con el modelo y el contrato. Devops lo necesitará para la Fase 8.
 
 **Revisión**: `security-reviewer`, centrado en la validación, la salvaguarda del adaptador `dev` y que ningún componente del frontend acceda a datos sin pasar por la API.

@@ -29,10 +29,19 @@ Este documento es para el compañero de devops. Describe qué necesita la web pa
 | Dominio | Subdominio de Vercel, salvo que los novios quieran uno propio | Hay que decidirlo antes del primer envío: WhatsApp cachea las previsualizaciones | |
 | MCP de Supabase para Claude | Escritura solo hasta el lanzamiento; después, solo lectura | Evita cambios accidentales con datos reales | |
 
+## Requisitos derivados del brief (Fase 1)
+- **Acceso por enlace personal** (`/r/<token>`): se confirma la propuesta de no usar Turnstile. El antispam se basa en el token, un honeypot y rate limiting.
+- **Bilingüe ES/RO** (`@nuxtjs/i18n`): cada invitación guarda su idioma. Las plantillas de WhatsApp existen en los dos idiomas (`invitation`/`reminder` × `es`/`ro`).
+- **Aviso por email en cada respuesta y en cada edición.** En las ediciones se indica qué ha cambiado, así que el servidor necesita la versión anterior de la respuesta al guardar. Como `replyTo` se usa el email del invitado, si lo ha dado.
+- **Destinatarios y accesos:** las 2 cuentas de los novios en `NOTIFY_TO` y en la allowlist del panel. Las direcciones no están en el repo; se configuran en la Fase 9.
+- **Fecha límite de respuesta:** 01/05/2027 23:59 `Europe/Bucharest`. A partir de entonces el endpoint de RSVP rechaza respuestas y ediciones.
+- **Borrado de datos:** 31/10/2027. Incluye teléfonos, emails y comentarios.
+
 ## Variables de entorno de producción
 Ver la sección de producción en `.env.example`. Se completa en la Fase 7.
 
 ## Datos personales
-- Se guardan nombres, respuestas y, si así se decide, teléfonos y email del invitado.
-- No se guardan datos de salud ni documentos de identidad.
-- Borrado previsto tras la boda (fecha en `docs/brief.md`).
+- Se guardan nombres, respuestas, el teléfono por invitación (opcional, lo introducen los novios) y el email del invitado (opcional).
+- No se piden datos de salud: solo hay un campo libre opcional, "Comentarios para el catering". Tampoco se piden documentos de identidad.
+- Borrado previsto el 31/10/2027 (ver `docs/brief.md`).
+- Por ahora no hay aviso de privacidad (decisión de los novios). Se revisa en la Fase 6.

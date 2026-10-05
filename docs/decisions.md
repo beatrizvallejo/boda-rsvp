@@ -15,3 +15,21 @@ Formato: `- AAAA-MM-DD · Fase N · Decisión — motivo`
 - 2026-10-05 · Fase 0 · ESLint (`@nuxt/eslint`, sin reglas de estilo) + Prettier con `eslint-config-prettier` — un único responsable del formato. Los `.md` y `.claude/` quedan fuera de Prettier.
 - 2026-10-05 · Fase 0 · Playwright con proyectos `android-360`, `iphone` (WebKit) y `desktop` (1280px); en local se ejecuta contra el `dev` del usuario o `PLAYWRIGHT_BASE_URL`.
 - 2026-10-05 · Fase 0 · Sin Figma: eliminado de `.mcp.json` — el diseño no está en Figma; la fuente se decide en la Fase 3.
+- 2026-10-05 · Fase 1 · Novios: Keko y Ro; ciudad: Alba (Rumanía). Dirección y horarios por confirmar (necesarios en las fases 3 y 4) — los novios aún no los tienen.
+- 2026-10-05 · Fase 1 · Fecha límite de confirmación: 01/05/2027 23:59 `Europe/Bucharest`; después, "plazo cerrado" — recomendación aceptada: margen para el catering y para los vuelos desde España.
+- 2026-10-05 · Fase 1 · Web en español y rumano con `@nuxtjs/i18n`, con idioma preferido por invitación y selector en la web — hay invitados de las dos familias.
+- 2026-10-05 · Fase 1 · Acceso por enlace personal `/r/<token>` — sin duplicados ni desconocidos, permite editar y no necesita captcha.
+- 2026-10-05 · Fase 1 · Acompañante siempre permitido (uno por invitación, con nombre) — decisión de los novios.
+- 2026-10-05 · Fase 1 · Niños invitados y contados aparte (número). Los detalles van en el campo de catering — necesario para el catering sin añadir campos.
+- 2026-10-05 · Fase 1 · Menú único y sin campos de logística de viaje; el "Desde" del billete es decorativo — los novios no lo necesitan por ahora.
+- 2026-10-05 · Fase 1 · Alergias: no se piden explícitamente; hay un campo libre opcional, "Comentarios para el catering" — evita tratar datos de salud (art. 9 RGPD).
+- 2026-10-05 · Fase 1 · Campo opcional "Mensaje para los novios", separado del de catering, y email del invitado opcional (`replyTo`) — recomendación aceptada.
+- 2026-10-05 · Fase 1 · Si la respuesta es "no", el formulario solo muestra el mensaje para los novios y el email — decisión de Claude: no tiene sentido pedir niños ni catering.
+- 2026-10-05 · Fase 1 · Teléfono opcional por invitación, introducido por los novios y nunca público; previsualización de WhatsApp genérica — comodidad de envío sin exponer nombres.
+- 2026-10-05 · Fase 1 · Plantillas de WhatsApp (invitación y recordatorio) en ES y RO, con `{nombre}`, `{enlace}` y `{fecha_limite}`. Borradores aceptados "de momento"; el rumano está pendiente de revisión nativa.
+- 2026-10-05 · Fase 1 · Aviso por email en cada respuesta y en cada edición, indicando qué cambia — recomendación aceptada.
+- 2026-10-05 · Fase 1 · Panel y avisos solo para los 2 novios. Sus emails no van al repo (`NOTIFY_TO` y allowlist en la Fase 9) — evita datos personales en el repo.
+- 2026-10-05 · Fase 1 · Métricas del panel: asistencia (invitaciones y personas), adultos y niños, y envíos por WhatsApp. Uso en móvil y escritorio por igual.
+- 2026-10-05 · Fase 1 · Borrado de datos el 31/10/2027, incluidos teléfonos y emails — recomendación aceptada.
+- 2026-10-05 · Fase 1 · Por ahora no hay aviso de privacidad (decisión de los novios); se revisa en la Fase 6 — se guardan teléfonos, emails y comentarios, así que se recomendará uno breve.
+- 2026-10-05 · Fase 1 · El brief es provisional en algunos puntos: los novios prevén editar o completar respuestas más adelante; se actualizarán `docs/brief.md` y estas decisiones cuando ocurra.
