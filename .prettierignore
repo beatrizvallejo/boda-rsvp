@@ -1,0 +1,15 @@
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+node_modules
+pnpm-lock.yaml
+playwright-report
+test-results
+blob-report
+public
+# Documentación y configuración de Claude: se editan a mano
+*.md
+.claude
