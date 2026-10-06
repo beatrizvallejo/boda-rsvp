@@ -35,7 +35,7 @@ Boda el sábado 31 de julio de 2027 en Rumanía.
 
 ## Arquitectura
 
-- **Principio: sencillez.** Es una web familiar, no un producto: prima que funcione bien con las mínimas piezas. Sin servicios externos salvo hosting, KV y email; nada de defensas o capas pensadas para tráfico hostil si el diseño ya lo evita (p. ej., tokens de 256 bits en lugar de rate limit).
+- **Principio: sencillez.** Es una web familiar, no un producto: prima que funcione bien con las mínimas piezas. Sin servicios externos salvo hosting, KV y email; nada de defensas o capas pensadas para tráfico hostil si el diseño ya lo evita (p. ej., enlaces con código aleatorio en lugar de rate limit).
 
 - **Nuxt 4** (Vue 3, TypeScript estricto, SSR).
 - **El frontend solo habla con `server/api/*`.** Nunca accede directamente a una base de datos ni a un servicio externo. El contrato de la API (rutas, entradas y salidas) se define con esquemas Zod compartidos y no cambia al pasar a producción.
@@ -84,7 +84,7 @@ Requiere Node 22 (`.nvmrc`; Nuxt 4.5 pide `^22.19 || ^24.11 || >=26`): `nvm use`
 - dev: `pnpm dev`
 - dev:mobile: `pnpm dev:mobile` (escucha en `0.0.0.0:3000`; abre `http://<IP-local>:3000` en el móvil)
 - build / preview: `pnpm build` · `pnpm preview`
-- seed / reset de datos locales: `pnpm seed` (vacía `.data/db` y carga `server/fixtures/`; tokens legibles, p. ej. `/r/seed-garcia-lopez-0000000000000000000000000`) · `pnpm reset` (solo vacía)
+- seed / reset de datos locales: `pnpm seed` (vacía `.data/db` y carga `server/fixtures/`; enlaces del tipo `/r/ana-garcia-lopez-demo01`) · `pnpm reset` (solo vacía)
 - typecheck: `pnpm typecheck` (`nuxt typecheck` con `vue-tsc`)
 - lint: `pnpm lint` (ESLint + `prettier --check`) · `pnpm lint:fix` para corregir
 - test e2e: `pnpm test:e2e` (contra `http://localhost:3000` o `PLAYWRIGHT_BASE_URL`; proyectos `android-360`, `iphone`, `desktop`)

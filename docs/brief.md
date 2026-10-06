@@ -7,8 +7,10 @@
 - Fecha: sábado 31 de julio de 2027
 - País: Rumanía
 - Ciudad: Alba (Rumanía)
-- Lugar y dirección para mapas: por confirmar. Hace falta para "Cómo llegar" y el `.ics` (Fase 4); hasta entonces se usa un valor de ejemplo en los fixtures.
-- Horarios (hora local de Rumanía, `Europe/Bucharest`): por confirmar. Hacen falta para la sección de horario (Fase 3) y el `.ics` (Fase 4).
+- Lugar: **Roots Wedding Venue** (Alba, Rumanía). Ceremonia y celebración en el mismo sitio.
+  - Mapa: https://www.google.com/maps/place/Roots+Wedding+Venue/@46.1158452,23.4344662,15z (coordenadas 46.1158452, 23.4344662).
+  - Instagram del lugar: https://www.instagram.com/roots_weddingvenue
+- Horario (hora local de Rumanía, `Europe/Bucharest`): a partir de las 13:00, "y hasta que el cuerpo aguante". No hay programa por momentos (ceremonia, cóctel…): todo es en el mismo lugar. Se usa en la cuenta atrás (`WEDDING_START` en `shared/config.ts`) y en el `.ics` (Fase 4).
 - Fecha límite de confirmación: sábado 1 de mayo de 2027 (23:59, hora de Rumanía). Hasta esa fecha se puede responder y editar. Después, el formulario muestra "plazo cerrado".
 - Idiomas: español y rumano (`@nuxtjs/i18n` desde la Fase 2). Cada invitación tiene un idioma preferido (ES/RO), que se usa en la web y en el mensaje de WhatsApp. El invitado puede cambiar de idioma en la web.
 
@@ -17,30 +19,27 @@
 - Campos de logística: ninguno de momento. No se pregunta la ciudad de origen, la fecha de llegada, el traslado ni el alojamiento. El "Desde" del billete es decorativo (se resuelve en la Fase 3).
 
 ## Modelo de acceso
-- Modo: invitación con enlace personal (`/r/<token>`). Los nombres van precargados, se puede editar la respuesta, no hay duplicados y no hace falta captcha. Los novios cargan la lista de invitados en el panel.
+- Modo: invitación con enlace personal (`/r/<token>`). El nombre va precargado, se puede editar la respuesta, no hay duplicados y no hace falta captcha. Los novios cargan la lista de invitados en el panel.
 
 ## Campos del formulario
 | Campo | Obligatorio | Notas |
 |---|---|---|
-| Asistencia (sí / no) | Sí | Por invitación |
-| Nombres de los invitados | Sí | Precargados desde la invitación y editables (por ejemplo, para corregir una tilde o un diacrítico) |
+| Nombre del invitado | Sí | Una invitación = una persona. Precargado y editable (por ejemplo, para corregir una tilde o un diacrítico) |
 | Acompañante (sí / no) + nombre | No | Siempre permitido: un acompañante por invitación. Si se marca, el nombre es obligatorio |
-| Número de niños | No (0 por defecto) | Se cuentan aparte de los adultos para el catering. Los detalles (edad, trona, menú infantil) van en el campo de catering |
-| Comentarios para el catering | No | Texto libre. No se pide explícitamente información de salud (ver "Privacidad") |
-| Mensaje para los novios | No | "¿Algo que quieras decirnos?" Va separado del campo de catering |
+| Número de niños | No (0 por defecto) | Se cuentan aparte de los adultos para el catering |
 | Email del invitado | No | Sirve de `replyTo` en el aviso a los novios |
 | Idioma | — | Viene de la invitación y no se pregunta en el formulario |
 
 - Menú: único, sin elección.
-- Si la respuesta es "no", solo se mantienen visibles el mensaje para los novios y el email.
+- Solo se confirma asistencia: no hay respuesta "no". Quien no viene, no responde (decisión del 06/10/2026). Si alguien confirma y luego no puede ir, avisa a los novios y ellos quitan la confirmación desde el panel (Fase 5).
 
 ## Acompañantes y niños
-- Acompañante: siempre permitido, uno por invitación, además de las personas nombradas en ella.
+- Acompañante: siempre permitido, uno por invitación (cada invitado puede llevar a una persona, lo estándar). Decisión del 06/10/2026: una invitación es para una sola persona; las parejas se invitan como invitado + acompañante.
 - Niños: sí están invitados. Se pide el número de niños aparte de los adultos.
 
 ## Notificación
 - Destinatarios en producción: Keko y Ro (2 cuentas). Las direcciones no se guardan en el repo: se configuran en `NOTIFY_TO` en la Fase 9.
-- ¿Avisar en ediciones?: sí. Un email por cada edición, marcado como "Cambio" e indicando qué ha cambiado (por ejemplo, asistencia sí → no).
+- ¿Avisar en ediciones?: sí. Un email por cada edición, marcado como "Cambio" e indicando qué ha cambiado (por ejemplo, acompañante o niños).
 
 ## WhatsApp
 - ¿Guardar teléfono por invitación?: sí, de forma opcional. Lo introducen los novios en el panel, nunca el invitado. No aparece en la parte pública y se borra con el resto de datos.
@@ -62,7 +61,7 @@
 ## Panel
 - Emails con acceso: Keko y Ro (2 cuentas, sin más personas). Las direcciones no se guardan en el repo: se configuran en `NOTIFY_TO` en la Fase 9. Al panel se entra con una contraseña compartida (simplificación del 05/10/2026).
 - Métricas:
-  - asistencia: confirmados, no vienen y pendientes, en invitaciones y en personas;
+  - asistencia: confirmados y pendientes, en invitaciones y en personas;
   - personas que vienen: adultos y niños por separado;
   - envíos por WhatsApp: invitaciones enviadas y sin enviar, y recordatorios enviados.
 - Dispositivo principal de uso: móvil y ordenador por igual. En móvil, lista apilada; en escritorio, tabla.
@@ -70,12 +69,12 @@
 ## Privacidad
 - Responsable: por ahora no habrá aviso de privacidad (decisión de los novios). Se revisa en la Fase 6.
 - Fecha de borrado de datos: 31/10/2027. Incluye teléfonos, emails y comentarios.
-- Decisión sobre alergias e intolerancias: no se pide explícitamente. Hay un campo libre opcional, "Comentarios para el catering".
+- Decisión sobre alergias e intolerancias: no se piden. Tampoco hay campos de comentarios ni de mensaje (decisión del 06/10/2026: el formulario se queda en nombre, acompañante, niños y email opcional).
 
 ## Diseño
 - Concepto: el formulario es un billete de avión, una tarjeta de embarque que rellena el invitado (idea de los novios). Ver `.claude/skills/wedding-design/references/concepto-billete.md`.
-- Fuente: sin Figma. Las referencias se deciden en la Fase 3.
-- ¿Existe versión móvil del diseño?: se decide en la Fase 3.
-- Tono del copy: se decide en la Fase 3. Los borradores de WhatsApp usan un tono cercano y en clave de viaje.
-- Modo oscuro: se decide en la Fase 3.
-- Secciones públicas: se deciden en la Fase 3.
+- Fuente: sin Figma; diseño iterado con el usuario en la Fase 3. Sistema completo en la skill `wedding-design` (señalética de aeropuerto internacional con humor, amarillo señal, Archivo, logo de aerolínea KR).
+- Versión móvil: diseñada desde 360px; en escritorio la tarjeta pasa a apaisada.
+- Tono del copy: cercano, con guiños de viaje y humor; emojis puntuales.
+- Modo oscuro: no (solo claro; los paneles negros son parte del diseño).
+- Secciones públicas: intro (panel de llegadas con cuenta atrás), tarjeta de embarque, Cómo llegar, Próximamente (vuelos, alojamiento y traslados) y fotos de los novios en tira de fotomatón. Sin programa por momentos.

@@ -1,5 +1,98 @@
 {
+  "brand": "Keko și Ro",
+  "lang": {
+    "label": "Limba"
+  },
+  "meta": {
+    "title": "Keko și Ro · 31 iulie 2027",
+    "description": "Ne căsătorim în Alba (România). Biletul tău de îmbarcare e gata: confirmă-ne până pe 1 mai."
+  },
+  "intro": {
+    "arrivals": "Sosiri",
+    "arrivalsAlt": "Llegadas · Arrivals",
+    "names": "KEKO ȘI RO",
+    "countdown": "Decolare în",
+    "date": "Sâmbătă, 31 iulie 2027 · 13:00 · Alba, România",
+    "srTitle": "Keko și Ro. Mai sunt {d} zile, {h} ore și {m} minute până la nuntă: sâmbătă, 31 iulie 2027, la ora 13:00, în Alba, România.",
+    "tracker": "În zbor · {pct} % din drum",
+    "board": "Îmbarcare"
+  },
+  "pass": {
+    "title": "Biletul tău de îmbarcare",
+    "lead": "Verifică datele și confirmă-ne până pe 1 mai 2027.",
+    "band": "Card de îmbarcare",
+    "from": "De la",
+    "fromValue": "Oriunde ai fi",
+    "to": "Spre",
+    "flight": "Zbor",
+    "date": "Data",
+    "dateValue": "31 IUL 2027",
+    "boarding": "Îmbarcare",
+    "gate": "Poarta",
+    "seat": "Loc",
+    "seatValue": "Liber",
+    "class": "Clasa",
+    "classValue": "Invitat",
+    "passenger": "Pasager",
+    "companionQuestion": "Vii însoțit/ă?",
+    "alone": "Călătoresc singur/ă",
+    "withCompanion": "Cu însoțitor",
+    "companion": "Însoțitor",
+    "namePlaceholder": "Nume și prenume",
+    "kids": "Minori la bord",
+    "kidsLess": "Scade un minor",
+    "kidsMore": "Adaugă un minor",
+    "email": "Emailul tău",
+    "emailHelp": "Doar ca să-ți putem răspunde dacă e nevoie.",
+    "addEmail": "Adaugă emailul meu (opțional)",
+    "passengers": "Pasageri",
+    "confirm": "Confirmă prezența",
+    "airline": "Linii aeriene"
+  },
+  "more": "Zboruri și cazare",
+  "howto": {
+    "title": "Cum ajungi",
+    "place": "Locul",
+    "placeLink": "{name} · vezi pe hartă",
+    "instagram": "Instagram",
+    "instagramText": "Aruncă o privire",
+    "open": "Deschidere",
+    "close": "Închidere",
+    "closeValue": "Până ne țin picioarele"
+  },
+  "soon": {
+    "status": "ÎN CURÂND",
+    "title": "Zboruri și cazare",
+    "text": "Foarte curând vă vom da mai multe informații despre zboruri și cazare, pentru cine are nevoie.",
+    "flights": "Zboruri",
+    "flightsText": "Ce aeroporturi vă sunt mai aproape și cum ajungeți de acolo la Roots.",
+    "hotels": "Cazare",
+    "hotelsText": "Unde puteți dormi aproape de locul nunții.",
+    "transfers": "Transfer",
+    "transfersText": "Cum vă deplasați în ziua nunții.",
+    "foot": "Vă anunțăm imediat ce e gata."
+  },
+  "crew": {
+    "label": "Fotografii cu mirii",
+    "photo1": "Keko și Ro ies de mână printre petale",
+    "photo2": "Ro ridică buchetul lângă Keko și cea mică",
+    "photo3": "Keko și Ro cu cea mică a casei",
+    "photo4": "Mâinile mirilor legate cu o panglică albastră"
+  },
+  "success": {
+    "title": "Ți-ai confirmat prezența!",
+    "lead": "Ne vedem în Alba pe 31 iulie.",
+    "stamp": "Confirmat"
+  },
   "home": {
-    "title": "Nuntă · 31 iulie 2027"
+    "title": "Biletul tău te așteaptă",
+    "text": "Ca să-ți confirmi prezența, deschide linkul personal pe care ți l-am trimis pe WhatsApp. Dacă nu-l găsești, scrie-ne."
+  },
+  "errors": {
+    "notFoundTitle": "Bilet negăsit",
+    "notFound": "Acest link nu corespunde niciunui bilet de îmbarcare. Verifică mesajul pe care ți l-am trimis.",
+    "closedTitle": "Îmbarcare închisă",
+    "closed": "Îmbarcarea s-a închis pe 1 mai. Dacă trebuie să schimbi ceva, scrie-ne.",
+    "generic": "Ceva n-a mers la încărcarea biletului. Încearcă din nou peste un moment."
   }
 }

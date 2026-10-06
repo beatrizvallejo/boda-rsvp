@@ -80,7 +80,7 @@ Referencia del modelo, a adaptar:
 
 ---
 
-## [ ] Fase 3 — Diseño
+## [x] Fase 3 — Diseño
 
 **Preguntas de entrada**
 - Fuente del diseño: enlace de Figma, invitación en papel o moodboard. Guarda las referencias en `.claude/skills/wedding-design/references/`.

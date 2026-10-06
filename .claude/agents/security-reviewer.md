@@ -21,8 +21,8 @@ Revisa, según lo que exista en el proyecto. En el bloque A (adaptadores locales
 2. **Endpoint de RSVP**
    - Orden: Zod → token → plazo → escritura → notificación.
    - Un fallo de email no revierte ni bloquea el guardado.
-   - Hay límites de longitud en todos los campos de texto. (Sin rate limit por decisión: los tokens son de 256 bits.)
-   - Los tokens son aleatorios y de al menos 128 bits.
+   - Hay límites de longitud en todos los campos de texto. (Sin rate limit por decisión: el enlace lleva un código aleatorio de 6 caracteres.)
+   - El código aleatorio del token sale de `crypto` (no de `Math.random`) y tiene 6 caracteres `[a-z0-9]`.
 3. **Secretos**
    - `ADMIN_PASSWORD`, `NUXT_SESSION_PASSWORD`, `GMAIL_APP_PASSWORD` y las credenciales del KV solo aparecen en código de servidor y en `runtimeConfig` privado.
    - Si hay build, busca en `.output/public` o equivalente cualquier rastro de esos valores o de sus nombres.

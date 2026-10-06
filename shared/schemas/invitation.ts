@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { guestNamesSchema, isoDateSchema, localeSchema, tokenSchema } from './common'
+import { isoDateSchema, localeSchema, personNameSchema, tokenSchema } from './common'
 
 /**
  * Teléfono en formato internacional E.164 (`+40712345678`). Se admiten espacios, guiones,
@@ -21,7 +21,8 @@ export const invitationSchema = z.object({
   id: z.uuid(),
   token: tokenSchema,
   label: invitationLabelSchema,
-  guestNames: guestNamesSchema,
+  /** Una invitación = una persona; puede llevar un acompañante (se indica en la respuesta). */
+  guestName: personNameSchema,
   locale: localeSchema,
   /** Solo lo ven los novios en el panel. Nunca sale por la API pública. */
   phone: phoneSchema.nullable(),
@@ -35,7 +36,7 @@ export type Invitation = z.infer<typeof invitationSchema>
 /** Alta de una invitación desde el panel (una a una o por importación). */
 export const invitationCreateSchema = z.strictObject({
   label: invitationLabelSchema,
-  guestNames: guestNamesSchema,
+  guestName: personNameSchema,
   locale: localeSchema.default('es'),
   phone: nullablePhoneSchema.default(null),
 })
@@ -50,7 +51,7 @@ export const invitationCreateRequestSchema = z.union([
 export const invitationUpdateSchema = z
   .strictObject({
     label: invitationLabelSchema,
-    guestNames: guestNamesSchema,
+    guestName: personNameSchema,
     locale: localeSchema,
     phone: nullablePhoneSchema,
   })

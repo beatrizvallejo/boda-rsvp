@@ -5,12 +5,9 @@ import type { RsvpNotification } from './types'
 // El texto definitivo se acuerda en la Fase 4.
 
 const FIELD_LABELS: Record<RsvpField, string> = {
-  attending: 'Asistencia',
-  guestNames: 'Nombres',
+  guestName: 'Nombre',
   companionName: 'Acompañante',
   children: 'Niños',
-  cateringNotes: 'Comentarios para el catering',
-  messageToCouple: 'Mensaje para los novios',
   email: 'Email',
 }
 
@@ -26,11 +23,10 @@ export function formatRsvpNotification(notification: RsvpNotification): {
   text: string
 } {
   const { kind, invitation, rsvp, changes } = notification
-  const verdict = rsvp.attending ? 'viene' : 'no viene'
   const subject =
     kind === 'new'
-      ? `RSVP: ${invitation.label} ${verdict}`
-      : `Cambio en el RSVP: ${invitation.label} (${verdict})`
+      ? `RSVP: ${invitation.label} confirma asistencia`
+      : `Cambio en el RSVP: ${invitation.label}`
 
   const lines = [subject, '']
   if (kind === 'change') {

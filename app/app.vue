@@ -1,14 +1,16 @@
 <script setup lang="ts">
-const head = useLocaleHead()
-useHead({ htmlAttrs: { lang: () => head.value.htmlAttrs?.lang } })
+// `lang` del documento según el idioma activo (también en el servidor, tras fijar el de la invitación).
+const { locale, locales } = useI18n()
+useHead({
+  htmlAttrs: {
+    lang: () => locales.value.find((l) => l.code === locale.value)?.language ?? locale.value,
+  },
+})
 </script>
 
 <template>
   <div>
     <NuxtRouteAnnouncer />
-    <!-- Esqueleto: el diseño llega en la Fase 3 (skill wedding-design) -->
-    <main>
-      <h1>{{ $t('home.title') }}</h1>
-    </main>
+    <NuxtPage />
   </div>
 </template>

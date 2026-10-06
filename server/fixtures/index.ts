@@ -1,11 +1,12 @@
 // Datos inventados para desarrollo y tests e2e. Se cargan con `pnpm seed` (adaptador `local`).
-// Nunca se usan en producción. Los tokens son fijos y legibles para poder probar con curl:
-// http://localhost:3000/r/<token>. Las direcciones y horarios reales están por confirmar.
+// Nunca se usan en producción. Los tokens son fijos para poder probar con curl: nombre + `demoNN`
+// (http://localhost:3000/r/ana-garcia-lopez-demo01). Una invitación = una persona (+ acompañante opcional en la respuesta).
 import type { Invitation, MessageTemplate, Rsvp } from '../../shared/schemas'
+import { slugifyName } from '../../shared/schemas/common'
 
-/** Token de fixture: legible, con el formato de un token real (43 caracteres base64url). */
-export function fixtureToken(slug: string): string {
-  return `seed-${slug}-`.padEnd(43, '0')
+/** Token de fixture: mismo formato que uno real, con un código fijo `demoNN` en lugar del aleatorio. */
+export function fixtureToken(guestName: string, n: number): string {
+  return `${slugifyName(guestName)}-demo${String(n).padStart(2, '0')}`
 }
 
 function id(n: number): string {
@@ -22,14 +23,12 @@ interface FixtureInvitation {
 const CREATED = '2026-09-20T18:00:00.000Z'
 const SENT = '2026-11-02T19:30:00.000Z'
 
-const NO = { companionName: null, children: 0, cateringNotes: null } as const
-
 const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'garcia-lopez',
     invitation: {
-      label: 'Familia García López',
-      guestNames: ['Ana García López', 'Luis García Martín'],
+      label: 'Ana García',
+      guestName: 'Ana García López',
       locale: 'es',
       phone: '+34600111222',
       invitedSentAt: SENT,
@@ -37,12 +36,9 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       createdAt: CREATED,
     },
     rsvp: {
-      attending: true,
-      guestNames: ['Ana García López', 'Luis García Martín'],
-      companionName: null,
+      guestName: 'Ana García López',
+      companionName: 'Luis García Martín',
       children: 2,
-      cateringNotes: 'El pequeño (2 años) necesitará trona.',
-      messageToCouple: '¡Qué ganas de veros! Preparando las maletas ya 🧳',
       email: 'ana.garcia@example.com',
       createdAt: '2026-11-03T08:12:00.000Z',
       updatedAt: '2026-11-03T08:12:00.000Z',
@@ -51,8 +47,8 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'popescu',
     invitation: {
-      label: 'Ioana și Andrei Popescu',
-      guestNames: ['Ioana Popescu', 'Andrei Popescu'],
+      label: 'Ioana Popescu',
+      guestName: 'Ioana Popescu',
       locale: 'ro',
       phone: '+40722111333',
       invitedSentAt: SENT,
@@ -60,12 +56,9 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       createdAt: CREATED,
     },
     rsvp: {
-      attending: true,
-      guestNames: ['Ioana Popescu', 'Andrei Popescu'],
-      companionName: null,
+      guestName: 'Ioana Popescu',
+      companionName: 'Andrei Popescu',
       children: 0,
-      cateringNotes: null,
-      messageToCouple: 'Abia așteptăm! Casă de piatră!',
       email: null,
     },
   },
@@ -73,7 +66,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     slug: 'taranu',
     invitation: {
       label: 'Ștefan Țăranu',
-      guestNames: ['Ștefan Țăranu'],
+      guestName: 'Ștefan Țăranu',
       locale: 'ro',
       phone: '+40733444555',
       invitedSentAt: SENT,
@@ -81,12 +74,9 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       createdAt: CREATED,
     },
     rsvp: {
-      attending: true,
-      guestNames: ['Ștefan Țăranu'],
+      guestName: 'Ștefan Țăranu',
       companionName: 'Mădălina Ionescu',
       children: 0,
-      cateringNotes: 'Mădălina este vegetariană.',
-      messageToCouple: null,
       email: 'stefan.taranu@example.ro',
     },
   },
@@ -94,7 +84,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     slug: 'abuela-carmen',
     invitation: {
       label: 'Abuela Carmen',
-      guestNames: ['Carmen Fernández Ruiz'],
+      guestName: 'Carmen Fernández Ruiz',
       locale: 'es',
       phone: null,
       invitedSentAt: null,
@@ -103,12 +93,9 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     },
     // Respuesta registrada por los novios desde el panel (confirmó por teléfono).
     rsvp: {
-      attending: true,
-      guestNames: ['Carmen Fernández Ruiz'],
+      guestName: 'Carmen Fernández Ruiz',
       companionName: null,
       children: 0,
-      cateringNotes: 'Mejor poca sal, si puede ser.',
-      messageToCouple: null,
       email: null,
       updatedBy: 'admin',
     },
@@ -117,7 +104,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     slug: 'nombre-largo',
     invitation: {
       label: 'María de los Ángeles Fernández-Villaverde',
-      guestNames: ['María de los Ángeles Fernández-Villaverde de la Cruz y Montenegro'],
+      guestName: 'María de los Ángeles Fernández-Villaverde de la Cruz y Montenegro',
       locale: 'es',
       phone: '+34611222333',
       invitedSentAt: SENT,
@@ -125,21 +112,17 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       createdAt: CREATED,
     },
     rsvp: {
-      attending: true,
-      guestNames: ['María de los Ángeles Fernández-Villaverde de la Cruz y Montenegro'],
+      guestName: 'María de los Ángeles Fernández-Villaverde de la Cruz y Montenegro',
       companionName: 'Francisco Javier Rodríguez-Monteagudo Sánchez de Albornoz',
       children: 0,
-      cateringNotes: null,
-      messageToCouple:
-        'Os escribo un mensaje largo a propósito para ver cómo se comporta el panel con textos de varias líneas. Estamos felices por vosotros, ya hemos mirado vuelos a Cluj y Sibiu, y queremos aprovechar para recorrer Transilvania unos días antes de la boda. ¡Gracias por invitarnos!',
       email: 'mangeles.fv@example.com',
     },
   },
   {
     slug: 'dumitrescu',
     invitation: {
-      label: 'Familia Dumitrescu',
-      guestNames: ['Alexandru Dumitrescu', 'Irina Dumitrescu', 'Bogdan Dumitrescu'],
+      label: 'Alexandru Dumitrescu',
+      guestName: 'Alexandru Dumitrescu',
       locale: 'ro',
       phone: '+40744555666',
       invitedSentAt: SENT,
@@ -147,38 +130,24 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       reminderCount: 1,
       createdAt: CREATED,
     },
-    rsvp: {
-      attending: false,
-      guestNames: ['Alexandru Dumitrescu', 'Irina Dumitrescu', 'Bogdan Dumitrescu'],
-      ...NO,
-      messageToCouple: 'Ne pare foarte rău că nu putem ajunge. Vă dorim tot binele din lume!',
-      email: null,
-    },
   },
   {
     slug: 'pablo-martinez',
     invitation: {
       label: 'Pablo Martínez',
-      guestNames: ['Pablo Martínez Gil'],
+      guestName: 'Pablo Martínez Gil',
       locale: 'es',
       phone: '+34622333444',
       invitedSentAt: SENT,
       reminderSentAt: null,
       createdAt: CREATED,
     },
-    rsvp: {
-      attending: false,
-      guestNames: ['Pablo Martínez Gil'],
-      ...NO,
-      messageToCouple: null,
-      email: 'pablo.mg@example.com',
-    },
   },
   {
     slug: 'mihailescu',
     invitation: {
-      label: 'Răzvan și Cătălina',
-      guestNames: ['Răzvan Mihăilescu', 'Cătălina Mihăilescu'],
+      label: 'Răzvan Mihăilescu',
+      guestName: 'Răzvan Mihăilescu',
       locale: 'ro',
       phone: '+40755666777',
       invitedSentAt: SENT,
@@ -191,7 +160,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     slug: 'lucia-sanchez',
     invitation: {
       label: 'Lucía Sánchez',
-      guestNames: ['Lucía Sánchez Moreno'],
+      guestName: 'Lucía Sánchez Moreno',
       locale: 'es',
       phone: '+34633444555',
       invitedSentAt: SENT,
@@ -202,8 +171,8 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'brancoveanu',
     invitation: {
-      label: 'Familia Ionescu-Brâncoveanu',
-      guestNames: ['Ileana Ionescu-Brâncoveanu', 'Mircea Ionescu-Brâncoveanu'],
+      label: 'Ileana Ionescu-Brâncoveanu',
+      guestName: 'Ileana Ionescu-Brâncoveanu',
       locale: 'ro',
       phone: null,
       invitedSentAt: null,
@@ -214,8 +183,8 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'javier-marta',
     invitation: {
-      label: 'Javier y Marta',
-      guestNames: ['Javier Ruiz Peña', 'Marta Iglesias Toro'],
+      label: 'Javier Ruiz',
+      guestName: 'Javier Ruiz Peña',
       locale: 'es',
       phone: null,
       invitedSentAt: null,
@@ -227,7 +196,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     slug: 'stoica',
     invitation: {
       label: 'Ana-Maria Stoica',
-      guestNames: ['Ana-Maria Stoica'],
+      guestName: 'Ana-Maria Stoica',
       locale: 'ro',
       phone: '+40766777888',
       invitedSentAt: SENT,
@@ -236,12 +205,9 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     },
     // Respuesta editada después de la primera confirmación.
     rsvp: {
-      attending: true,
-      guestNames: ['Ana-Maria Stoica'],
+      guestName: 'Ana-Maria Stoica',
       companionName: 'Vlad Munteanu',
       children: 0,
-      cateringNotes: null,
-      messageToCouple: 'Am adăugat și însoțitorul, sper că e în regulă!',
       email: 'anamaria.stoica@example.ro',
       createdAt: '2026-11-05T10:00:00.000Z',
       updatedAt: '2026-12-01T21:45:00.000Z',
@@ -250,8 +216,8 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'trabajo',
     invitation: {
-      label: 'Compañeros del trabajo',
-      guestNames: ['Elena Navarro', 'Sergio Blanco', 'Raquel Ortega', 'David Molina'],
+      label: 'Elena (trabajo)',
+      guestName: 'Elena Navarro',
       locale: 'es',
       phone: '+34644555666',
       invitedSentAt: SENT,
@@ -259,12 +225,9 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       createdAt: CREATED,
     },
     rsvp: {
-      attending: true,
-      guestNames: ['Elena Navarro', 'Sergio Blanco', 'Raquel Ortega', 'David Molina'],
-      companionName: null,
+      guestName: 'Elena Navarro',
+      companionName: 'Sergio Blanco',
       children: 0,
-      cateringNotes: null,
-      messageToCouple: null,
       email: null,
     },
   },
@@ -272,7 +235,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
     slug: 'vladescu',
     invitation: {
       label: 'Tudor Vlădescu',
-      guestNames: ['Tudor Vlădescu'],
+      guestName: 'Tudor Vlădescu',
       locale: 'ro',
       phone: '+40777888999',
       invitedSentAt: SENT,
@@ -283,8 +246,8 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'etxeberria',
     invitation: {
-      label: 'Nerea y familia',
-      guestNames: ['Nerea Etxeberria Goikoetxea', 'Íñigo Zubizarreta Arrieta'],
+      label: 'Nerea Etxeberria',
+      guestName: 'Nerea Etxeberria Goikoetxea',
       locale: 'es',
       phone: '+34655666777',
       invitedSentAt: SENT,
@@ -292,22 +255,19 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       createdAt: CREATED,
     },
     rsvp: {
-      attending: true,
-      guestNames: ['Nerea Etxeberria Goikoetxea', 'Íñigo Zubizarreta Arrieta'],
-      companionName: null,
+      guestName: 'Nerea Etxeberria Goikoetxea',
+      companionName: 'Íñigo Zubizarreta Arrieta',
       children: 1,
-      cateringNotes: 'Menú infantil para Ane (6 años).',
-      messageToCouple: null,
       email: 'nerea.etxe@example.com',
     },
   },
 ]
 
-export const fixtureInvitations: Invitation[] = fixtures.map(({ slug, invitation }, index) => ({
+export const fixtureInvitations: Invitation[] = fixtures.map(({ invitation }, index) => ({
   reminderCount: 0,
   ...invitation,
   id: id(index + 1),
-  token: fixtureToken(slug),
+  token: fixtureToken(invitation.guestName, index + 1),
 }))
 
 export const fixtureRsvps: Rsvp[] = fixtures.flatMap(({ rsvp }, index) => {

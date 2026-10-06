@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID } from 'node:crypto'
+import { randomInt, randomUUID } from 'node:crypto'
 import type {
   AdminInvitation,
   Invitation,
@@ -7,21 +7,28 @@ import type {
   PublicRsvp,
   Rsvp,
 } from '#shared/schemas'
-import { idSchema, tokenSchema } from '#shared/schemas'
+import { idSchema, slugifyName, TOKEN_CODE_LENGTH, tokenSchema } from '#shared/schemas'
 import { isRsvpClosed, RSVP_DEADLINE } from '#shared/config'
 import { useDataAdapter } from './adapters'
 
-/** Token del enlace personal: 32 bytes de `crypto.randomBytes` (256 bits) en base64url. */
-export function generateToken(): string {
-  return randomBytes(32).toString('base64url')
+const CODE_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789'
+
+/**
+ * Token del enlace personal: nombre legible + código aleatorio de `crypto.randomInt`.
+ * "Ana García López" → "ana-garcia-lopez-k7f3q2". El código impide adivinar el enlace de otro invitado.
+ */
+export function generateToken(guestName: string): string {
+  let code = ''
+  for (let i = 0; i < TOKEN_CODE_LENGTH; i++) code += CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]
+  return `${slugifyName(guestName)}-${code}`
 }
 
 export function buildInvitation(input: InvitationCreate, now = new Date()): Invitation {
   return {
     id: randomUUID(),
-    token: generateToken(),
+    token: generateToken(input.guestName),
     label: input.label,
-    guestNames: input.guestNames,
+    guestName: input.guestName,
     locale: input.locale,
     phone: input.phone,
     invitedSentAt: null,
@@ -61,7 +68,7 @@ export function toPublicInvitationResponse(
 ): PublicInvitationResponse {
   return {
     invitation: {
-      guestNames: invitation.guestNames,
+      guestName: invitation.guestName,
       locale: invitation.locale,
     },
     rsvp: rsvp ? toPublicRsvp(rsvp) : null,

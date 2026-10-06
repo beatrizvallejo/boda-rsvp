@@ -10,22 +10,22 @@ export const adminInvitationSchema = invitationSchema.extend({ rsvp: rsvpSchema.
 export type AdminInvitation = z.infer<typeof adminInvitationSchema>
 
 const countsSchema = z.object({
-  attending: z.int(),
-  declined: z.int(),
+  confirmed: z.int(),
   pending: z.int(),
 })
 
 /**
- * `GET /api/admin/stats` (métricas del brief).
- * - `people.pending` cuenta los nombres de las invitaciones sin respuesta (sin acompañantes ni niños,
- *   que aún no se conocen).
- * - Adultos = nombres de la respuesta + acompañante.
+ * `GET /api/admin/stats` (métricas del brief). Cada invitación está confirmada o pendiente: no hay
+ * respuesta "no".
+ * - `people.pending` cuenta una persona por invitación pendiente (el acompañante y los niños aún no se
+ *   conocen).
+ * - Adultos = invitado + acompañante.
  */
 export const statsSchema = z.object({
   invitations: countsSchema.extend({ total: z.int() }),
   people: countsSchema,
-  attendingAdults: z.int(),
-  attendingChildren: z.int(),
+  adults: z.int(),
+  children: z.int(),
   whatsapp: z.object({
     invitationsSent: z.int(),
     invitationsNotSent: z.int(),

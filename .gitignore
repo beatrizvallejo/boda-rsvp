@@ -31,3 +31,6 @@ playwright/.cache
 
 # Ajustes personales de Claude Code
 .claude/settings.local.json
+
+# Capturas y logs de Playwright MCP
+.playwright-mcp

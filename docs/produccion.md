@@ -23,7 +23,7 @@ Este documento es para el compañero de devops. Describe qué necesita la web pa
 | Datos | KV del hosting o Upstash Redis (plan gratuito), vía driver de unstorage | Decenas de invitaciones: un KV sobra. Mismo código que en local, sin SQL, migraciones, RLS ni pausa por inactividad | Supabase (descartado por complejidad) |
 | Login del panel | Contraseña compartida de los novios (`ADMIN_PASSWORD`) + cookie de sesión sellada (`NUXT_SESSION_PASSWORD`) | Son 2 personas; sin proveedor de auth ni allowlist | Magic link (descartado por complejidad) |
 | Backups | Descarga periódica desde el panel (CSV) y, si el KV lo ofrece, su copia automática | Las respuestas son el único dato valioso | |
-| Antispam | Ninguno: el acceso es por enlace personal con token de 256 bits, imposible de adivinar | Sin rate limit, honeypot ni captcha | |
+| Antispam | Ninguno: el acceso es por enlace personal con un código aleatorio que no se puede adivinar | Sin rate limit, honeypot ni captcha | |
 | Email | Gmail SMTP con contraseña de aplicación, solo para avisar a los novios | Remitente y destinatario son la misma cuenta, sin problemas de entregabilidad | Proveedor transaccional con dominio verificado |
 | Dominio | Subdominio de Vercel, salvo que los novios quieran uno propio | Hay que decidirlo antes del primer envío: WhatsApp cachea las previsualizaciones | |
 
@@ -42,9 +42,9 @@ La única fuente es `shared/schemas/` (Zod). Las migraciones de la Fase 8 se der
 | Campo | Tipo | Notas |
 |---|---|---|
 | `id` | uuid, PK | lo genera el servidor (`crypto.randomUUID`) |
-| `token` | text, **único** | 32 bytes aleatorios en base64url (43 caracteres, 256 bits). Es el secreto del enlace `/r/<token>` |
+| `token` | text ≤64, **único** | Nombre del invitado en formato URL + `-` + 6 caracteres aleatorios `[a-z0-9]` de `crypto.randomInt` (p. ej. `ana-garcia-lopez-k7f3q2`). Es el secreto del enlace `/r/<token>` |
 | `label` | text ≤80 | etiqueta del grupo ("Familia Popescu") |
-| `guest_names` | text[] 1–8, cada uno ≤80 | nombres precargados |
+| `guest_name` | text ≤80 | nombre precargado: una invitación = una persona |
 | `locale` | `es` \| `ro` | idioma de la web y del mensaje de WhatsApp |
 | `phone` | text E.164, nullable | **solo panel**, nunca en respuestas públicas |
 | `invited_sent_at`, `reminder_sent_at` | timestamptz, nullable | registro orientativo de envíos por WhatsApp |
@@ -55,17 +55,14 @@ La única fuente es `shared/schemas/` (Zod). Las migraciones de la Fase 8 se der
 | Campo | Tipo | Notas |
 |---|---|---|
 | `invitation_id` | uuid, PK y FK → `invitations.id` **on delete cascade** | |
-| `attending` | boolean | |
-| `guest_names` | text[] 1–8, cada uno ≤80 | editables por el invitado |
+| `guest_name` | text ≤80 | editable por el invitado |
 | `companion_name` | text ≤80, nullable | `null` = sin acompañante |
 | `children` | int 0–10 | |
-| `catering_notes` | text ≤500, nullable | |
-| `message_to_couple` | text ≤1000, nullable | |
 | `email` | text ≤254, nullable | `replyTo` del aviso |
 | `updated_by` | `guest` \| `admin` | los cambios de los novios desde el panel no generan aviso |
 | `created_at`, `updated_at` | timestamptz | |
 
-Si `attending = false`, el servidor guarda `companion_name = null`, `children = 0` y `catering_notes = null`.
+Solo existen confirmaciones: una invitación sin fila en `rsvps` está pendiente. No hay respuesta "no".
 
 **`message_templates`**: PK (`kind` `invitation`\|`reminder`, `locale` `es`\|`ro`), `body` text ≤1000 que debe contener `{enlace}`, `updated_at`. Se insertan las 4 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
 
@@ -76,12 +73,12 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 
 | Método y ruta | Acceso | Entrada → salida |
 |---|---|---|
-| `GET /api/rsvp/:token` | público | → `{ invitation: {guestNames, locale}, rsvp \| null, deadline, closed }`. Sin `label` (etiqueta interna de los novios). Token inválido o inexistente: 404 |
+| `GET /api/rsvp/:token` | público | → `{ invitation: {guestName, locale}, rsvp \| null, deadline, closed }`. Sin `label` (etiqueta interna de los novios). Token inválido o inexistente: 404 |
 | `PUT /api/rsvp/:token` | público | `RsvpInput` → `{ rsvp, isNew, changes[] }`. 404, 410 (`deadline_closed`), 422 |
 | `GET /api/admin/session` | auth | → `{ email }` o 401 |
 | `GET /api/admin/invitations` | auth | → invitaciones con `rsvp` (incluye teléfono y token) |
 | `POST /api/admin/invitations` | auth | una invitación o un array de 1–500 (importación) → 201 con las creadas |
-| `PATCH /api/admin/invitations/:id` | auth | `{label?, guestNames?, locale?, phone?}` → invitación |
+| `PATCH /api/admin/invitations/:id` | auth | `{label?, guestName?, locale?, phone?}` → invitación |
 | `DELETE /api/admin/invitations/:id` | auth | → 204 (borra también la respuesta) |
 | `PUT /api/admin/invitations/:id/rsvp` | auth | `RsvpInput` → respuesta registrada por los novios. **Ignora la fecha límite** y no genera aviso |
 | `POST /api/admin/invitations/:id/sent` | auth | `{kind: invitation\|reminder}` → invitación con el envío registrado |
@@ -101,8 +98,15 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - Con `AUTH_ADAPTER=dev`, el servidor de producción lanza un error al arrancar (plugin `server/plugins/00.adapters.ts`). Está comprobado con `node .output/server/index.mjs`.
 - El adaptador `local` guarda en `.data/db` (Nitro storage `fs`). No sirve para serverless: en producción es obligatorio `DATA_ADAPTER=kv`.
 
+## Frontend (Fase 3)
+- **Rutas públicas:** `/` (portada sin enlace personal) y `/r/<token>` (tarjeta del invitado). Un token inexistente devuelve la página con aviso y **código 404**.
+- **Metadatos Open Graph** renderizados en servidor (`useSeoMeta`): `og:image` apunta a `${NUXT_PUBLIC_SITE_URL}/og.jpg` (1200×630, 57 KB). La URL pública debe estar bien fijada antes del primer envío por WhatsApp (WhatsApp cachea la previsualización).
+- **Estáticos en `public/`:** fuente Archivo autoalojada (`/fonts/*.woff2`, 176 KB, OFL), fotos de los novios (`/fotos/boda-1..4.jpg`, ~60 KB cada una) y `og.jpg`. Sin peticiones a terceros (ni Google Fonts).
+- **Idioma:** sin prefijo en la URL; el inicial es el de la invitación y el elegido se guarda en la cookie `boda_locale`.
+- **Solo confirmaciones:** no hay respuesta "no"; una invitación sin fila en `rsvps` está pendiente.
+
 ## Variables de entorno de producción
-Ver la sección de producción en `.env.example`. Se completa en la Fase 7.
+Ver la sección de producción en `.env.example`. Se completa en la Fase 7. `NUXT_PUBLIC_SITE_URL` (URL pública, sin barra final) es obligatoria: la usan los metadatos OG y `baseUrl` de i18n, y se lee al construir.
 
 ## Datos personales
 - Se guardan nombres, respuestas, el teléfono por invitación (opcional, lo introducen los novios) y el email del invitado (opcional).
