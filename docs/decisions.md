@@ -63,3 +63,5 @@ Formato: `- AAAA-MM-DD · Fase N · Decisión — motivo`
 - 2026-10-06 · Fase 3 · Fotos de los novios (4, incluida la niña) en el repositorio y en la web: originales en `references/fotos/`, recortes de 600px en `public/fotos/` — aprobado por el usuario.
 - 2026-10-06 · Fase 3 · Previsualización de WhatsApp genérica (`public/og.jpg`, panel de llegadas, sin nombres de invitados) con metadatos OG en servidor; un enlace inválido devuelve 404 con aviso.
 - 2026-10-06 · Fase 3 · Textos en rumano escritos por Claude, pendientes de revisión nativa antes del envío de invitaciones.
+- 2026-10-06 · Fase 3 (ajuste) · Ruta de la tarjeta "Allá donde estés → Nuestra boda" (RO "Nunta noastră") en lugar de "Alba", para no dar tanta relevancia al lugar; en la intro el vuelo sigue llegando a ALBA — decisión del usuario.
+- 2026-10-06 · Fase 3 (ajuste) · Fondo de la página arena `#F3EBDD` (antes gris `#F2F2EF`) — elegido por el usuario entre seis opciones.

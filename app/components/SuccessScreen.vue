@@ -30,7 +30,9 @@ const PLANE =
     @click="emit('close')"
   >
     <div class="success__inner">
-      <p class="success__kicker" aria-hidden="true">KR 3107 · {{ t('pass.fromValue') }} → Alba</p>
+      <p class="success__kicker" aria-hidden="true">
+        KR 3107 · {{ t('pass.fromValue') }} → {{ t('pass.toValue') }}
+      </p>
       <h2 id="success-title" class="success__title">{{ t('success.title') }}</h2>
       <p class="success__lead">{{ t('success.lead') }}</p>
 
@@ -54,7 +56,7 @@ const PLANE =
               </svg>
               <div class="issued__to">
                 <span class="label">{{ t('pass.to') }}</span
-                ><b>Alba</b>
+                ><b>{{ t('pass.toValue') }}</b>
               </div>
             </div>
             <dl class="issued__info">

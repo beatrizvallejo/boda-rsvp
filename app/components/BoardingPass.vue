@@ -62,7 +62,7 @@ const PLANE =
         </svg>
         <div class="pass__to">
           <span class="label">{{ t('pass.to') }}</span>
-          <span class="pass__city">Alba</span>
+          <span class="pass__city">{{ t('pass.toValue') }}</span>
         </div>
       </div>
 

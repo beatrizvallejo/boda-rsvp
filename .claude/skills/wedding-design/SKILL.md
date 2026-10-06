@@ -23,6 +23,7 @@ Lo que la hace propia de esta pareja: los muñequitos de bloques de los novios (
 Los valores viven en `tokens.json` (única fuente) y se exponen como variables CSS en `app/assets/css/tokens.css`. No escribas colores ni tamaños sueltos en los componentes.
 - **Amarillo señal (`signal`)**: botones principales, banda de la tarjeta, carteles de "Cómo llegar", fondo de la pantalla de éxito. En la intro, **solo** el botón Embarcar es amarillo.
 - **Estados** en los paneles: verde `statusOnTime`, ámbar `statusBoarding` (parpadea).
+- **Fondo de la página: arena (`page`, `#F3EBDD`)**, cálido y veraniego; la tarjeta blanca y los carteles amarillos destacan sobre él.
 - **Fondo negro de los paneles** con luz cenital (degradado radial blanco al 11 % arriba) y viñeta: nunca negro plano.
 
 ## Tipografía
@@ -38,7 +39,7 @@ Los valores viven en `tokens.json` (única fuente) y se exponen como variables C
 **Intro** (`IntroBoard`, una vez por visita, a pantalla completa, no se cierra sola):
 barra LLEGADAS · Sosiri · Arrivals con relojes Madrid/Alba → muñequitos (encima del nombre en móvil; en escritorio, absolutos a la izquierda de la K) → KEKO Y RO en fichas → "Despegue en" D·H·M → fecha · 13:00 · Alba → fila del vuelo KR3107 MADRID → ALBA con estado ES/RO/EN → seguimiento MADRID ✈ - - - ALBA ("En ruta · N % del trayecto") → botón EMBARCAR → megafonía con la fecha límite. Al pulsar: las fichas se apagan en cascada desde el botón y el panel sube.
 
-**Página** (`/r/<token>`), de arriba abajo: cabecera (KR · Keko y Ro · ES/RO) → tarjeta de embarque (vertical en móvil; apaisada con talón a la derecha en escritorio) → flecha "Vuelos y alojamiento ↓" (en móvil, además, píldora flotante hasta el primer scroll) → Cómo llegar (3 carteles amarillos: Lugar → mapa, Instagram, Apertura/Cierre) → Próximamente (tarjeta negra con PRÓXIMAMENTE en fichas ámbar) → fotos de los novios sin título (tira de fotomatón en B/N; horizontal en escritorio, vertical en móvil).
+**Página** (`/r/<token>`), de arriba abajo: cabecera (KR · Keko y Ro · ES/RO) → tarjeta de embarque, con ruta "Allá donde estés → Nuestra boda" (vertical en móvil; apaisada con talón a la derecha en escritorio) → flecha "Vuelos y alojamiento ↓" (en móvil, además, píldora flotante hasta el primer scroll) → Cómo llegar (3 carteles amarillos: Lugar → mapa, Instagram, Apertura/Cierre) → Próximamente (tarjeta negra con PRÓXIMAMENTE en fichas ámbar) → fotos de los novios sin título (tira de fotomatón en B/N; horizontal en escritorio, vertical en móvil).
 
 **Éxito** (tras confirmar): pantalla completa amarilla → "¡Has confirmado tu asistencia!" → muñequitos saludando con borde blanco de pegatina → tarjeta emitida con sello rojo CONFIRMADO que cae con golpe. Se cierra tocando cualquier parte. **No hay respuesta "no"** ni pantalla para ella.
 
