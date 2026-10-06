@@ -21,8 +21,11 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-// Antes del primer pintado: si la intro ya se vio en esta visita, no se pinta.
+// Antes del primer pintado: si la intro ya se vio en esta visita, no se pinta. La regla va en línea
+// (aplicada antes de que llegue cualquier hoja de estilos) y con !important, porque `.intro` del
+// componente tiene la misma especificidad y se carga después.
 useHead({
+  style: [{ tagPosition: 'head', innerHTML: '.intro-off .intro{display:none!important}' }],
   script: [
     {
       tagPosition: 'head',
@@ -68,7 +71,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
       <a class="more" href="#pronto" @click.prevent="goToSoon">
         <span>{{ t('more') }}</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
           <path
             fill="currentColor"
             d="M11 4h2v12l5.5-5.5 1.4 1.4L12 19.8l-7.9-7.9 1.4-1.4L11 16z"
@@ -96,11 +99,6 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 </template>
 
 <style scoped>
-/* La intro ya vista no se pinta (clase puesta en <html> antes del primer pintado) */
-:global(.intro-off .intro) {
-  display: none;
-}
-
 .more {
   display: flex;
   flex-direction: column;

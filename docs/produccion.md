@@ -105,6 +105,11 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - **Idioma:** sin prefijo en la URL; el inicial es el de la invitación y el elegido se guarda en la cookie `boda_locale`.
 - **Solo confirmaciones:** no hay respuesta "no"; una invitación sin fila en `rsvps` está pendiente.
 
+## Formulario y confirmación (Fase 4)
+- **Ruta `GET /boda.ics?lang=es|ro`** (`server/routes/boda.ics.ts`, pública): evento de calendario con `TZID=Europe/Bucharest` y `VTIMEZONE`, del 31/07/2027 13:00 al 01/08/2027 03:00 (hora de Rumanía). `Content-Disposition: attachment` y `Cache-Control: public, max-age=3600`. Se sirve desde el servidor porque las descargas de blobs fallan en el navegador de WhatsApp.
+- **Google Calendar:** enlace directo a `calendar.google.com` con `ctz=Europe/Bucharest`, sin API ni credenciales.
+- **Aviso a los novios** (`server/utils/adapters/notifier/format.ts`): texto plano, en español. Asunto `✈️ <nombre> confirma · N adultos + N niños` (respuesta nueva) o `✏️ Cambio · <nombre>` (edición), con la lista de cambios, la respuesta completa y el enlace `${NUXT_PUBLIC_SITE_URL}/admin`. El adaptador `gmail` debe usar el mismo `formatRsvpNotification(notification, siteUrl)` y el email del invitado como `replyTo`.
+
 ## Variables de entorno de producción
 Ver la sección de producción en `.env.example`. Se completa en la Fase 7. `NUXT_PUBLIC_SITE_URL` (URL pública, sin barra final) es obligatoria: la usan los metadatos OG y `baseUrl` de i18n, y se lee al construir.
 

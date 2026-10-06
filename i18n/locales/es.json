@@ -48,7 +48,11 @@
     "addEmail": "Añadir mi email (opcional)",
     "passengers": "Pasajeros",
     "confirm": "Confirmar asistencia",
-    "airline": "Líneas aéreas"
+    "airline": "Líneas aéreas",
+    "leadConfirmed": "Ya tenemos tu confirmación. Si algo cambia, edítalo aquí.",
+    "confirmedNote": "Puedes cambiar los datos hasta el 1 de mayo.",
+    "save": "Guardar cambios",
+    "sending": "Enviando tu tarjeta…"
   },
   "more": "Vuelos y alojamiento",
   "howto": {
@@ -83,7 +87,10 @@
   "success": {
     "title": "¡Has confirmado tu asistencia!",
     "lead": "Nos vemos el 31 de julio.",
-    "stamp": "Confirmado"
+    "stamp": "Confirmado",
+    "editedTitle": "¡Tarjeta actualizada!",
+    "calendar": "Añadir al calendario",
+    "calendarIcs": "Apple · Outlook"
   },
   "home": {
     "title": "Tu tarjeta de embarque te espera",
@@ -94,6 +101,13 @@
     "notFound": "Este enlace no corresponde a ninguna tarjeta de embarque. Revisa el mensaje que te enviamos.",
     "closedTitle": "Embarque cerrado",
     "closed": "El embarque se cerró el 1 de mayo. Si necesitas cambiar algo, escríbenos.",
-    "generic": "Algo ha fallado al cargar tu tarjeta. Vuelve a intentarlo en un momento."
+    "generic": "Algo ha fallado al cargar tu tarjeta. Vuelve a intentarlo en un momento.",
+    "guestName": "Falta tu nombre. Escríbelo tal y como quieres que aparezca.",
+    "companionName": "Falta el nombre de tu acompañante. Escríbelo o elige «Viajo solo/a».",
+    "nameTooLong": "Este nombre es demasiado largo: como mucho, 80 caracteres.",
+    "email": "Este email no parece correcto. Revísalo o déjalo en blanco.",
+    "network": "No hemos podido enviar tu tarjeta: parece que no hay conexión. Tus datos siguen aquí; vuelve a intentarlo.",
+    "save": "Algo ha fallado al guardar tu tarjeta. Vuelve a intentarlo en un momento.",
+    "closedWithRsvp": "Esta es tu tarjeta confirmada. Si necesitas cambiar algo, escríbenos."
   }
 }

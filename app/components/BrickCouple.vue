@@ -1,22 +1,43 @@
 <script setup lang="ts">
-// Los novios como muñequitos de bloques (dibujo propio, sin marca): él calvo, con traje, pajarita y la
-// maleta del vuelo; ella rubia de melena larga, con velo y ramo. Se balancean por turnos y entre los
+// Los novios como muñequitos de bloques (dibujo propio, sin marca): él calvo, con barba oscura con
+// canas, traje, pajarita y la maleta del vuelo; ella rubia de melena larga, con velo y ramo. Se balancean por turnos y entre los
 // dos sube un corazón. Con `wave` saludan (él con la mano, ella levantando el ramo).
+// Tamaño: 76px de alto por defecto (width/height del SVG); quien lo usa fija la altura con su clase. Sin
+// height: 100% propio: si este CSS llega antes que el del contenedor, los muñecos se ven gigantes.
 const props = withDefaults(defineProps<{ wave?: boolean }>(), { wave: false })
+// Id único del recorte de la barba: puede haber dos parejas en la misma página (intro y pantalla de éxito).
+const headClip = useId()
 </script>
 
 <template>
-  <svg class="couple" viewBox="0 0 120 92" aria-hidden="true">
+  <svg class="couple" viewBox="0 0 120 92" width="99" height="76" aria-hidden="true">
+    <defs>
+      <clipPath :id="headClip">
+        <rect x="9" y="4" width="20" height="18" rx="8" />
+      </clipPath>
+    </defs>
     <!-- Novio -->
     <g class="couple__groom">
       <g transform="translate(10 8)">
-        <!-- cabeza -->
-        <rect x="9" y="4" width="20" height="18" rx="5" class="skin" />
-        <ellipse cx="14.5" cy="7.5" rx="3" ry="1.6" fill="#fff" opacity="0.55" />
-        <circle cx="15.5" cy="13.5" r="1.3" class="eye" />
-        <circle cx="22.5" cy="13.5" r="1.3" class="eye" />
-        <path d="M15 17 Q19 20.5 23 17" class="smile" />
+        <!-- cuello y cabeza redondeada -->
         <rect x="15" y="21" width="8" height="3" class="skin" />
+        <rect x="9" y="4" width="20" height="18" rx="8" class="skin" />
+        <ellipse cx="15" cy="7.6" rx="3" ry="1.6" fill="#fff" opacity="0.55" />
+        <circle cx="15.5" cy="12.5" r="1.3" class="eye" />
+        <circle cx="22.5" cy="12.5" r="1.3" class="eye" />
+        <!-- barba oscura con canas, recortada al contorno de la cabeza; hueco para la sonrisa -->
+        <g :clip-path="`url(#${headClip})`">
+          <path
+            d="M5 13.5 Q10.6 14.4 11.8 16.4 Q14 14.6 19 14.8 Q24 14.6 26.2 16.4 Q27.4 14.4 33 13.5 V30 H5Z"
+            class="beard"
+          />
+          <path
+            d="M10.4 16.6 l0.5 2.2 M12.6 20.4 l0.9 1.3 M27.6 16.9 l-0.4 2 M25.6 20.6 l-0.8 1.2 M19.4 21.6 v1.2 M17 15.6 l1.4 -0.2 M22.6 15.8 l-1.2 -0.3"
+            class="beard__grey"
+          />
+        </g>
+        <ellipse cx="19" cy="18" rx="4.1" ry="2" class="skin" />
+        <path d="M16.2 17.5 Q19 19.7 21.8 17.5" class="smile" />
         <!-- brazos -->
         <g v-if="props.wave" class="couple__wave">
           <path d="M8 26 L2 11 L6 9.5 L11.5 24Z" class="suit" />
@@ -108,7 +129,7 @@ const props = withDefaults(defineProps<{ wave?: boolean }>(), { wave: false })
 <style scoped>
 .couple {
   display: block;
-  height: 100%;
+  width: auto;
   overflow: visible;
 }
 .skin {
@@ -116,6 +137,16 @@ const props = withDefaults(defineProps<{ wave?: boolean }>(), { wave: false })
 }
 .suit {
   fill: #3a3e52;
+}
+.beard {
+  fill: #2e2420;
+}
+.beard__grey {
+  fill: none;
+  stroke: #c9c4bd;
+  stroke-width: 0.55;
+  stroke-linecap: round;
+  opacity: 0.85;
 }
 .hair {
   fill: #d8962a;

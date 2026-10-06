@@ -1,7 +1,13 @@
 <script setup lang="ts">
-// Cabecera de la página: monograma, nombres y selector de idioma (ES/RO). El idioma elegido se guarda
-// en la cookie de @nuxtjs/i18n.
+// Cabecera de la página: monograma, nombres y selector de idioma (ES/RO). Elegir idioma aquí lo marca
+// como elección del invitado (cookie `boda_locale_elegido`): a partir de ahí manda sobre el de la invitación.
 const { t, locale, locales, setLocale } = useI18n()
+const chosen = useCookie('boda_locale_elegido', { maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+
+function choose(code: (typeof locales.value)[number]['code']) {
+  chosen.value = '1'
+  setLocale(code)
+}
 </script>
 
 <template>
@@ -16,7 +22,7 @@ const { t, locale, locales, setLocale } = useI18n()
         type="button"
         :aria-pressed="locale === l.code"
         :lang="l.language"
-        @click="setLocale(l.code)"
+        @click="choose(l.code)"
       >
         {{ l.code.toUpperCase() }}
       </button>

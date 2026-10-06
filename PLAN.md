@@ -101,7 +101,7 @@ Referencia del modelo, a adaptar:
 
 ---
 
-## [ ] Fase 4 — Formulario billete y confirmación
+## [x] Fase 4 — Formulario billete y confirmación
 
 **Preguntas de entrada**
 - Qué campos del billete son editables y cuáles decorativos (sale de la Fase 3).

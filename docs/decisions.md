@@ -65,3 +65,11 @@ Formato: `- AAAA-MM-DD · Fase N · Decisión — motivo`
 - 2026-10-06 · Fase 3 · Textos en rumano escritos por Claude, pendientes de revisión nativa antes del envío de invitaciones.
 - 2026-10-06 · Fase 3 (ajuste) · Ruta de la tarjeta "Allá donde estés → Nuestra boda" (RO "Nunta noastră") en lugar de "Alba", para no dar tanta relevancia al lugar; en la intro el vuelo sigue llegando a ALBA — decisión del usuario.
 - 2026-10-06 · Fase 3 (ajuste) · Fondo de la página arena `#F3EBDD` (antes gris `#F2F2EF`) — elegido por el usuario entre seis opciones.
+- 2026-10-06 · Fase 4 · Formulario: nombre precargado, acompañante, menores y email opcional, validados en cliente con el mismo esquema Zod; error junto al campo y foco en el primero. Al volver al enlace se editan los datos y «Guardar cambios» solo se activa si algo cambia.
+- 2026-10-06 · Fase 4 · Pantalla de éxito sin QR ni "reenviar al acompañante": solo «Añadir al calendario» (Google Calendar + `.ics` para Apple/Outlook). El `.ics` lo sirve el servidor en `/boda.ics?lang=es|ro` con `TZID=Europe/Bucharest` — las descargas de blobs fallan en el navegador de WhatsApp.
+- 2026-10-06 · Fase 4 · Aviso a los novios en texto plano y en español: `✈️ <nombre> confirma · N adultos + N niños` o `✏️ Cambio · <nombre>` con lo que cambia, la respuesta completa y el enlace al panel — aprobado por el usuario en el log del notifier `console`.
+- 2026-10-06 · Fase 4 · Idioma: manda el de la invitación salvo que el invitado elija otro con el selector (cookie `boda_locale_elegido`).
+- 2026-10-06 · Fase 4 · Errores en el tono del diseño: enlace inválido (404), plazo cerrado (tarjeta en solo lectura), sin conexión y fallo al guardar.
+- 2026-10-06 · Fase 4 · Sin parpadeos al cargar: todos los SVG llevan width/height de reserva y no se dimensionan al 100% por su cuenta; la regla que oculta la intro ya vista va en línea en el `<head>` con `!important` — el usuario veía la intro y los muñecos/logo gigantes un instante al recargar.
+- 2026-10-06 · Fase 4 · Novio con cabeza redondeada y barba oscura con canas — petición del usuario ("se parecerá más").
+- 2026-10-06 · Fase 4 · Recorrido de `e2e-tester` y prueba en móvil real sustituidos por la validación del usuario; el flujo se comprobó con Playwright MCP a 360 y 1280px — decisión del usuario.

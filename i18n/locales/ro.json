@@ -48,7 +48,11 @@
     "addEmail": "Adaugă emailul meu (opțional)",
     "passengers": "Pasageri",
     "confirm": "Confirmă prezența",
-    "airline": "Linii aeriene"
+    "airline": "Linii aeriene",
+    "leadConfirmed": "Avem deja confirmarea ta. Dacă se schimbă ceva, modifică aici.",
+    "confirmedNote": "Poți modifica datele până pe 1 mai.",
+    "save": "Salvează modificările",
+    "sending": "Se trimite biletul…"
   },
   "more": "Zboruri și cazare",
   "howto": {
@@ -82,8 +86,11 @@
   },
   "success": {
     "title": "Ți-ai confirmat prezența!",
-    "lead": "Ne vedem în Alba pe 31 iulie.",
-    "stamp": "Confirmat"
+    "lead": "Ne vedem pe 31 iulie.",
+    "stamp": "Confirmat",
+    "editedTitle": "Bilet actualizat!",
+    "calendar": "Adaugă în calendar",
+    "calendarIcs": "Apple · Outlook"
   },
   "home": {
     "title": "Biletul tău te așteaptă",
@@ -94,6 +101,13 @@
     "notFound": "Acest link nu corespunde niciunui bilet de îmbarcare. Verifică mesajul pe care ți l-am trimis.",
     "closedTitle": "Îmbarcare închisă",
     "closed": "Îmbarcarea s-a închis pe 1 mai. Dacă trebuie să schimbi ceva, scrie-ne.",
-    "generic": "Ceva n-a mers la încărcarea biletului. Încearcă din nou peste un moment."
+    "generic": "Ceva n-a mers la încărcarea biletului. Încearcă din nou peste un moment.",
+    "guestName": "Lipsește numele tău. Scrie-l așa cum vrei să apară.",
+    "companionName": "Lipsește numele însoțitorului. Scrie-l sau alege „Călătoresc singur/ă”.",
+    "nameTooLong": "Numele e prea lung: cel mult 80 de caractere.",
+    "email": "Adresa de email nu pare corectă. Verific-o sau las-o goală.",
+    "network": "Nu am putut trimite biletul: se pare că nu ai conexiune. Datele tale sunt încă aici; încearcă din nou.",
+    "save": "Ceva n-a mers la salvarea biletului. Încearcă din nou peste câteva momente.",
+    "closedWithRsvp": "Acesta este biletul tău confirmat. Dacă trebuie să schimbi ceva, scrie-ne."
   }
 }

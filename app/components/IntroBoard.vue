@@ -116,7 +116,7 @@ onBeforeUnmount(() => {
   >
     <header class="intro__top">
       <p class="intro__kind">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
           <path
             fill="currentColor"
             d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"
@@ -192,7 +192,13 @@ onBeforeUnmount(() => {
       <span>Madrid</span>
       <div class="tracker__line">
         <div class="tracker__done" :style="{ width: `${trackerShown * 100}%` }" />
-        <svg class="tracker__plane" :style="{ left: `${trackerShown * 100}%` }" viewBox="0 0 24 24">
+        <svg
+          class="tracker__plane"
+          :style="{ left: `${trackerShown * 100}%` }"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+        >
           <path
             fill="currentColor"
             d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"
@@ -213,7 +219,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="pa" aria-hidden="true">
-      <svg class="pa__icon" viewBox="0 0 24 24">
+      <svg class="pa__icon" viewBox="0 0 24 24" width="24" height="24">
         <path
           fill="currentColor"
           d="M3 10v4h4l5 5V5L7 10zm13.5 2A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4M14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6"

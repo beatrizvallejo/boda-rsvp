@@ -41,7 +41,9 @@ export function useNotifierAdapter(): NotifierAdapter {
   if (!notifier) {
     const { notifier: name } = useAdapterConfig()
     notifier =
-      name === 'console' ? createConsoleNotifierAdapter() : notImplemented('NOTIFIER_ADAPTER', name)
+      name === 'console'
+        ? createConsoleNotifierAdapter(useRuntimeConfig().public.siteUrl)
+        : notImplemented('NOTIFIER_ADAPTER', name)
   }
   return notifier
 }

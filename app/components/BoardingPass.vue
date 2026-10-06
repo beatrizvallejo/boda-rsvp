@@ -2,12 +2,26 @@
 /**
  * La tarjeta de embarque: el formulario de confirmación. Vertical en móvil; apaisada con el talón a la
  * derecha en escritorio. Precarga el nombre (y la respuesta previa, si la hay).
- * Fase 3: solo emite `confirm` con los datos; la validación y el envío a la API llegan en la Fase 4.
+ * Valida con el mismo esquema Zod que el servidor y emite `confirm` con los datos ya válidos; el envío
+ * lo hace la página. Con `readonly` (plazo cerrado) solo muestra la respuesta guardada.
  */
-import type { PublicRsvp, RsvpInput } from '#shared/schemas'
+import { rsvpInputSchema, type PublicRsvp, type RsvpData } from '#shared/schemas'
 
-const props = defineProps<{ guestName: string; rsvp?: PublicRsvp | null }>()
-const emit = defineEmits<{ confirm: [data: RsvpInput] }>()
+type Field = 'guestName' | 'companionName' | 'email'
+export interface FieldIssue {
+  path: string[]
+  code: string
+}
+
+const props = defineProps<{
+  guestName: string
+  rsvp?: PublicRsvp | null
+  readonly?: boolean
+  pending?: boolean
+  /** Error general del envío (red, servidor), ya traducido. */
+  submitError?: string | null
+}>()
+const emit = defineEmits<{ confirm: [data: RsvpData] }>()
 const { t } = useI18n()
 
 const name = ref(props.rsvp?.guestName ?? props.guestName)
@@ -20,21 +34,83 @@ const showEmail = ref(Boolean(props.rsvp?.email))
 
 const passengers = computed(() => 1 + (withCompanion.value ? 1 : 0) + children.value)
 
-function confirm() {
-  emit('confirm', {
-    guestName: name.value,
-    companionName: withCompanion.value ? companionName.value : null,
-    children: children.value,
-    email: showEmail.value ? email.value : null,
-  })
+const input = computed(() => ({
+  guestName: name.value,
+  companionName: withCompanion.value ? companionName.value : null,
+  children: children.value,
+  email: showEmail.value ? email.value : null,
+}))
+
+// Con respuesta previa, "Guardar cambios" solo se activa si algo cambia respecto a lo guardado.
+const dirty = computed(() => {
+  if (!props.rsvp) return true
+  const parsed = rsvpInputSchema.safeParse(input.value)
+  if (!parsed.success) return true
+  const { guestName, companionName, children, email } = props.rsvp
+  return (
+    JSON.stringify(parsed.data) !== JSON.stringify({ guestName, companionName, children, email })
+  )
+})
+
+const errors = ref<Partial<Record<Field, string>>>({})
+const touched = ref(false)
+
+function messageFor(issue: FieldIssue): [Field, string] | null {
+  const field = issue.path[0]
+  if (field === 'guestName')
+    return [field, t(issue.code === 'too_big' ? 'errors.nameTooLong' : 'errors.guestName')]
+  if (field === 'companionName')
+    return [field, t(issue.code === 'too_big' ? 'errors.nameTooLong' : 'errors.companionName')]
+  if (field === 'email') return [field, t('errors.email')]
+  return null
 }
+
+const formEl = ref<HTMLFormElement>()
+
+/** Pinta los errores por campo (del cliente o del 422 del servidor) y lleva al primero. */
+async function showIssues(issues: FieldIssue[]) {
+  const next: Partial<Record<Field, string>> = {}
+  for (const issue of issues) {
+    const entry = messageFor(issue)
+    if (entry && !next[entry[0]]) next[entry[0]] = entry[1]
+  }
+  errors.value = next
+  await nextTick()
+  const first = formEl.value?.querySelector<HTMLElement>('[aria-invalid="true"]')
+  first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  first?.focus({ preventScroll: true })
+}
+
+function validate() {
+  const result = rsvpInputSchema.safeParse(input.value)
+  if (result.success) {
+    errors.value = {}
+    return result.data
+  }
+  showIssues(result.error.issues.map((i) => ({ path: i.path.map(String), code: i.code })))
+  return null
+}
+
+// Tras el primer intento, los errores se corrigen según se escribe.
+watch(input, () => {
+  if (touched.value && Object.keys(errors.value).length) validate()
+})
+
+function confirm() {
+  if (props.readonly || props.pending) return
+  touched.value = true
+  const data = validate()
+  if (data) emit('confirm', data)
+}
+
+defineExpose({ showIssues })
 
 const PLANE =
   'M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z'
 </script>
 
 <template>
-  <form class="pass" @submit.prevent="confirm">
+  <form ref="formEl" class="pass" novalidate @submit.prevent="confirm">
     <header class="pass__band">
       <span class="pass__airline"><AirlineLogo class="pass__mono" /> {{ t('brand') }}</span>
       <span class="pass__doc">{{ t('pass.band') }}</span>
@@ -46,7 +122,14 @@ const PLANE =
           <span class="label">{{ t('pass.from') }}</span>
           <span class="pass__city">{{ t('pass.fromValue') }}</span>
         </div>
-        <svg class="pass__path" viewBox="0 0 120 24" aria-hidden="true" preserveAspectRatio="none">
+        <svg
+          class="pass__path"
+          viewBox="0 0 120 24"
+          width="120"
+          height="24"
+          aria-hidden="true"
+          preserveAspectRatio="none"
+        >
           <line
             x1="2"
             y1="12"
@@ -57,7 +140,7 @@ const PLANE =
             stroke-dasharray="4 5"
           />
         </svg>
-        <svg class="pass__plane" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="pass__plane" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
           <path fill="currentColor" :d="PLANE" transform="rotate(90 12 12)" />
         </svg>
         <div class="pass__to">
@@ -93,10 +176,21 @@ const PLANE =
         </div>
       </dl>
 
-      <div class="pass__fields">
+      <fieldset class="pass__fields" :disabled="readonly">
+        <legend class="sr-only">{{ t('pass.title') }}</legend>
         <label class="field">
           <span class="label">{{ t('pass.passenger') }}</span>
-          <input v-model="name" class="field__input" autocomplete="name" required maxlength="80" />
+          <input
+            v-model="name"
+            class="field__input"
+            autocomplete="name"
+            maxlength="80"
+            :aria-invalid="Boolean(errors.guestName)"
+            :aria-describedby="errors.guestName ? 'err-guestName' : undefined"
+          />
+          <span v-if="errors.guestName" id="err-guestName" class="field__error">{{
+            errors.guestName
+          }}</span>
         </label>
         <div class="field">
           <span id="companion-label" class="label">{{ t('pass.companionQuestion') }}</span>
@@ -127,7 +221,12 @@ const PLANE =
             :placeholder="t('pass.namePlaceholder')"
             autocomplete="off"
             maxlength="80"
+            :aria-invalid="Boolean(errors.companionName)"
+            :aria-describedby="errors.companionName ? 'err-companionName' : undefined"
           />
+          <span v-if="errors.companionName" id="err-companionName" class="field__error">{{
+            errors.companionName
+          }}</span>
         </label>
         <div class="field">
           <span id="kids-label" class="label">{{ t('pass.kids') }}</span>
@@ -149,9 +248,9 @@ const PLANE =
             </button>
           </div>
         </div>
-      </div>
+      </fieldset>
 
-      <div class="pass__email">
+      <div v-if="!readonly || showEmail" class="pass__email">
         <button
           v-if="!showEmail"
           type="button"
@@ -170,8 +269,12 @@ const PLANE =
             inputmode="email"
             autocomplete="email"
             maxlength="254"
+            :disabled="readonly"
+            :aria-invalid="Boolean(errors.email)"
+            :aria-describedby="errors.email ? 'err-email' : 'email-help'"
           />
-          <span class="field__help">{{ t('pass.emailHelp') }}</span>
+          <span v-if="errors.email" id="err-email" class="field__error">{{ errors.email }}</span>
+          <span id="email-help" class="field__help">{{ t('pass.emailHelp') }}</span>
         </label>
       </div>
 
@@ -202,8 +305,21 @@ const PLANE =
           >{{ passengers }}</span
         >
       </div>
-      <div class="stub__barcode" aria-hidden="true" />
-      <button type="submit" class="pass__confirm">{{ t('pass.confirm') }}</button>
+      <div class="stub__code">
+        <div class="stub__barcode" aria-hidden="true" />
+        <span v-if="rsvp" class="stub__stamp">{{ t('success.stamp') }}</span>
+      </div>
+      <p v-if="rsvp && !readonly" class="stub__note">{{ t('pass.confirmedNote') }}</p>
+      <p v-if="submitError" class="stub__error" role="alert">{{ submitError }}</p>
+      <button
+        v-if="!readonly"
+        type="submit"
+        class="pass__confirm"
+        :disabled="pending || !dirty"
+        :aria-busy="pending"
+      >
+        {{ pending ? t('pass.sending') : rsvp ? t('pass.save') : t('pass.confirm') }}
+      </button>
     </footer>
   </form>
 </template>
@@ -312,6 +428,35 @@ const PLANE =
 .field {
   display: grid;
   gap: 0.375rem;
+}
+.pass__fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.field__error {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--error);
+}
+.field__input[aria-invalid='true'] {
+  border-color: var(--error);
+  box-shadow: 0 0 0 1px var(--error);
+}
+.field__input:disabled {
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  background: #f7f7f4;
+  border-color: var(--line);
+  opacity: 1;
+}
+.pass__fields:disabled .segmented,
+.pass__fields:disabled .stepper button {
+  opacity: 0.6;
+}
+.pass__fields:disabled button {
+  cursor: default;
 }
 .field__help {
   font-size: 0.8125rem;
@@ -470,6 +615,47 @@ const PLANE =
     transparent 11px 13px
   );
   opacity: 0.9;
+}
+.stub__code {
+  position: relative;
+}
+.stub__stamp {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  padding: 0.125rem 0.625rem;
+  font-size: 1.125rem;
+  font-weight: 900;
+  font-stretch: var(--stretch-tile);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--stamp);
+  background: rgb(255 255 255 / 0.75);
+  border: 3px double var(--stamp);
+  border-radius: 8px;
+  transform: translateY(-50%) rotate(-8deg);
+}
+.stub__note {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--muted);
+}
+.stub__error {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 8%, #fff);
+  border-radius: var(--radius-control);
+}
+.pass__confirm:disabled {
+  color: var(--muted);
+  background: var(--line);
+  cursor: default;
+}
+.pass__confirm[aria-busy='true'] {
+  opacity: 0.75;
 }
 .pass__confirm {
   width: 100%;

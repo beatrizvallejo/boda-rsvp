@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // Logo de "aerolínea" KR: insignia negra con las letras en cursiva ancha y una estela amarilla de
 // despegue. Las letras son trazos (no texto) para que se vea igual en el favicon (public/favicon.svg).
+// Tamaño: 36px por defecto (width/height del SVG, como en la cabecera); quien lo usa lo fija con su clase.
+// Sin width: 100% propio: si este CSS llega antes que el del contenedor, el logo se ve gigante.
 </script>
 
 <template>
-  <svg class="airline-logo" viewBox="0 0 64 64" aria-hidden="true">
+  <svg class="airline-logo" viewBox="0 0 64 64" width="36" height="36" aria-hidden="true">
     <circle cx="32" cy="32" r="32" fill="#121212" />
     <path d="M6 49 Q31 62 58 44 Q31 56.5 6 49Z" fill="#ffc629" />
     <g transform="translate(5.5 0) skewX(-12)" fill="#fff">
@@ -20,7 +22,5 @@
 <style scoped>
 .airline-logo {
   display: block;
-  width: 100%;
-  height: 100%;
 }
 </style>

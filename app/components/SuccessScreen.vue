@@ -1,9 +1,16 @@
 <script setup lang="ts">
 // Pantalla de éxito tras confirmar: amarilla a pantalla completa, novios saludando y la tarjeta con el
-// sello CONFIRMADO que cae con un golpe. Se cierra tocando cualquier parte (o con Escape).
-const props = defineProps<{ passengers: string[] }>()
+// sello CONFIRMADO que cae con un golpe, y los botones del calendario. Se cierra tocando cualquier parte
+// fuera de los botones (o con Escape).
+import { googleCalendarUrl } from '#shared/calendar'
+
+const props = defineProps<{
+  passengers: string[]
+  /** `true` si se han guardado cambios de una respuesta anterior. */
+  edited?: boolean
+}>()
 const emit = defineEmits<{ close: [] }>()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 function onKey(event: KeyboardEvent) {
   if (event.key === 'Escape') emit('close')
@@ -33,7 +40,9 @@ const PLANE =
       <p class="success__kicker" aria-hidden="true">
         KR 3107 · {{ t('pass.fromValue') }} → {{ t('pass.toValue') }}
       </p>
-      <h2 id="success-title" class="success__title">{{ t('success.title') }}</h2>
+      <h2 id="success-title" class="success__title">
+        {{ props.edited ? t('success.editedTitle') : t('success.title') }}
+      </h2>
       <p class="success__lead">{{ t('success.lead') }}</p>
 
       <div class="success__stage">
@@ -51,7 +60,7 @@ const PLANE =
                 <span class="label">{{ t('pass.from') }}</span
                 ><b>{{ t('pass.fromValue') }}</b>
               </div>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
                 <path fill="currentColor" :d="PLANE" transform="rotate(90 12 12)" />
               </svg>
               <div class="issued__to">
@@ -81,9 +90,21 @@ const PLANE =
           </div>
           <div class="stamp" aria-hidden="true">
             <span>{{ t('success.stamp') }}</span>
-            <small>KR3107 · 31 JUL 2027 · Alba</small>
+            <small>KR3107 · {{ t('pass.dateValue') }} · Alba</small>
           </div>
         </article>
+      </div>
+
+      <div class="calendar" @click.stop>
+        <p class="calendar__title">{{ t('success.calendar') }}</p>
+        <div class="calendar__buttons">
+          <a class="calendar__btn" :href="googleCalendarUrl(locale)" target="_blank" rel="noopener">
+            Google Calendar
+          </a>
+          <a class="calendar__btn" :href="`/boda.ics?lang=${locale}`">
+            {{ t('success.calendarIcs') }}
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -98,7 +119,7 @@ const PLANE =
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   overflow: hidden auto;
-  padding: 2rem 1.25rem max(2rem, env(safe-area-inset-bottom));
+  padding: 1.5rem 1.25rem max(1.5rem, env(safe-area-inset-bottom));
   color: var(--on-signal);
   background:
     radial-gradient(70% 50% at 50% 0%, rgb(255 255 255 / 0.35), transparent 70%), var(--signal);
@@ -153,14 +174,20 @@ const PLANE =
     drop-shadow(0 -2.5px 0 #fff) drop-shadow(0 6px 8px rgb(0 0 0 / 0.25));
 }
 @media (min-width: 720px) {
-  .success__stage {
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 2rem;
-  }
   .success__couple {
     height: 132px;
+  }
+}
+/* Escritorio: los novios, fuera del flujo a la izquierda de la tarjeta, para que esta quede centrada
+   con el título y la botonera. Por debajo de 900px no caben al lado y van encima, como en móvil. */
+@media (min-width: 900px) {
+  .success__stage {
+    position: relative;
+  }
+  .success__couple {
+    position: absolute;
+    right: calc(50% + 12.5rem + 2rem);
+    bottom: 0;
   }
 }
 
@@ -266,6 +293,49 @@ const PLANE =
     var(--ink) 8px 11px,
     transparent 11px 13px
   );
+}
+
+/* Añadir al calendario: lo único pulsable de la pantalla */
+.calendar {
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+  width: min(100%, 25rem);
+  margin-top: 1.75rem;
+  cursor: default;
+}
+.calendar__title {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  font-stretch: var(--stretch-label);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.calendar__buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  width: 100%;
+}
+.calendar__btn {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--signal);
+  text-decoration: none;
+  background: var(--ink);
+  border-radius: var(--radius-button);
+}
+.calendar__btn:focus-visible {
+  outline: 3px solid var(--paper);
+  outline-offset: 2px;
 }
 
 /* Sello CONFIRMADO que cae con un golpe */
