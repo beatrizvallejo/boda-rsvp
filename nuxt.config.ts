@@ -16,6 +16,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: { siteUrl },
   },
+  routeRules: {
+    // Panel de los novios: solo en el cliente (no hay nada que indexar ni que previsualizar) y fuera
+    // de buscadores. Sus datos solo salen por `/api/admin/*`, protegido por el adaptador `auth`.
+    '/admin': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/admin/**': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/api/admin/**': { headers: { 'Cache-Control': 'private, no-store' } },
+  },
   app: {
     head: {
       link: [

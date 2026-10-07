@@ -19,6 +19,8 @@ export interface DataAdapter {
   getRsvp(invitationId: string): Promise<Rsvp | null>
   /** Crea o reemplaza la respuesta de una invitación (una por invitación). */
   saveRsvp(rsvp: Rsvp): Promise<void>
+  /** Borra la respuesta (la invitación vuelve a estar pendiente). Devuelve `false` si no había. */
+  deleteRsvp(invitationId: string): Promise<boolean>
 
   listTemplates(): Promise<MessageTemplate[]>
   getTemplate(kind: MessageKind, locale: MessageTemplate['locale']): Promise<MessageTemplate | null>

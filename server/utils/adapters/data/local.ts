@@ -88,6 +88,12 @@ export function createLocalDataAdapter(
       await storage.setItem(localKeys.rsvp(rsvp.invitationId), rsvp)
     },
 
+    async deleteRsvp(invitationId) {
+      if (!(await storage.hasItem(localKeys.rsvp(invitationId)))) return false
+      await storage.removeItem(localKeys.rsvp(invitationId))
+      return true
+    },
+
     listTemplates() {
       return readAll(localKeys.templatesPrefix, messageTemplateSchema)
     },

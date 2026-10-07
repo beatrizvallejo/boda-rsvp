@@ -43,7 +43,7 @@ La única fuente es `shared/schemas/` (Zod). Las migraciones de la Fase 8 se der
 |---|---|---|
 | `id` | uuid, PK | lo genera el servidor (`crypto.randomUUID`) |
 | `token` | text ≤64, **único** | Nombre del invitado en formato URL + `-` + 6 caracteres aleatorios `[a-z0-9]` de `crypto.randomInt` (p. ej. `ana-garcia-lopez-k7f3q2`). Es el secreto del enlace `/r/<token>` |
-| `label` | text ≤80 | etiqueta del grupo ("Familia Popescu") |
+| `label` | text ≤80, puede estar vacía | etiqueta del grupo ("Familia Ro", "Amigos Keko"); sirve para filtrar en el panel |
 | `guest_name` | text ≤80 | nombre precargado: una invitación = una persona |
 | `locale` | `es` \| `ro` | idioma de la web y del mensaje de WhatsApp |
 | `phone` | text E.164, nullable | **solo panel**, nunca en respuestas públicas |
@@ -75,22 +75,25 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 |---|---|---|
 | `GET /api/rsvp/:token` | público | → `{ invitation: {guestName, locale}, rsvp \| null, deadline, closed }`. Sin `label` (etiqueta interna de los novios). Token inválido o inexistente: 404 |
 | `PUT /api/rsvp/:token` | público | `RsvpInput` → `{ rsvp, isNew, changes[] }`. 404, 410 (`deadline_closed`), 422 |
-| `GET /api/admin/session` | auth | → `{ email }` o 401 |
+| `POST /api/auth/login` | público | `{password}` → 204 y cookie de sesión, o 401 |
+| `POST /api/auth/logout` | público | → 204 (borra la sesión) |
+| `GET /api/admin/session` | auth | → `{ method: dev\|password }` o 401 |
 | `GET /api/admin/invitations` | auth | → invitaciones con `rsvp` (incluye teléfono y token) |
 | `POST /api/admin/invitations` | auth | una invitación o un array de 1–500 (importación) → 201 con las creadas |
 | `PATCH /api/admin/invitations/:id` | auth | `{label?, guestName?, locale?, phone?}` → invitación |
 | `DELETE /api/admin/invitations/:id` | auth | → 204 (borra también la respuesta) |
+| `DELETE /api/admin/invitations/:id/rsvp` | auth | → 204: quita la confirmación (vuelve a pendiente), sin aviso |
 | `PUT /api/admin/invitations/:id/rsvp` | auth | `RsvpInput` → respuesta registrada por los novios. **Ignora la fecha límite** y no genera aviso |
 | `POST /api/admin/invitations/:id/sent` | auth | `{kind: invitation\|reminder}` → invitación con el envío registrado |
 | `GET /api/admin/stats` | auth | → métricas (ver `statsSchema`) |
 | `GET /api/admin/templates` | auth | → plantillas |
 | `PUT /api/admin/templates/:kind/:locale` | auth | `{body}` → plantilla |
+| `GET /api/admin/export.csv` | auth | → CSV (`;`, UTF-8 con BOM), una fila por invitación, con fórmulas neutralizadas (prefijo `'`; por eso los teléfonos salen como `'+34…`) |
 
 - **Orden en `PUT /api/rsvp/:token`:** Zod → token → plazo → guardado → aviso. Un fallo del aviso se registra en el log y no revierte el guardado. Reenviar una respuesta idéntica no guarda nada ni genera aviso.
-- **Protección del panel:** cada handler de `/api/admin/*` llama a `requireAdmin()`. Además, el middleware `server/middleware/admin-auth.ts` cubre todo el prefijo. El adaptador `auth: password` implementa `getAdminSession(event)` leyendo la cookie de sesión.
+- **Protección del panel:** cada handler de `/api/admin/*` llama a `requireAdmin()`. Además, el middleware `server/middleware/admin-auth.ts` cubre todo el prefijo. Todo `/api/admin/**` lleva `Cache-Control: private, no-store` (`routeRules`).
 - **Aviso por email:** el endpoint espera (`await`) al notifier dentro de un `try/catch`. Con Gmail, pon un timeout corto al transporte de nodemailer (o usa `event.waitUntil`, si el hosting lo admite) para que un SMTP lento no retrase la respuesta al invitado.
 - **CSRF:** la cookie de sesión del panel va con `SameSite=Lax`, así que el navegador no la envía en peticiones `POST`/`PUT`/`PATCH`/`DELETE` desde otros sitios.
-- **Pendiente:** exportación CSV (`GET /api/admin/export.csv`), en la Fase 5.
 
 ## Selección de adaptadores y salvaguarda
 - Variables `DATA_ADAPTER`, `AUTH_ADAPTER` y `NOTIFIER_ADAPTER`, leídas en tiempo de ejecución (`server/utils/adapters/config.ts`).
@@ -110,11 +113,18 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - **Google Calendar:** enlace directo a `calendar.google.com` con `ctz=Europe/Bucharest`, sin API ni credenciales.
 - **Aviso a los novios** (`server/utils/adapters/notifier/format.ts`): texto plano, en español. Asunto `✈️ <nombre> confirma · N adultos + N niños` (respuesta nueva) o `✏️ Cambio · <nombre>` (edición), con la lista de cambios, la respuesta completa y el enlace `${NUXT_PUBLIC_SITE_URL}/admin`. El adaptador `gmail` debe usar el mismo `formatRsvpNotification(notification, siteUrl)` y el email del invitado como `replyTo`.
 
+## Panel de los novios (Fase 5)
+- **Login (`AUTH_ADAPTER=password`, `server/utils/adapters/auth/password.ts`):** contraseña compartida `ADMIN_PASSWORD` (mínimo 16 caracteres), comparada en tiempo constante (SHA-256 + `timingSafeEqual`). Sesión sellada con `useSession` de h3 y `NUXT_SESSION_PASSWORD` (≥32 caracteres): cookie `boda_panel`, `HttpOnly`, `Secure`, `SameSite=Lax`, 30 días, sin cabecera alternativa. Si falta alguna de las dos variables, o no llega al mínimo, **el servidor no arranca**. Cambiar `NUXT_SESSION_PASSWORD` cierra todas las sesiones: es lo que hay que hacer si se pierde un móvil con el panel abierto (la sesión no se guarda en servidor, así que el logout solo borra la cookie de ese navegador).
+- Sin rate limit en el login, por la decisión de sencillez: la defensa es una contraseña larga (4+ palabras al azar).
+- **Rutas `/admin/**`:** solo en el cliente (`ssr: false`) y con `X-Robots-Tag: noindex, nofollow`. Los datos solo salen por `/api/admin/*`.
+- **Enlaces de los mensajes:** `${NUXT_PUBLIC_SITE_URL}/r/<token>`. Solo en desarrollo se usa la URL del navegador (para probar con `dev:mobile`).
+- **Exportación CSV:** también sirve de copia de seguridad manual (ver P03).
+
 ## Variables de entorno de producción
 Ver la sección de producción en `.env.example`. Se completa en la Fase 7. `NUXT_PUBLIC_SITE_URL` (URL pública, sin barra final) es obligatoria: la usan los metadatos OG y `baseUrl` de i18n, y se lee al construir.
 
 ## Datos personales
 - Se guardan nombres, respuestas, el teléfono por invitación (opcional, lo introducen los novios) y el email del invitado (opcional).
-- No se piden datos de salud: solo hay un campo libre opcional, "Comentarios para el catering". Tampoco se piden documentos de identidad.
+- No se piden datos de salud ni hay campos libres (sin comentarios ni mensajes desde la Fase 3). Tampoco se piden documentos de identidad.
 - Borrado previsto el 31/10/2027 (ver `docs/brief.md`).
 - Por ahora no hay aviso de privacidad (decisión de los novios). Se revisa en la Fase 6.

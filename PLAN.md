@@ -123,7 +123,7 @@ Referencia del modelo, a adaptar:
 
 ---
 
-## [ ] Fase 5 — Panel de los novios y WhatsApp
+## [x] Fase 5 — Panel de los novios y WhatsApp
 
 **Preguntas de entrada**
 - Métricas y columnas del CSV.

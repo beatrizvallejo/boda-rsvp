@@ -27,7 +27,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'garcia-lopez',
     invitation: {
-      label: 'Ana García',
+      label: 'Familia Keko',
       guestName: 'Ana García López',
       locale: 'es',
       phone: '+34600111222',
@@ -47,7 +47,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'popescu',
     invitation: {
-      label: 'Ioana Popescu',
+      label: 'Familia Ro',
       guestName: 'Ioana Popescu',
       locale: 'ro',
       phone: '+40722111333',
@@ -65,7 +65,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'taranu',
     invitation: {
-      label: 'Ștefan Țăranu',
+      label: 'Amigos Ro',
       guestName: 'Ștefan Țăranu',
       locale: 'ro',
       phone: '+40733444555',
@@ -83,7 +83,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'abuela-carmen',
     invitation: {
-      label: 'Abuela Carmen',
+      label: 'Familia Keko',
       guestName: 'Carmen Fernández Ruiz',
       locale: 'es',
       phone: null,
@@ -103,7 +103,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'nombre-largo',
     invitation: {
-      label: 'María de los Ángeles Fernández-Villaverde',
+      label: 'Familia Keko',
       guestName: 'María de los Ángeles Fernández-Villaverde de la Cruz y Montenegro',
       locale: 'es',
       phone: '+34611222333',
@@ -121,7 +121,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'dumitrescu',
     invitation: {
-      label: 'Alexandru Dumitrescu',
+      label: 'Familia Ro',
       guestName: 'Alexandru Dumitrescu',
       locale: 'ro',
       phone: '+40744555666',
@@ -134,7 +134,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'pablo-martinez',
     invitation: {
-      label: 'Pablo Martínez',
+      label: 'Amigos Keko',
       guestName: 'Pablo Martínez Gil',
       locale: 'es',
       phone: '+34622333444',
@@ -146,7 +146,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'mihailescu',
     invitation: {
-      label: 'Răzvan Mihăilescu',
+      label: 'Amigos Ro',
       guestName: 'Răzvan Mihăilescu',
       locale: 'ro',
       phone: '+40755666777',
@@ -159,7 +159,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'lucia-sanchez',
     invitation: {
-      label: 'Lucía Sánchez',
+      label: 'Amigos Keko',
       guestName: 'Lucía Sánchez Moreno',
       locale: 'es',
       phone: '+34633444555',
@@ -171,7 +171,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'brancoveanu',
     invitation: {
-      label: 'Ileana Ionescu-Brâncoveanu',
+      label: 'Familia Ro',
       guestName: 'Ileana Ionescu-Brâncoveanu',
       locale: 'ro',
       phone: null,
@@ -183,7 +183,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'javier-marta',
     invitation: {
-      label: 'Javier Ruiz',
+      label: 'Amigos Keko',
       guestName: 'Javier Ruiz Peña',
       locale: 'es',
       phone: null,
@@ -195,7 +195,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'stoica',
     invitation: {
-      label: 'Ana-Maria Stoica',
+      label: 'Amigos Ro',
       guestName: 'Ana-Maria Stoica',
       locale: 'ro',
       phone: '+40766777888',
@@ -216,7 +216,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'trabajo',
     invitation: {
-      label: 'Elena (trabajo)',
+      label: 'Trabajo',
       guestName: 'Elena Navarro',
       locale: 'es',
       phone: '+34644555666',
@@ -234,7 +234,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'vladescu',
     invitation: {
-      label: 'Tudor Vlădescu',
+      label: '',
       guestName: 'Tudor Vlădescu',
       locale: 'ro',
       phone: '+40777888999',
@@ -246,7 +246,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
   {
     slug: 'etxeberria',
     invitation: {
-      label: 'Nerea Etxeberria',
+      label: 'Amigos Keko',
       guestName: 'Nerea Etxeberria Goikoetxea',
       locale: 'es',
       phone: '+34655666777',

@@ -12,8 +12,9 @@ WhatsApp es el canal principal por el que se compartirá el enlace. Todo lo de a
 
 ## 2. Envío de invitaciones desde el panel — Fase 5
 - Cada invitación tiene un botón **"Enviar por WhatsApp"**:
-  - con teléfono guardado: `https://wa.me/<telefono_internacional_sin_+>?text=<mensaje codificado>`;
-  - sin teléfono: `https://wa.me/?text=<mensaje codificado>`, y el novio elige el contacto.
+  - con teléfono guardado: `https://api.whatsapp.com/send/?phone=<telefono_internacional_sin_+>&text=<mensaje codificado>`;
+  - sin teléfono: `https://api.whatsapp.com/send/?text=<mensaje codificado>`, y el novio elige el contacto.
+  - **No se usa `wa.me`:** su redirección a `api.whatsapp.com` estropea algunos emojis (`✈️` llegaba como `�`, comprobado el 07/10/2026). Se enlaza directamente al destino de esa redirección.
 - En móvil también hay un botón **"Compartir"** con `navigator.share` (Web Share API), y como alternativa **"Copiar enlace"**.
 - Plantilla del mensaje editable desde el panel, en clave de viaje (por ejemplo, "Tu tarjeta de embarque a Rumanía está lista") y en el idioma de cada invitado si la web es multiidioma, con variables (`{nombre}`, `{enlace}`, `{fecha_limite}`). Se guarda en base de datos.
 - Las variables del mensaje se codifican con `encodeURIComponent`. Nunca se construye la URL concatenando texto sin codificar.

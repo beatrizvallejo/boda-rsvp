@@ -53,3 +53,10 @@ Formato de cada pregunta:
 - Respuesta:
 
 > P04 (rate limiting) y P07 (acceso de Claude a Supabase) se retiraron el 05/10/2026 al simplificar la arquitectura: ya no hay rate limit ni Supabase.
+
+### [ABIERTA] P08 — Contraseña del panel en producción
+- Contexto: el panel `/admin` no tiene usuarios: se entra solo con una contraseña compartida por los dos novios (`ADMIN_PASSWORD`, mínimo 16 caracteres) y la sesión va en una cookie sellada con `NUXT_SESSION_PASSWORD` (≥32 caracteres aleatorios). No hay rate limit en el login, así que la contraseña tiene que ser larga y aleatoria.
+- Pregunta: ¿generas tú las dos variables en el hosting y le haces llegar `ADMIN_PASSWORD` a los novios? ¿Por qué canal (gestor de contraseñas, en persona…)?
+- Opciones y recomendación: `ADMIN_PASSWORD` de 4–5 palabras al azar (fácil de teclear en el móvil, p. ej. generada con un gestor de contraseñas) y `NUXT_SESSION_PASSWORD` con `openssl rand -base64 32`. Entregarla en persona o por un gestor de contraseñas, no por WhatsApp ni email. Si se pierde un móvil con sesión abierta, se cambia `NUXT_SESSION_PASSWORD` y se cierran todas las sesiones.
+- Bloquea: Fase 9.
+- Respuesta:

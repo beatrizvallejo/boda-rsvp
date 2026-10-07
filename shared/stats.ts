@@ -1,6 +1,9 @@
-import type { AdminInvitation, Stats } from '#shared/schemas'
+import type { AdminInvitation, Stats } from './schemas'
 
-/** Métricas del panel (ver `statsSchema` para la definición de cada contador). */
+/**
+ * Métricas del panel (ver `statsSchema` para la definición de cada contador). Las usan
+ * `GET /api/admin/stats` y el propio panel, que ya tiene la lista cargada.
+ */
 export function computeStats(invitations: AdminInvitation[]): Stats {
   const stats: Stats = {
     invitations: { total: invitations.length, confirmed: 0, pending: 0 },

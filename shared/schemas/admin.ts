@@ -2,8 +2,12 @@ import { z } from 'zod'
 import { invitationSchema } from './invitation'
 import { rsvpSchema } from './rsvp'
 
-export const adminSessionSchema = z.object({ email: z.string() })
+/** Sesión del panel. `method` indica cómo se ha entrado: `dev` (sin login, solo en desarrollo) o `password`. */
+export const adminSessionSchema = z.object({ method: z.enum(['dev', 'password']) })
 export type AdminSession = z.infer<typeof adminSessionSchema>
+
+/** `POST /api/auth/login`: contraseña compartida de los novios. */
+export const loginSchema = z.strictObject({ password: z.string().min(1).max(200) })
 
 /** Invitación tal como la ve el panel: con teléfono, token y su respuesta (o `null` si está pendiente). */
 export const adminInvitationSchema = invitationSchema.extend({ rsvp: rsvpSchema.nullable() })

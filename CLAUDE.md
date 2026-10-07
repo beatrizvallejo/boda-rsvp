@@ -49,7 +49,7 @@ Boda el sábado 31 de julio de 2027 en Rumanía.
 
 - **Salvaguarda del adaptador `dev` de auth:** si el servidor arranca en producción (`!import.meta.dev`) con `AUTH_ADAPTER=dev`, debe lanzar un error y no arrancar. Nunca debe existir un acceso sin login en producción.
 - **Datos de ejemplo:** `server/fixtures/` contiene invitaciones y respuestas inventadas con nombres realistas (españoles y rumanos), acompañantes y casos límite. Un script `seed` las carga y otro `reset` vacía `.data/`.
-- **WhatsApp:** enlaces `wa.me`, Web Share API y Open Graph, sin API de WhatsApp Business.
+- **WhatsApp:** enlaces de envío (`api.whatsapp.com/send`), Web Share API y Open Graph, sin API de WhatsApp Business.
 - **Tests e2e:** Playwright, con proyectos móviles. Se ejecutan siempre contra los adaptadores locales.
 
 ## Desarrollo local
@@ -72,7 +72,7 @@ Boda el sábado 31 de julio de 2027 en Rumanía.
   - orden: validación → token → guardado → notificación;
   - un fallo del notifier se registra en el log y nunca bloquea ni revierte el guardado.
 - Los metadatos Open Graph de las páginas públicas se renderizan en servidor (`useSeoMeta`).
-- Las URLs `wa.me` se construyen siempre con `encodeURIComponent`.
+- Las URLs de WhatsApp se construyen siempre con `encodeURIComponent` y apuntan a `api.whatsapp.com/send`, no a `wa.me` (su redirección estropea emojis; ver `docs/whatsapp.md`).
 - No leas ni edites `.env*`, salvo `.env.example`.
 - Todo el copy va en español (y en los idiomas que fije el brief), en el tono de la skill `wedding-design`.
 - **Datos personales:** recoge solo los campos del brief, sin datos de salud salvo decisión registrada. El teléfono solo se guarda si así se decidió.

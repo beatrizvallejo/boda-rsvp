@@ -1,4 +1,5 @@
 import { createDevAuthAdapter } from './auth/dev'
+import { createPasswordAuthAdapter } from './auth/password'
 import type { AuthAdapter } from './auth/types'
 import { resolveAdapterConfig, type AdapterConfig } from './config'
 import { createLocalDataAdapter } from './data/local'
@@ -32,7 +33,7 @@ export function useDataAdapter(): DataAdapter {
 export function useAuthAdapter(): AuthAdapter {
   if (!auth) {
     const { auth: name } = useAdapterConfig()
-    auth = name === 'dev' ? createDevAuthAdapter() : notImplemented('AUTH_ADAPTER', name)
+    auth = name === 'dev' ? createDevAuthAdapter() : createPasswordAuthAdapter()
   }
   return auth
 }

@@ -15,7 +15,8 @@ const nullablePhoneSchema = z.preprocess(
   phoneSchema.nullable(),
 )
 
-export const invitationLabelSchema = z.string().trim().min(1).max(80)
+/** Etiqueta interna de los novios para agrupar ("Familia Ro", "Amigos Keko"). Vacía = sin etiqueta. */
+export const invitationLabelSchema = z.string().trim().max(80)
 
 export const invitationSchema = z.object({
   id: z.uuid(),
@@ -35,7 +36,7 @@ export type Invitation = z.infer<typeof invitationSchema>
 
 /** Alta de una invitación desde el panel (una a una o por importación). */
 export const invitationCreateSchema = z.strictObject({
-  label: invitationLabelSchema,
+  label: invitationLabelSchema.default(''),
   guestName: personNameSchema,
   locale: localeSchema.default('es'),
   phone: nullablePhoneSchema.default(null),

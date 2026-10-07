@@ -46,6 +46,12 @@
   --status-boarding: #ff9f1a;
   --stamp: #c8102e;
   --error: #b3261e;
+  /* Panel de los novios (Fase 5) */
+  --input-line: #c9c9c3;
+  --confirmed-ink: #0b5a2e;
+  --confirmed-bg: #d8f5e4;
+  --pending-ink: #7a4300;
+  --pending-bg: #ffe7c2;
 
   /* Tipografía */
   --font: 'Archivo', system-ui, sans-serif;

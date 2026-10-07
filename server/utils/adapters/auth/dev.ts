@@ -8,7 +8,11 @@ export function createDevAuthAdapter(): AuthAdapter {
   return {
     async getAdminSession() {
       if (!import.meta.dev) return null
-      return { email: 'novios@dev.local' }
+      return { method: 'dev' }
     },
+    async login() {
+      return import.meta.dev
+    },
+    async logout() {},
   }
 }
