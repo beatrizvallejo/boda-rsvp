@@ -1,32 +1,24 @@
 <script setup lang="ts">
 // Alta de invitaciones: una a una, o importando una lista pegada desde Excel/Sheets o un .csv.
 import { invitationCreateSchema, type Invitation } from '#shared/schemas'
+import type { InvitationForm } from '~/components/admin/InvitationFields.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
 const { data: invitations, refresh } = useAdminInvitations()
 const toast = useToast()
-const labels = computed(() => [...new Set(invitations.value.map((i) => i.label).filter(Boolean))])
+const labels = useAdminLabels()
 
 // ── Una a una ────────────────────────────────────────────────────────────
-const form = reactive({ guestName: '', locale: 'es' as 'es' | 'ro', phone: '', label: '' })
-const formError = ref<{ field: string; message: string } | null>(null)
+const form = ref<InvitationForm>({ guestName: '', locale: 'es', phone: '', label: '' })
+const formError = ref<FieldError | null>(null)
 const creating = ref(false)
 
 async function create() {
   formError.value = null
-  const parsed = invitationCreateSchema.safeParse(form)
+  const parsed = invitationCreateSchema.safeParse(form.value)
   if (!parsed.success) {
-    const field = String(parsed.error.issues[0]?.path[0] ?? '')
-    formError.value = {
-      field,
-      message:
-        field === 'phone'
-          ? 'Teléfono no válido: escríbelo con prefijo, p. ej. +34 600 111 222.'
-          : field === 'guestName'
-            ? 'Escribe el nombre del invitado (máx. 80 caracteres).'
-            : 'Etiqueta demasiado larga (máx. 80 caracteres).',
-    }
+    formError.value = firstFieldError(parsed.error, INVITATION_MESSAGES)
     void focusFirstError()
     return
   }
@@ -98,69 +90,7 @@ async function runImport() {
           Una invitación es para una persona, que puede venir con acompañante.
         </p>
         <form novalidate @submit.prevent="create">
-          <label class="field">
-            <span class="label">Nombre</span>
-            <input
-              v-model="form.guestName"
-              class="input"
-              autocomplete="off"
-              :aria-invalid="formError?.field === 'guestName' || undefined"
-            />
-            <span v-if="formError?.field === 'guestName'" class="field-error" role="alert">{{
-              formError.message
-            }}</span>
-          </label>
-          <div class="field">
-            <span id="new-locale" class="label">Idioma</span>
-            <div class="segmented" role="group" aria-labelledby="new-locale">
-              <button
-                type="button"
-                :aria-pressed="form.locale === 'es'"
-                @click="form.locale = 'es'"
-              >
-                ES
-              </button>
-              <button
-                type="button"
-                :aria-pressed="form.locale === 'ro'"
-                @click="form.locale = 'ro'"
-              >
-                RO
-              </button>
-            </div>
-          </div>
-          <label class="field">
-            <span class="label">Teléfono (opcional)</span>
-            <input
-              v-model="form.phone"
-              class="input"
-              type="tel"
-              inputmode="tel"
-              autocomplete="off"
-              placeholder="+34 600 111 222"
-              :aria-invalid="formError?.field === 'phone' || undefined"
-            />
-            <span v-if="formError?.field === 'phone'" class="field-error" role="alert">{{
-              formError.message
-            }}</span>
-          </label>
-          <label class="field">
-            <span class="label">Etiqueta (opcional)</span>
-            <input
-              v-model="form.label"
-              class="input"
-              list="new-labels"
-              autocomplete="off"
-              placeholder="Familia Ro, Amigos Keko…"
-              :aria-invalid="formError?.field === 'label' || undefined"
-            />
-            <span v-if="formError?.field === 'label'" class="field-error" role="alert">{{
-              formError.message
-            }}</span>
-            <datalist id="new-labels">
-              <option v-for="l in labels" :key="l" :value="l" />
-            </datalist>
-          </label>
+          <AdminInvitationFields v-model="form" :error="formError" :labels="labels" />
           <button type="submit" class="btn btn--primary submit" :disabled="creating">
             Crear invitación
           </button>

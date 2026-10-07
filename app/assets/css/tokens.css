@@ -52,11 +52,25 @@
   --confirmed-bg: #d8f5e4;
   --pending-ink: #7a4300;
   --pending-bg: #ffe7c2;
+  /* Grises del papel (tarjeta, fotomatón) y textos sobre los paneles negros */
+  --paper-sunken: #f0f0ec;
+  --paper-disabled: #f7f7f4;
+  --pass-path: #b9b9b3;
+  --pass-micro: #a3a39d;
+  --perforation: #c9c9c4;
+  --photo-paper: #fbfbf8;
+  --photo-caption: #6b6b6b;
+  --board-text: #d4d4d8;
+  --board-text-soft: #b9b9be;
+  --board-glow: #1a1b1f;
+  --board-pa: #17181b;
+  --board-dash: #3a3b40;
 
   /* Tipografía */
   --font: 'Archivo', system-ui, sans-serif;
   --stretch-label: 75%;
   --stretch-tile: 85%;
+  --stretch-body: 100%;
   --stretch-display: 112%;
   --fs-label: 0.75rem;
   --fs-small: 0.875rem;
@@ -72,6 +86,19 @@
   --radius-button: 12px;
   --radius-sign: 6px;
   --radius-board: 16px;
+  --radius-pass-small: 18px;
+  --radius-inner: 8px;
+  --radius-tag: 4px;
+  --radius-pill: 999px;
+
+  /* Capas: aviso del panel < píldora flotante < intro < pantalla de éxito */
+  --z-toast: 10;
+  --z-float: 40;
+  --z-intro: 50;
+  --z-overlay: 60;
+
+  /* Breakpoints (no se pueden usar en @media; referencia):
+     parte pública 480 / 720 / 900 (el billete pasa a apaisado), panel 720 / 960 (tabla). */
   --shadow-pass:
     0 1px 2px rgb(0 0 0 / 0.08), 0 4px 10px -4px rgb(0 0 0 / 0.12),
     0 28px 50px -28px rgb(0 0 0 / 0.45);

@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import type { AdminSession } from '#shared/schemas'
 import { useAuthAdapter } from './adapters'
+import { apiError } from './http'
 
 /**
  * Exige sesión de los novios. Lo llama cada endpoint de `/api/admin/*` (además del middleware),

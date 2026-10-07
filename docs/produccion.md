@@ -33,38 +33,38 @@ Este documento es para el compañero de devops. Describe qué necesita la web pa
 - **Aviso por email en cada respuesta y en cada edición.** En las ediciones se indica qué ha cambiado, así que el servidor necesita la versión anterior de la respuesta al guardar. Como `replyTo` se usa el email del invitado, si lo ha dado.
 - **Destinatarios y accesos:** las 2 cuentas de los novios en `NOTIFY_TO`; al panel se entra con la contraseña compartida. Las direcciones no están en el repo; se configuran en la Fase 9.
 - **Fecha límite de respuesta:** 01/05/2027 23:59 `Europe/Bucharest`. A partir de entonces el endpoint de RSVP rechaza respuestas y ediciones.
-- **Borrado de datos:** 31/10/2027. Incluye teléfonos, emails y comentarios.
+- **Borrado de datos:** 31/10/2027. Incluye teléfonos y emails (vaciar el KV entero basta).
 
 ## Modelo de datos (Fase 2)
-La única fuente es `shared/schemas/` (Zod). Las migraciones de la Fase 8 se derivan de ahí. Límites de longitud: deben replicarse como `check` en SQL.
+La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un documento JSON en el KV y **se valida con su esquema al leerlo**: no hay SQL, migraciones ni `check`. Claves en `server/utils/adapters/data/local-keys.ts`: `invitations:<id>`, `tokens:<token>` (índice token → id), `rsvps:<invitationId>` y `templates:<kind>-<locale>`. Los nombres de campo de las tablas siguientes son los del JSON en camelCase (`guestName`, `invitedSentAt`…).
 
 **`invitations`**
 | Campo | Tipo | Notas |
 |---|---|---|
-| `id` | uuid, PK | lo genera el servidor (`crypto.randomUUID`) |
-| `token` | text ≤64, **único** | Nombre del invitado en formato URL + `-` + 6 caracteres aleatorios `[a-z0-9]` de `crypto.randomInt` (p. ej. `ana-garcia-lopez-k7f3q2`). Es el secreto del enlace `/r/<token>` |
-| `label` | text ≤80, puede estar vacía | etiqueta del grupo ("Familia Ro", "Amigos Keko"); sirve para filtrar en el panel |
-| `guest_name` | text ≤80 | nombre precargado: una invitación = una persona |
+| `id` | uuid | lo genera el servidor (`crypto.randomUUID`) |
+| `token` | texto ≤64, **único** (índice `tokens:`) | Nombre del invitado en formato URL + `-` + 6 caracteres aleatorios `[a-z0-9]` de `crypto.randomInt` (p. ej. `ana-garcia-lopez-k7f3q2`). Es el secreto del enlace `/r/<token>` |
+| `label` | texto ≤80, puede estar vacía | etiqueta del grupo ("Familia Ro", "Amigos Keko"); sirve para filtrar en el panel |
+| `guestName` | texto ≤80 | nombre precargado: una invitación = una persona |
 | `locale` | `es` \| `ro` | idioma de la web y del mensaje de WhatsApp |
-| `phone` | text E.164, nullable | **solo panel**, nunca en respuestas públicas |
-| `invited_sent_at`, `reminder_sent_at` | timestamptz, nullable | registro orientativo de envíos por WhatsApp |
-| `reminder_count` | int ≥0 | |
-| `created_at` | timestamptz | |
+| `phone` | texto E.164, nullable | **solo panel**, nunca en respuestas públicas |
+| `invitedSentAt`, `reminderSentAt` | fecha ISO, nullable | registro orientativo de envíos por WhatsApp |
+| `reminderCount` | entero ≥0 | |
+| `createdAt` | fecha ISO | |
 
 **`rsvps`** (una por invitación)
 | Campo | Tipo | Notas |
 |---|---|---|
-| `invitation_id` | uuid, PK y FK → `invitations.id` **on delete cascade** | |
-| `guest_name` | text ≤80 | editable por el invitado |
-| `companion_name` | text ≤80, nullable | `null` = sin acompañante |
-| `children` | int 0–10 | |
-| `email` | text ≤254, nullable | `replyTo` del aviso |
-| `updated_by` | `guest` \| `admin` | los cambios de los novios desde el panel no generan aviso |
-| `created_at`, `updated_at` | timestamptz | |
+| `invitationId` | uuid de la invitación (una respuesta por invitación) | se borra con la invitación (`deleteInvitation`) |
+| `guestName` | texto ≤80 | editable por el invitado |
+| `companionName` | texto ≤80, nullable | `null` = sin acompañante |
+| `children` | entero 0–10 | |
+| `email` | texto ≤254, nullable | `replyTo` del aviso |
+| `updatedBy` | `guest` \| `admin` | los cambios de los novios desde el panel no generan aviso |
+| `createdAt`, `updatedAt` | fecha ISO | |
 
-Solo existen confirmaciones: una invitación sin fila en `rsvps` está pendiente. No hay respuesta "no".
+Solo existen confirmaciones: una invitación sin documento en `rsvps:` está pendiente. No hay respuesta "no".
 
-**`message_templates`**: PK (`kind` `invitation`\|`reminder`, `locale` `es`\|`ro`), `body` text ≤1000 que debe contener `{enlace}`, `updated_at`. Se insertan las 4 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
+**`templates`**: clave (`kind` `invitation`\|`reminder`, `locale` `es`\|`ro`), `body` texto ≤1000 que debe contener `{enlace}`, `updatedAt`. Se insertan las 4 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
 
 **Interfaz del adaptador:** `server/utils/adapters/data/types.ts` (`DataAdapter`). El adaptador `kv` reutiliza la implementación de `local`. `insertInvitations` comprueba duplicados antes de escribir (no es transaccional; suficiente para este volumen), y `deleteInvitation` borra también la respuesta.
 
@@ -100,6 +100,13 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - En producción **no tienen valor por defecto**: si falta alguna, el servidor no arranca.
 - Con `AUTH_ADAPTER=dev`, el servidor de producción lanza un error al arrancar (plugin `server/plugins/00.adapters.ts`). Está comprobado con `node .output/server/index.mjs`.
 - El adaptador `local` guarda en `.data/db` (Nitro storage `fs`). No sirve para serverless: en producción es obligatorio `DATA_ADAPTER=kv`.
+
+## Buscadores
+- Toda la web lleva `X-Robots-Tag: noindex, nofollow` (`routeRules` en `nuxt.config.ts`) y la meta `robots` equivalente. `robots.txt` deja rastrear **a propósito**: un `Disallow` impediría a los buscadores leer el `noindex` y podría bloquear al rastreador de la previsualización de WhatsApp.
+
+## Tests (Fase 6)
+- `pnpm test:e2e` (Playwright) contra `http://localhost:3000` o `PLAYWRIGHT_BASE_URL`. El `globalSetup` ejecuta `pnpm seed` (vacía `.data/` y carga los datos de ejemplo) **solo si la URL es local**: nunca toca un entorno remoto.
+- El flujo completo (enlace → confirmar → editar → panel) corre en `android-360` con adaptadores locales (`AUTH_ADAPTER=dev`). En CI, `webServer` levanta `pnpm build && pnpm preview` con esos adaptadores.
 
 ## Frontend (Fase 3)
 - **Rutas públicas:** `/` (portada sin enlace personal) y `/r/<token>` (tarjeta del invitado). Un token inexistente devuelve la página con aviso y **código 404**.

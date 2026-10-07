@@ -1,17 +1,19 @@
 <script setup lang="ts">
 // Cabecera de la página: monograma, nombres y selector de idioma (ES/RO). Elegir idioma aquí lo marca
-// como elección del invitado (cookie `boda_locale_elegido`): a partir de ahí manda sobre el de la invitación.
+// como elección del invitado (`LOCALE_CHOSEN_COOKIE`): a partir de ahí manda sobre el de la invitación.
+// `inert` mientras la intro tapa la página.
+defineProps<{ inert?: boolean }>()
 const { t, locale, locales, setLocale } = useI18n()
-const chosen = useCookie('boda_locale_elegido', { maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+const chosen = useCookie(LOCALE_CHOSEN_COOKIE, { maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
 
-function choose(code: (typeof locales.value)[number]['code']) {
+async function choose(code: (typeof locales.value)[number]['code']) {
   chosen.value = '1'
-  setLocale(code)
+  await setLocale(code)
 }
 </script>
 
 <template>
-  <header class="site-header">
+  <header class="site-header" :inert="inert">
     <span class="site-header__brand"
       ><AirlineLogo class="site-header__mono" /> {{ t('brand') }}</span
     >
@@ -61,7 +63,7 @@ function choose(code: (typeof locales.value)[number]['code']) {
   color: var(--muted);
   background: none;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   cursor: pointer;
 }
 .site-header__lang button[aria-pressed='true'] {

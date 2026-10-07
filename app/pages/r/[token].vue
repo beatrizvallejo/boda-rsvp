@@ -17,7 +17,7 @@ const { data, error } = await useFetch<PublicInvitationResponse>(
 )
 
 // El idioma de la invitación manda salvo que el invitado haya elegido otro con el selector.
-const localeChosen = useCookie('boda_locale_elegido')
+const localeChosen = useCookie(LOCALE_CHOSEN_COOKIE)
 if (data.value && !localeChosen.value) await setLocale(data.value.invitation.locale)
 
 const notFound = computed(() => error.value?.statusCode === 404)
@@ -39,7 +39,8 @@ async function onConfirm(input: RsvpData) {
       body: input,
     })
     const edited = data.value.rsvp !== null
-    data.value.rsvp = result.rsvp
+    // `useFetch` no es reactivo en profundidad (deep: false en Nuxt 4): se reasigna entero.
+    data.value = { ...data.value, rsvp: result.rsvp }
     success.value = {
       passengers: [result.rsvp.guestName, result.rsvp.companionName].filter((n): n is string =>
         Boolean(n),
@@ -52,7 +53,7 @@ async function onConfirm(input: RsvpData) {
     if (status === 422 && body?.data?.issues) {
       pass.value?.showIssues(body.data.issues)
     } else if (status === 410) {
-      data.value.closed = true
+      data.value = { ...data.value, closed: true }
     } else if (status === undefined) {
       submitError.value = t('errors.network')
     } else {
@@ -90,20 +91,13 @@ async function onConfirm(input: RsvpData) {
         />
       </section>
 
-      <section v-else class="notice" aria-labelledby="notice-title">
-        <h1 id="notice-title" class="notice__title">
-          {{ notFound ? t('errors.notFoundTitle') : data?.closed ? t('errors.closedTitle') : '✈' }}
-        </h1>
-        <p class="notice__text">
-          {{
-            notFound
-              ? t('errors.notFound')
-              : data?.closed
-                ? t('errors.closed')
-                : t('errors.generic')
-          }}
-        </p>
-      </section>
+      <PublicNotice
+        v-else
+        :title="notFound ? t('errors.notFoundTitle') : data?.closed ? t('errors.closedTitle') : '✈'"
+        :text="
+          notFound ? t('errors.notFound') : data?.closed ? t('errors.closed') : t('errors.generic')
+        "
+      />
     </PublicPage>
 
     <SuccessScreen
@@ -125,7 +119,7 @@ async function onConfirm(input: RsvpData) {
   margin: 0 0 0.25rem;
   font-size: var(--fs-section);
   font-weight: 800;
-  font-stretch: 85%;
+  font-stretch: var(--stretch-tile);
 }
 .pass-section__lead {
   margin: 0 0 1.5rem;
@@ -138,29 +132,5 @@ async function onConfirm(input: RsvpData) {
   background: var(--paper);
   border-left: 4px solid var(--signal);
   border-radius: var(--radius-control);
-}
-.notice {
-  max-width: 40rem;
-  margin: 1.5rem auto 1rem;
-  padding: 1.75rem 1.5rem;
-  text-align: center;
-  background: var(--paper);
-  border-radius: var(--radius-pass);
-  box-shadow: var(--shadow-pass);
-}
-@media (max-width: 719px) {
-  .notice {
-    margin-inline: var(--gutter);
-  }
-}
-.notice__title {
-  margin: 0 0 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 800;
-  font-stretch: 85%;
-}
-.notice__text {
-  margin: 0;
-  color: var(--muted);
 }
 </style>

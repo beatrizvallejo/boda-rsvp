@@ -6,7 +6,7 @@ import {
   type MessageKind,
   type MessageTemplate,
 } from '#shared/schemas'
-import { formatDeadline, renderTemplate } from '#shared/whatsapp'
+import { formatDeadline, invitationLink, renderTemplate } from '#shared/whatsapp'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
@@ -25,12 +25,17 @@ const VARIABLE_HELP: Record<(typeof TEMPLATE_VARIABLES)[number], string> = {
   '{enlace}': 'su enlace personal (obligatorio)',
   '{fecha_limite}': 'fecha límite en su idioma',
 }
+const variableHelp = Object.entries(VARIABLE_HELP)
 
 const key = (kind: string, locale: string) => `${kind}-${locale}`
 const drafts = reactive<Record<string, string>>({})
 const errors = reactive<Record<string, string>>({})
 const saving = ref('')
-const areas = ref<Record<string, HTMLTextAreaElement>>({})
+// Textareas por plantilla, para insertar variables donde está el cursor (no hace falta reactividad).
+const areas: Record<string, HTMLTextAreaElement> = {}
+function setArea(slot: (typeof SLOTS)[number], el: unknown) {
+  if (el instanceof HTMLTextAreaElement) areas[key(slot.kind, slot.locale)] = el
+}
 
 function saved(kind: MessageKind, locale: string): MessageTemplate | undefined {
   return templates.value.find((t) => t.kind === kind && t.locale === locale)
@@ -56,7 +61,7 @@ function changed(slot: (typeof SLOTS)[number]) {
 function preview(slot: (typeof SLOTS)[number]) {
   return renderTemplate(drafts[key(slot.kind, slot.locale)] ?? '', {
     nombre: slot.example,
-    enlace: `${siteUrl}/r/${slot.example.toLowerCase()}-k7f3q2`,
+    enlace: invitationLink(siteUrl, `${slot.example.toLowerCase()}-k7f3q2`),
     fecha_limite: formatDeadline(slot.locale),
   })
 }
@@ -64,7 +69,7 @@ function preview(slot: (typeof SLOTS)[number]) {
 /** Inserta la variable donde está el cursor. */
 function insert(slot: (typeof SLOTS)[number], variable: string) {
   const k = key(slot.kind, slot.locale)
-  const area = areas.value[k]
+  const area = areas[k]
   const text = drafts[k] ?? ''
   const start = area?.selectionStart ?? text.length
   const end = area?.selectionEnd ?? text.length
@@ -80,11 +85,13 @@ async function save(slot: (typeof SLOTS)[number]) {
   errors[k] = ''
   const parsed = templateBodySchema.safeParse(drafts[k] ?? '')
   if (!parsed.success) {
-    errors[k] = (drafts[k] ?? '').trim()
-      ? (drafts[k] ?? '').length > 1000
-        ? 'Demasiado largo (máx. 1000 caracteres).'
-        : 'Falta {enlace}: sin él, el invitado no puede confirmar.'
-      : 'Escribe el mensaje.'
+    const code = parsed.error.issues[0]?.code
+    errors[k] =
+      code === 'too_small'
+        ? 'Escribe el mensaje.'
+        : code === 'too_big'
+          ? 'Demasiado largo (máx. 1000 caracteres).'
+          : 'Falta {enlace}: sin él, el invitado no puede confirmar.'
     return
   }
   saving.value = k
@@ -115,8 +122,8 @@ function undo(slot: (typeof SLOTS)[number]) {
     <h1>Mensajes de WhatsApp</h1>
     <p class="muted intro">
       Cada invitado recibe el mensaje en su idioma. Variables:
-      <template v-for="(help, variable, index) in VARIABLE_HELP" :key="variable">
-        <code>{{ variable }}</code> ({{ help }}){{ index < 2 ? ', ' : '.' }}
+      <template v-for="([variable, help], index) in variableHelp" :key="variable">
+        <code>{{ variable }}</code> ({{ help }}){{ index < variableHelp.length - 1 ? ', ' : '.' }}
       </template>
     </p>
     <p v-if="status === 'pending' && !templates.length" class="muted">Cargando…</p>
@@ -134,11 +141,7 @@ function undo(slot: (typeof SLOTS)[number]) {
         <label class="field">
           <span class="sr-only">Texto del mensaje</span>
           <textarea
-            :ref="
-              (el) => {
-                if (el) areas[key(slot.kind, slot.locale)] = el as HTMLTextAreaElement
-              }
-            "
+            :ref="(el) => setArea(slot, el)"
             v-model="drafts[key(slot.kind, slot.locale)]"
             class="input"
             rows="6"
@@ -188,7 +191,7 @@ code {
   font-size: 0.9em;
   padding: 0.0625rem 0.25rem;
   background: var(--paper);
-  border-radius: 4px;
+  border-radius: var(--radius-tag);
 }
 .grid {
   display: grid;

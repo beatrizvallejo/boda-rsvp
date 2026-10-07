@@ -69,7 +69,7 @@ const { t } = useI18n()
   margin: 0 0 1rem;
   font-size: var(--fs-section);
   font-weight: 800;
-  font-stretch: 85%;
+  font-stretch: var(--stretch-tile);
 }
 .signs {
   display: grid;
@@ -110,12 +110,12 @@ a.sign:focus-visible {
   height: 2.5rem;
   padding: 0.375rem;
   border: 2px solid currentColor;
-  border-radius: 4px;
+  border-radius: var(--radius-tag);
 }
 .sign b {
   display: block;
   font-size: 1.125rem;
-  font-stretch: 85%;
+  font-stretch: var(--stretch-tile);
   text-transform: uppercase;
 }
 .sign__arrow {

@@ -147,7 +147,7 @@ Referencia del modelo, a adaptar:
 
 ---
 
-## [ ] Fase 6 — Calidad frontend
+## [x] Fase 6 — Calidad frontend
 
 **Preguntas de entrada**
 - ¿`noindex`? Recomendado.

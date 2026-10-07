@@ -109,7 +109,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   padding: 0.5rem 1rem;
   font-size: var(--fs-small);
   font-weight: 700;
-  font-stretch: 85%;
+  font-stretch: var(--stretch-tile);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink);
@@ -133,7 +133,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   position: fixed;
   left: 50%;
   bottom: max(1rem, env(safe-area-inset-bottom));
-  z-index: 40;
+  z-index: var(--z-float);
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -144,7 +144,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
   white-space: nowrap;
   text-decoration: none;
   background: var(--signal);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   box-shadow: 0 8px 20px -6px rgb(0 0 0 / 0.35);
   transform: translateX(-50%);
   transition:

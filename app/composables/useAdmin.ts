@@ -1,31 +1,43 @@
 // Datos y acciones del panel de los novios. Todo pasa por `/api/admin/*` (protegido por el adaptador
-// `auth`); si la sesión caduca (401), se vuelve al login.
-import type { AdminInvitation, MessageKind, MessageTemplate } from '#shared/schemas'
+// `auth`) con `adminFetch`, que vuelve al login si la sesión caduca.
+import type { AdminInvitation, AdminSession, MessageKind, MessageTemplate } from '#shared/schemas'
 import { formatDeadline, invitationLink, renderTemplate, whatsappUrl } from '#shared/whatsapp'
 
-export const adminFetch = $fetch.create({
-  onResponseError({ response }) {
-    if (response.status === 401) navigateTo('/admin/login')
-  },
-})
+const INVITATIONS_KEY = 'admin-invitations'
+const TEMPLATES_KEY = 'admin-templates'
 
+/** Sesión del panel (`null` sin sesión). La rellena el middleware `admin` o el login. */
+export function useAdminSession() {
+  return useState<AdminSession | null>('admin-session', () => null)
+}
+
+// `dedupe: 'defer'`: si la petición ya está en marcha, quien llega después espera a esa misma en
+// lugar de cancelarla y lanzar otra.
 export function useAdminInvitations() {
   return useAsyncData(
-    'admin-invitations',
+    INVITATIONS_KEY,
     () => adminFetch<AdminInvitation[]>('/api/admin/invitations'),
     {
       default: () => [],
+      dedupe: 'defer',
     },
   )
 }
 
 export function useAdminTemplates() {
-  return useAsyncData(
-    'admin-templates',
-    () => adminFetch<MessageTemplate[]>('/api/admin/templates'),
-    {
-      default: () => [],
-    },
+  return useAsyncData(TEMPLATES_KEY, () => adminFetch<MessageTemplate[]>('/api/admin/templates'), {
+    default: () => [],
+    dedupe: 'defer',
+  })
+}
+
+/** Etiquetas en uso (sin vacías ni repetidas), ordenadas: filtro del listado y sugerencias. */
+export function useAdminLabels() {
+  const { data } = useNuxtData<AdminInvitation[]>(INVITATIONS_KEY)
+  return computed(() =>
+    [...new Set((data.value ?? []).map((i) => i.label).filter(Boolean))].sort((a, b) =>
+      a.localeCompare(b, 'es'),
+    ),
   )
 }
 
@@ -39,11 +51,13 @@ export function useSiteUrl(): string {
     : useRuntimeConfig().public.siteUrl
 }
 
-/** Mensajes de WhatsApp, compartir, copiar y registro de envíos de una invitación. */
+/**
+ * Mensajes de WhatsApp, compartir, copiar y registro de envíos de una invitación. Lee las plantillas
+ * que ya ha cargado la página (`useAdminTemplates`) sin volver a pedirlas: se usa en cada fila.
+ */
 export function useSend() {
   const siteUrl = useSiteUrl()
-  const { data: templates } = useAdminTemplates()
-  const { refresh } = useAdminInvitations()
+  const { data: templates } = useNuxtData<MessageTemplate[]>(TEMPLATES_KEY)
   const canShare = import.meta.client && typeof navigator.share === 'function'
 
   function link(invitation: Pick<AdminInvitation, 'token'>) {
@@ -51,7 +65,7 @@ export function useSend() {
   }
 
   function message(invitation: AdminInvitation, kind: MessageKind): string {
-    const template = templates.value.find((t) => t.kind === kind && t.locale === invitation.locale)
+    const template = templates.value?.find((t) => t.kind === kind && t.locale === invitation.locale)
     return renderTemplate(template?.body ?? '{enlace}', {
       nombre: invitation.guestName,
       enlace: link(invitation),
@@ -69,7 +83,7 @@ export function useSend() {
       method: 'POST',
       body: { kind },
     })
-    await refresh()
+    await refreshNuxtData(INVITATIONS_KEY)
   }
 
   async function share(invitation: AdminInvitation, kind: MessageKind) {
@@ -93,20 +107,16 @@ export function useSend() {
   return { canShare, link, message, whatsapp, record, share, copyLink }
 }
 
+// Un único temporizador para todo el panel: un aviso nuevo no lo borra el de otro componente.
+let toastTimer: ReturnType<typeof setTimeout> | undefined
+
 /** Aviso breve tras una acción ("Enlace copiado"). Lo pinta `<AdminToast>`. */
 export function useToast() {
   const message = useState<string>('admin-toast', () => '')
-  let timer: ReturnType<typeof setTimeout> | undefined
   function show(text: string) {
     message.value = text
-    clearTimeout(timer)
-    timer = setTimeout(() => (message.value = ''), 2500)
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => (message.value = ''), 2500)
   }
   return { message, show }
-}
-
-/** Tras un error de validación, lleva el foco (y el scroll) al primer campo marcado. */
-export async function focusFirstError() {
-  await nextTick()
-  document.querySelector<HTMLElement>('.admin [aria-invalid="true"]')?.focus()
 }

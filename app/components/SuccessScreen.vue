@@ -4,7 +4,7 @@
 // fuera de los botones (o con Escape).
 import { googleCalendarUrl } from '#shared/calendar'
 
-const props = defineProps<{
+defineProps<{
   passengers: string[]
   /** `true` si se han guardado cambios de una respuesta anterior. */
   edited?: boolean
@@ -23,9 +23,6 @@ onBeforeUnmount(() => {
   document.documentElement.style.overflow = ''
   window.removeEventListener('keydown', onKey)
 })
-
-const PLANE =
-  'M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z'
 </script>
 
 <template>
@@ -41,7 +38,7 @@ const PLANE =
         KR 3107 · {{ t('pass.fromValue') }} → {{ t('pass.toValue') }}
       </p>
       <h2 id="success-title" class="success__title">
-        {{ props.edited ? t('success.editedTitle') : t('success.title') }}
+        {{ edited ? t('success.editedTitle') : t('success.title') }}
       </h2>
       <p class="success__lead">{{ t('success.lead') }}</p>
 
@@ -60,9 +57,7 @@ const PLANE =
                 <span class="label">{{ t('pass.from') }}</span
                 ><b>{{ t('pass.fromValue') }}</b>
               </div>
-              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                <path fill="currentColor" :d="PLANE" transform="rotate(90 12 12)" />
-              </svg>
+              <PlaneIcon />
               <div class="issued__to">
                 <span class="label">{{ t('pass.to') }}</span
                 ><b>{{ t('pass.toValue') }}</b>
@@ -71,7 +66,7 @@ const PLANE =
             <dl class="issued__info">
               <div class="issued__pax">
                 <dt class="label">{{ t('pass.passengers') }}</dt>
-                <dd>{{ props.passengers.join(' · ') }}</dd>
+                <dd>{{ passengers.join(' · ') }}</dd>
               </div>
               <div>
                 <dt class="label">{{ t('pass.date') }}</dt>
@@ -114,7 +109,7 @@ const PLANE =
 .success {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--z-overlay);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
@@ -170,8 +165,9 @@ const PLANE =
 .success__couple {
   height: 88px;
   /* Pegatina: borde blanco para que destaquen sobre el amarillo */
-  filter: drop-shadow(2.5px 0 0 #fff) drop-shadow(-2.5px 0 0 #fff) drop-shadow(0 2.5px 0 #fff)
-    drop-shadow(0 -2.5px 0 #fff) drop-shadow(0 6px 8px rgb(0 0 0 / 0.25));
+  filter: drop-shadow(2.5px 0 0 var(--paper)) drop-shadow(-2.5px 0 0 var(--paper))
+    drop-shadow(0 2.5px 0 var(--paper)) drop-shadow(0 -2.5px 0 var(--paper))
+    drop-shadow(0 6px 8px rgb(0 0 0 / 0.25));
 }
 @media (min-width: 720px) {
   .success__couple {
@@ -197,7 +193,7 @@ const PLANE =
   width: min(100%, 25rem);
   text-align: left;
   background: var(--paper);
-  border-radius: 18px;
+  border-radius: var(--radius-pass-small);
   box-shadow:
     0 2px 4px rgb(0 0 0 / 0.1),
     0 30px 50px -24px rgb(0 0 0 / 0.45);
@@ -223,22 +219,22 @@ const PLANE =
   text-transform: uppercase;
   color: var(--signal);
   background: var(--ink);
-  border-radius: 18px 18px 0 0;
+  border-radius: var(--radius-pass-small) var(--radius-pass-small) 0 0;
 }
 .issued__airline {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   font-size: 1rem;
-  font-stretch: 100%;
+  font-stretch: var(--stretch-body);
   letter-spacing: 0;
   text-transform: none;
-  color: #fff;
+  color: var(--paper);
 }
 .issued__mono {
   width: 1.75rem;
   height: 1.75rem;
-  box-shadow: 0 0 0 1.5px #fff;
+  box-shadow: 0 0 0 1.5px var(--paper);
   border-radius: 50%;
 }
 .issued__body {
@@ -348,14 +344,14 @@ const PLANE =
   padding: 0.375rem 0.875rem 0.5rem;
   color: var(--stamp);
   border: 4px double var(--stamp);
-  border-radius: 10px;
+  border-radius: var(--radius-control);
   transform: rotate(-12deg);
   mix-blend-mode: multiply;
   animation: stamp-in 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) 0.8s both;
 }
 .stamp span {
   font-size: 1.75rem;
-  font-weight: 900;
+  font-weight: 800;
   font-stretch: var(--stretch-tile);
   letter-spacing: 0.06em;
   line-height: 1.05;

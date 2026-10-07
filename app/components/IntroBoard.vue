@@ -52,9 +52,9 @@ const STATUS = {
   onTime: { es: 'EN HORA', ro: 'LA TIMP', en: 'ON TIME' },
   boarding: { es: 'EMBARCANDO', ro: 'ÎMBARCARE', en: 'BOARDING' },
 } as const
-const flights: { origin: string; status: keyof typeof STATUS }[] = [
-  { origin: 'MADRID', status: 'boarding' },
-]
+/** Estado del vuelo KR3107 MADRID → ALBA en el panel (ámbar, parpadea). */
+const FLIGHT_STATUS: keyof typeof STATUS = 'boarding'
+const FLAP_DELAY = 1100
 
 let clockTimer: ReturnType<typeof setInterval> | undefined
 let langTimer: ReturnType<typeof setInterval> | undefined
@@ -116,13 +116,7 @@ onBeforeUnmount(() => {
   >
     <header class="intro__top">
       <p class="intro__kind">
-        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"
-            transform="rotate(135 12 12)"
-          />
-        </svg>
+        <PlaneIcon :rotate="135" />
         <span>{{ t('intro.arrivals') }}</span
         ><span class="intro__kind-alt">{{ t('intro.arrivalsAlt') }}</span>
       </p>
@@ -175,14 +169,14 @@ onBeforeUnmount(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(f, i) in flights" :key="f.origin">
+        <tr>
           <td class="col-flight">
-            <FlapText text="KR3107" :delay="1100 + i * 90" />
+            <FlapText text="KR3107" :delay="FLAP_DELAY" />
           </td>
-          <td><FlapText :text="f.origin" :length="6" :delay="1100 + i * 90" /></td>
-          <td class="col-dest"><FlapText text="ALBA" :delay="1100 + i * 90" /></td>
-          <td class="col-status" :class="`is-${f.status}`">
-            <FlapText :text="STATUS[f.status][lang]" :length="10" :delay="1100 + i * 90" />
+          <td><FlapText text="MADRID" :length="6" :delay="FLAP_DELAY" /></td>
+          <td class="col-dest"><FlapText text="ALBA" :delay="FLAP_DELAY" /></td>
+          <td class="col-status" :class="`is-${FLIGHT_STATUS}`">
+            <FlapText :text="STATUS[FLIGHT_STATUS][lang]" :length="10" :delay="FLAP_DELAY" />
           </td>
         </tr>
       </tbody>
@@ -192,19 +186,7 @@ onBeforeUnmount(() => {
       <span>Madrid</span>
       <div class="tracker__line">
         <div class="tracker__done" :style="{ width: `${trackerShown * 100}%` }" />
-        <svg
-          class="tracker__plane"
-          :style="{ left: `${trackerShown * 100}%` }"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-        >
-          <path
-            fill="currentColor"
-            d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"
-            transform="rotate(90 12 12)"
-          />
-        </svg>
+        <PlaneIcon class="tracker__plane" :style="{ left: `${trackerShown * 100}%` }" />
       </div>
       <span>Alba</span>
     </div>
@@ -244,16 +226,16 @@ onBeforeUnmount(() => {
   --ink: var(--board-ink);
   --muted: var(--board-muted);
   --line: var(--board-line);
-  --glow: #1a1b1f;
-  --pa-bg: #17181b;
-  --dash: #3a3b40;
+  --glow: var(--board-glow);
+  --pa-bg: var(--board-pa);
+  --dash: var(--board-dash);
   --tile-ink: var(--board-ink);
   --green: var(--status-on-time);
   --amber: var(--status-boarding);
   --button: var(--signal);
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: var(--z-intro);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -326,7 +308,7 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 800;
-  font-stretch: 75%;
+  font-stretch: var(--stretch-label);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -355,7 +337,7 @@ onBeforeUnmount(() => {
 .intro__clocks span {
   font-size: 0.6875rem;
   font-weight: 700;
-  font-stretch: 75%;
+  font-stretch: var(--stretch-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -390,7 +372,7 @@ onBeforeUnmount(() => {
   flex-basis: 100%;
   font-size: 0.75rem;
   font-weight: 700;
-  font-stretch: 75%;
+  font-stretch: var(--stretch-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -431,7 +413,7 @@ onBeforeUnmount(() => {
   text-align: left;
   font-size: 0.75rem;
   font-weight: 700;
-  font-stretch: 75%;
+  font-stretch: var(--stretch-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-bottom: 1px solid var(--line);
@@ -487,7 +469,7 @@ onBeforeUnmount(() => {
   margin: 1.75rem auto 0;
   font-size: 0.8125rem;
   font-weight: 700;
-  font-stretch: 75%;
+  font-stretch: var(--stretch-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -596,10 +578,10 @@ onBeforeUnmount(() => {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #121212;
+  color: var(--on-signal);
   background: var(--button);
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   animation:
     go-in 0.5s ease-out 1.8s both,

@@ -89,9 +89,9 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   width: 0.92em;
   height: 1.3em;
   font-weight: 700;
-  font-stretch: 85%;
+  font-stretch: var(--stretch-tile);
   line-height: 1;
-  background: linear-gradient(#2c2c2f 0 49.5%, #232326 50.5% 100%);
+  background: linear-gradient(var(--tile-top) 0 49.5%, var(--tile-bottom) 50.5% 100%);
   border-radius: 0.12em;
   animation: flap 0.1s ease-out;
 }

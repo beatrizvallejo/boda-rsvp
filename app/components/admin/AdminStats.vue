@@ -75,7 +75,7 @@ defineProps<{ stats: Stats }>()
   font-size: var(--fs-small);
   color: var(--board-muted);
 }
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

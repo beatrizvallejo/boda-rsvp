@@ -32,7 +32,7 @@ Formato de cada pregunta:
 - Bloquea: Fase 8.
 - Respuesta:
 ### [ABIERTA] P03 — Backups
-- Contexto: las respuestas de los invitados son el único dato valioso. El panel tendrá exportación CSV.
+- Contexto: las respuestas de los invitados son el único dato valioso. El panel ya tiene exportación CSV completa (botón «Descargar CSV», `GET /api/admin/export.csv`).
 - Pregunta: ¿basta con la copia automática del KV (si la tiene) más descargas periódicas del CSV, o prefieres algo automatizado?
 - Opciones y recomendación: copia del proveedor + CSV manual semanal durante los meses de respuestas.
 - Bloquea: Fase 9.

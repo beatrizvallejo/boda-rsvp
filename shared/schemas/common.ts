@@ -1,7 +1,9 @@
 import { z } from 'zod'
 import { LOCALES } from '../config'
+import { foldDiacritics } from '../text'
 
 export const localeSchema = z.enum(LOCALES)
+export type Locale = z.infer<typeof localeSchema>
 
 export const isoDateSchema = z.iso.datetime({ offset: true })
 
@@ -18,9 +20,7 @@ export const TOKEN_CODE_LENGTH = 6
  * "Ștefan Țăranu" → "stefan-taranu".
  */
 export function slugifyName(name: string): string {
-  const slug = name
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+  const slug = foldDiacritics(name)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')

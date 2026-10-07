@@ -1,6 +1,7 @@
 // Importación de la lista de invitados: texto pegado desde Excel/Sheets (tabuladores) o un .csv
 // (`;` o `,`). Columnas: nombre, idioma, teléfono, etiqueta. Con cabecera se admite cualquier orden.
 import { invitationCreateSchema, type InvitationCreate } from '#shared/schemas'
+import { compareKey } from '#shared/text'
 
 export interface ImportRow {
   /** Número de línea en el texto pegado (empieza en 1). */
@@ -37,10 +38,6 @@ const LOCALE_ALIASES: Record<string, 'es' | 'ro'> = {
   ro: 'ro',
   rumano: 'ro',
   romana: 'ro',
-}
-
-function normalize(value: string): string {
-  return value.normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase()
 }
 
 /** Separador más probable de la primera línea: tabulador (pegado de hoja de cálculo), `;` o `,`. */
@@ -89,13 +86,13 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
 
   let order = DEFAULT_ORDER
   let start = 0
-  const header = (table[0] ?? []).map((cell) => HEADER_ALIASES[normalize(cell)])
+  const header = (table[0] ?? []).map((cell) => HEADER_ALIASES[compareKey(cell)])
   if (header.includes('nombre')) {
     order = header as Column[]
     start = 1
   }
 
-  const seen = new Set(existingNames.map(normalize))
+  const seen = new Set(existingNames.map(compareKey))
   const rows: ImportRow[] = []
   for (let index = start; index < table.length; index++) {
     const cells = table[index]!
@@ -108,7 +105,7 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
     const row: ImportRow = { line: index + 1, raw, data: null, error: null }
     rows.push(row)
 
-    const locale = raw.idioma ? LOCALE_ALIASES[normalize(raw.idioma)] : 'es'
+    const locale = raw.idioma ? LOCALE_ALIASES[compareKey(raw.idioma)] : 'es'
     if (!raw.nombre) {
       row.error = 'Falta el nombre.'
       continue
@@ -124,16 +121,10 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
       label: raw.etiqueta,
     })
     if (!parsed.success) {
-      const field = parsed.error.issues[0]?.path[0]
-      row.error =
-        field === 'phone'
-          ? 'Teléfono no válido: escríbelo con prefijo, p. ej. +34 600 111 222.'
-          : field === 'guestName'
-            ? 'Nombre demasiado largo (máx. 80 caracteres).'
-            : 'Etiqueta demasiado larga (máx. 80 caracteres).'
+      row.error = firstFieldError(parsed.error, INVITATION_MESSAGES).message
       continue
     }
-    const key = normalize(parsed.data.guestName)
+    const key = compareKey(parsed.data.guestName)
     if (seen.has(key)) {
       row.error = 'Ya hay una invitación con este nombre: no se importa.'
       continue

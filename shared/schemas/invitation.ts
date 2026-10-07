@@ -1,12 +1,17 @@
 import { z } from 'zod'
 import { isoDateSchema, localeSchema, personNameSchema, tokenSchema } from './common'
 
+/** Quita los espacios, guiones, puntos y paréntesis con que se suele escribir un teléfono. */
+export function normalizePhone(value: string): string {
+  return value.replace(/[\s\-().]/g, '')
+}
+
 /**
  * Teléfono en formato internacional E.164 (`+40712345678`). Se admiten espacios, guiones,
  * puntos y paréntesis al escribirlo, y se eliminan antes de validar.
  */
 export const phoneSchema = z.preprocess(
-  (value) => (typeof value === 'string' ? value.replace(/[\s\-().]/g, '') : value),
+  (value) => (typeof value === 'string' ? normalizePhone(value) : value),
   z.string().regex(/^\+[1-9]\d{6,14}$/),
 )
 

@@ -104,9 +104,6 @@ function confirm() {
 }
 
 defineExpose({ showIssues })
-
-const PLANE =
-  'M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z'
 </script>
 
 <template>
@@ -140,9 +137,7 @@ const PLANE =
             stroke-dasharray="4 5"
           />
         </svg>
-        <svg class="pass__plane" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-          <path fill="currentColor" :d="PLANE" transform="rotate(90 12 12)" />
-        </svg>
+        <PlaneIcon class="pass__plane" />
         <div class="pass__to">
           <span class="label">{{ t('pass.to') }}</span>
           <span class="pass__city">{{ t('pass.toValue') }}</span>
@@ -378,7 +373,7 @@ const PLANE =
 .pass__path {
   width: 100%;
   height: 24px;
-  color: #b9b9b3;
+  color: var(--pass-path);
 }
 .pass__plane {
   width: 22px;
@@ -447,7 +442,7 @@ const PLANE =
 .field__input:disabled {
   color: var(--ink);
   -webkit-text-fill-color: var(--ink);
-  background: #f7f7f4;
+  background: var(--paper-disabled);
   border-color: var(--line);
   opacity: 1;
 }
@@ -486,7 +481,7 @@ const PLANE =
   display: grid;
   grid-template-columns: 1fr 1fr;
   padding: 4px;
-  background: #f0f0ec;
+  background: var(--paper-sunken);
   border: 1.5px solid var(--ink);
   border-radius: var(--radius-button);
 }
@@ -497,7 +492,7 @@ const PLANE =
   color: var(--ink);
   background: none;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   cursor: pointer;
 }
 .segmented button[aria-checked='true'] {
@@ -531,14 +526,15 @@ const PLANE =
   font-weight: 600;
   letter-spacing: 0.12em;
   white-space: nowrap;
-  color: #a3a39d;
+  color: var(--pass-micro);
 }
 
 /* Perforación con muescas que dejan ver el fondo */
 .perf {
   position: relative;
   height: 28px;
-  background: radial-gradient(circle, #c9c9c4 1.5px, transparent 2px) repeat-x 0 50% / 10px 4px;
+  background: radial-gradient(circle, var(--perforation) 1.5px, transparent 2px) repeat-x 0 50% /
+    10px 4px;
 }
 .perf::before,
 .perf::after {
@@ -625,14 +621,14 @@ const PLANE =
   right: 0.5rem;
   padding: 0.125rem 0.625rem;
   font-size: 1.125rem;
-  font-weight: 900;
+  font-weight: 800;
   font-stretch: var(--stretch-tile);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--stamp);
   background: rgb(255 255 255 / 0.75);
   border: 3px double var(--stamp);
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   transform: translateY(-50%) rotate(-8deg);
 }
 .stub__note {
@@ -646,7 +642,7 @@ const PLANE =
   font-size: var(--fs-small);
   font-weight: 600;
   color: var(--error);
-  background: color-mix(in srgb, var(--error) 8%, #fff);
+  background: color-mix(in srgb, var(--error) 8%, var(--paper));
   border-radius: var(--radius-control);
 }
 .pass__confirm:disabled {
@@ -707,7 +703,8 @@ const PLANE =
   .perf {
     width: 28px;
     height: auto;
-    background: radial-gradient(circle, #c9c9c4 1.5px, transparent 2px) repeat-y 50% 0 / 4px 10px;
+    background: radial-gradient(circle, var(--perforation) 1.5px, transparent 2px) repeat-y 50% 0 /
+      4px 10px;
   }
   .perf::before {
     top: -14px;
@@ -730,7 +727,7 @@ const PLANE =
     display: flex;
     flex-direction: column;
     padding: 1.75rem 1.75rem 2rem;
-    background: color-mix(in srgb, var(--signal) 12%, #fff);
+    background: color-mix(in srgb, var(--signal) 12%, var(--paper));
   }
 }
 </style>

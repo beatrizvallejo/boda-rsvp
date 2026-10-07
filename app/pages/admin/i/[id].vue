@@ -2,10 +2,12 @@
 // Ficha de una invitación: envío, datos de la invitación, respuesta (registrar, corregir o quitar) y borrado.
 import {
   invitationUpdateSchema,
+  normalizePhone,
   rsvpInputSchema,
   type AdminInvitation,
   type InvitationUpdate,
 } from '#shared/schemas'
+import type { InvitationForm } from '~/components/admin/InvitationFields.vue'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
@@ -18,22 +20,17 @@ const toast = useToast()
 const invitation = computed<AdminInvitation | undefined>(() =>
   invitations.value.find((i) => i.id === route.params.id),
 )
-const labels = computed(() => [...new Set(invitations.value.map((i) => i.label).filter(Boolean))])
+const labels = useAdminLabels()
 
 // ── Datos de la invitación ───────────────────────────────────────────────
-const form = reactive({ guestName: '', locale: 'es' as 'es' | 'ro', phone: '', label: '' })
-const formError = ref<{ field: string; message: string } | null>(null)
+const form = ref<InvitationForm>({ guestName: '', locale: 'es', phone: '', label: '' })
+const formError = ref<FieldError | null>(null)
 const savingInvitation = ref(false)
 
 function resetForm() {
   const i = invitation.value
   if (!i) return
-  Object.assign(form, {
-    guestName: i.guestName,
-    locale: i.locale,
-    phone: i.phone ?? '',
-    label: i.label,
-  })
+  form.value = { guestName: i.guestName, locale: i.locale, phone: i.phone ?? '', label: i.label }
   formError.value = null
 }
 watch(invitation, (now, before) => now && now.id !== before?.id && resetForm(), { immediate: true })
@@ -42,10 +39,10 @@ const patch = computed<InvitationUpdate>(() => {
   const i = invitation.value
   if (!i) return {}
   const changes: InvitationUpdate = {}
-  if (form.guestName.trim() !== i.guestName) changes.guestName = form.guestName
-  if (form.locale !== i.locale) changes.locale = form.locale
-  if (form.phone.replace(/[\s\-().]/g, '') !== (i.phone ?? '')) changes.phone = form.phone
-  if (form.label.trim() !== i.label) changes.label = form.label
+  if (form.value.guestName.trim() !== i.guestName) changes.guestName = form.value.guestName
+  if (form.value.locale !== i.locale) changes.locale = form.value.locale
+  if (normalizePhone(form.value.phone) !== (i.phone ?? '')) changes.phone = form.value.phone
+  if (form.value.label.trim() !== i.label) changes.label = form.value.label
   return changes
 })
 const invitationChanged = computed(() => Object.keys(patch.value).length > 0)
@@ -54,16 +51,7 @@ async function saveInvitation() {
   formError.value = null
   const parsed = invitationUpdateSchema.safeParse(patch.value)
   if (!parsed.success) {
-    const field = String(parsed.error.issues[0]?.path[0] ?? '')
-    formError.value = {
-      field,
-      message:
-        field === 'phone'
-          ? 'Teléfono no válido: escríbelo con prefijo, p. ej. +34 600 111 222.'
-          : field === 'guestName'
-            ? 'Escribe el nombre (máx. 80 caracteres).'
-            : 'Etiqueta demasiado larga (máx. 80 caracteres).',
-    }
+    formError.value = firstFieldError(parsed.error, INVITATION_MESSAGES)
     void focusFirstError()
     return
   }
@@ -85,6 +73,10 @@ async function saveInvitation() {
 
 // ── Respuesta ────────────────────────────────────────────────────────────
 const editingRsvp = ref(false)
+const COMPANION_OPTIONS = [
+  { value: false, label: 'Solo/a' },
+  { value: true, label: 'Acompañado/a' },
+]
 const rsvpForm = reactive({
   guestName: '',
   withCompanion: false,
@@ -92,7 +84,7 @@ const rsvpForm = reactive({
   children: 0,
   email: '',
 })
-const rsvpError = ref<{ field: string; message: string } | null>(null)
+const rsvpError = ref<FieldError | null>(null)
 const savingRsvp = ref(false)
 
 function startRsvp() {
@@ -109,13 +101,6 @@ function startRsvp() {
   editingRsvp.value = true
 }
 
-const RSVP_MESSAGES: Record<string, string> = {
-  guestName: 'Escribe el nombre del invitado.',
-  companionName: 'Falta el nombre del acompañante (o marca «Solo/a»).',
-  children: 'El número de niños va de 0 a 10.',
-  email: 'Email no válido.',
-}
-
 async function saveRsvp() {
   rsvpError.value = null
   if (rsvpForm.withCompanion && !rsvpForm.companionName.trim()) {
@@ -130,8 +115,7 @@ async function saveRsvp() {
     email: rsvpForm.email,
   })
   if (!parsed.success) {
-    const field = String(parsed.error.issues[0]?.path[0] ?? '')
-    rsvpError.value = { field, message: RSVP_MESSAGES[field] ?? 'Revisa los datos.' }
+    rsvpError.value = firstFieldError(parsed.error, RSVP_MESSAGES)
     void focusFirstError()
     return
   }
@@ -286,25 +270,11 @@ async function copy() {
                 rsvpError.message
               }}</span>
             </label>
-            <div class="field">
-              <span id="companion-label" class="label">Acompañante</span>
-              <div class="segmented" role="group" aria-labelledby="companion-label">
-                <button
-                  type="button"
-                  :aria-pressed="!rsvpForm.withCompanion"
-                  @click="rsvpForm.withCompanion = false"
-                >
-                  Solo/a
-                </button>
-                <button
-                  type="button"
-                  :aria-pressed="rsvpForm.withCompanion"
-                  @click="rsvpForm.withCompanion = true"
-                >
-                  Acompañado/a
-                </button>
-              </div>
-            </div>
+            <AdminSegmented
+              v-model="rsvpForm.withCompanion"
+              label="Acompañante"
+              :options="COMPANION_OPTIONS"
+            />
             <label v-if="rsvpForm.withCompanion" class="field">
               <span class="label">Nombre del acompañante</span>
               <input
@@ -405,72 +375,13 @@ async function copy() {
         <section class="card" aria-labelledby="data-title">
           <h2 id="data-title">Datos de la invitación</h2>
           <form novalidate @submit.prevent="saveInvitation">
-            <label class="field">
-              <span class="label">Nombre</span>
-              <input
-                v-model="form.guestName"
-                class="input"
-                autocomplete="off"
-                :aria-invalid="formError?.field === 'guestName' || undefined"
-              />
-              <span v-if="formError?.field === 'guestName'" class="field-error" role="alert">{{
-                formError.message
-              }}</span>
-            </label>
-            <div class="field">
-              <span id="locale-label" class="label">Idioma de la web y del mensaje</span>
-              <div class="segmented" role="group" aria-labelledby="locale-label">
-                <button
-                  type="button"
-                  :aria-pressed="form.locale === 'es'"
-                  @click="form.locale = 'es'"
-                >
-                  ES
-                </button>
-                <button
-                  type="button"
-                  :aria-pressed="form.locale === 'ro'"
-                  @click="form.locale = 'ro'"
-                >
-                  RO
-                </button>
-              </div>
-            </div>
-            <label class="field">
-              <span class="label">Teléfono (opcional)</span>
-              <input
-                v-model="form.phone"
-                class="input"
-                type="tel"
-                inputmode="tel"
-                autocomplete="off"
-                placeholder="+34 600 111 222"
-                :aria-invalid="formError?.field === 'phone' || undefined"
-              />
-              <span v-if="formError?.field === 'phone'" class="field-error" role="alert">{{
-                formError.message
-              }}</span>
-              <span class="hint"
-                >Con prefijo del país. Sin teléfono, WhatsApp te deja elegir el contacto.</span
-              >
-            </label>
-            <label class="field">
-              <span class="label">Etiqueta (opcional)</span>
-              <input
-                v-model="form.label"
-                class="input"
-                list="labels"
-                autocomplete="off"
-                placeholder="Familia Ro, Amigos Keko…"
-                :aria-invalid="formError?.field === 'label' || undefined"
-              />
-              <span v-if="formError?.field === 'label'" class="field-error" role="alert">{{
-                formError.message
-              }}</span>
-              <datalist id="labels">
-                <option v-for="l in labels" :key="l" :value="l" />
-              </datalist>
-            </label>
+            <AdminInvitationFields
+              v-model="form"
+              :error="formError"
+              :labels="labels"
+              locale-label="Idioma de la web y del mensaje"
+              phone-hint="Con prefijo del país. Sin teléfono, WhatsApp te deja elegir el contacto."
+            />
             <div class="btn-row actions">
               <button
                 type="submit"

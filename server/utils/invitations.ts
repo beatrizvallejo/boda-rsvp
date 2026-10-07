@@ -10,6 +10,7 @@ import type {
 import { idSchema, slugifyName, TOKEN_CODE_LENGTH, tokenSchema } from '#shared/schemas'
 import { isRsvpClosed, RSVP_DEADLINE } from '#shared/config'
 import { useDataAdapter } from './adapters'
+import { apiError } from './http'
 
 const CODE_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789'
 
@@ -40,15 +41,17 @@ export function buildInvitation(input: InvitationCreate, now = new Date()): Invi
 
 /** Busca por token. Un token con formato inválido se trata igual que uno inexistente (404). */
 export async function findInvitationByToken(token: string | undefined): Promise<Invitation> {
-  if (!tokenSchema.safeParse(token).success) throw apiError(404, 'not_found')
-  const invitation = await useDataAdapter().getInvitationByToken(token as string)
+  const parsed = tokenSchema.safeParse(token)
+  if (!parsed.success) throw apiError(404, 'not_found')
+  const invitation = await useDataAdapter().getInvitationByToken(parsed.data)
   if (!invitation) throw apiError(404, 'not_found')
   return invitation
 }
 
 export async function findInvitationById(id: string | undefined): Promise<Invitation> {
-  if (!idSchema.safeParse(id).success) throw apiError(404, 'not_found')
-  const invitation = await useDataAdapter().getInvitation(id as string)
+  const parsed = idSchema.safeParse(id)
+  if (!parsed.success) throw apiError(404, 'not_found')
+  const invitation = await useDataAdapter().getInvitation(parsed.data)
   if (!invitation) throw apiError(404, 'not_found')
   return invitation
 }

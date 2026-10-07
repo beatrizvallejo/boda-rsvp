@@ -17,10 +17,14 @@ export default defineNuxtConfig({
     public: { siteUrl },
   },
   routeRules: {
-    // Panel de los novios: solo en el cliente (no hay nada que indexar ni que previsualizar) y fuera
-    // de buscadores. Sus datos solo salen por `/api/admin/*`, protegido por el adaptador `auth`.
-    '/admin': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/admin/**': { ssr: false, headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    // Web privada de una boda: fuera de buscadores con `noindex` (cabecera + meta `robots`). robots.txt
+    // deja rastrear a propósito: un `Disallow` impediría leer el `noindex` y podría bloquear al
+    // rastreador de la previsualización de WhatsApp.
+    '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    // Panel de los novios: solo en el cliente (no hay nada que previsualizar). Sus datos solo salen
+    // por `/api/admin/*`, protegido por el adaptador `auth`.
+    '/admin': { ssr: false },
+    '/admin/**': { ssr: false },
     '/api/admin/**': { headers: { 'Cache-Control': 'private, no-store' } },
   },
   app: {
@@ -37,7 +41,10 @@ export default defineNuxtConfig({
           crossorigin: '',
         },
       ],
-      meta: [{ name: 'theme-color', content: '#0e0f11' }],
+      meta: [
+        { name: 'theme-color', content: '#0e0f11' },
+        { name: 'robots', content: 'noindex, nofollow' },
+      ],
     },
   },
   eslint: {

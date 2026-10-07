@@ -3,7 +3,7 @@ import type { AdminSession } from '#shared/schemas'
 
 definePageMeta({ layout: 'admin' })
 
-const session = useState<AdminSession | null>('admin-session', () => null)
+const session = useAdminSession()
 const password = ref('')
 const visible = ref(false)
 const error = ref('')
@@ -139,7 +139,7 @@ async function submit() {
   cursor: pointer;
   background: none;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   transform: translateY(-50%);
 }
 .password__toggle[aria-pressed='true'] {

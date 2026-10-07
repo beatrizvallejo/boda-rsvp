@@ -3,6 +3,7 @@
 // y exportación CSV. En móvil, lista apilada; en escritorio, tabla.
 import type { AdminInvitation } from '#shared/schemas'
 import { computeStats } from '#shared/stats'
+import { compareKey } from '#shared/text'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
@@ -37,25 +38,17 @@ const filter = computed<Filter>({
 })
 const label = computed({ get: () => queryParam('e'), set: (v) => setQuery('e', v) })
 
-const labels = computed(() =>
-  [...new Set(invitations.value.map((i) => i.label).filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b, 'es'),
-  ),
-)
-
-function normalize(text: string) {
-  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-}
+const labels = useAdminLabels()
 
 const filtered = computed(() => {
   const test = FILTERS.find((f) => f.value === filter.value)!.test
-  const words = normalize(search.value).split(/\s+/).filter(Boolean)
+  const words = compareKey(search.value).split(/\s+/).filter(Boolean)
   return invitations.value
     .filter(test)
     .filter((i) => !label.value || (label.value === NO_LABEL ? !i.label : i.label === label.value))
     .filter((i) => {
       if (!words.length) return true
-      const haystack = normalize(
+      const haystack = compareKey(
         [i.guestName, i.rsvp?.guestName, i.rsvp?.companionName, i.label].filter(Boolean).join(' '),
       )
       return words.every((w) => haystack.includes(w))
@@ -63,9 +56,12 @@ const filtered = computed(() => {
     .sort((a, b) => a.guestName.localeCompare(b.guestName, 'es'))
 })
 
-function count(f: (typeof FILTERS)[number]) {
-  return invitations.value.filter(f.test).length
-}
+const counts = computed(
+  () =>
+    Object.fromEntries(
+      FILTERS.map((f) => [f.value, invitations.value.filter(f.test).length]),
+    ) as Record<Filter, number>,
+)
 </script>
 
 <template>
@@ -94,7 +90,7 @@ function count(f: (typeof FILTERS)[number]) {
           :aria-pressed="filter === f.value"
           @click="filter = f.value"
         >
-          {{ f.label }} <span class="chip__count">{{ count(f) }}</span>
+          {{ f.label }} <span class="chip__count">{{ counts[f.value] }}</span>
         </button>
       </div>
       <div class="toolbar__row">
@@ -157,7 +153,7 @@ function count(f: (typeof FILTERS)[number]) {
   cursor: pointer;
   background: var(--paper);
   border: 1.5px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 .chip[aria-pressed='true'] {
   background: var(--ink);

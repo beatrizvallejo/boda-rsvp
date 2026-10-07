@@ -40,7 +40,7 @@ const photos = [1, 2, 3, 4].map((n) => ({ src: `/fotos/boda-${n}.jpg`, alt: `cre
   gap: 10px;
   width: min(74vw, 270px);
   padding: 12px 12px 8px;
-  background: #fbfbf8;
+  background: var(--photo-paper);
   box-shadow:
     0 2px 4px rgb(0 0 0 / 0.12),
     0 24px 40px -20px rgb(0 0 0 / 0.45);
@@ -81,6 +81,6 @@ const photos = [1, 2, 3, 4].map((n) => ({ src: `/fotos/boda-${n}.jpg`, alt: `cre
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: #6b6b6b;
+  color: var(--photo-caption);
 }
 </style>

@@ -75,12 +75,12 @@ const { t } = useI18n()
   margin: 0.75rem 0 0;
   font-size: 1.5rem;
   font-weight: 800;
-  font-stretch: 85%;
+  font-stretch: var(--stretch-tile);
 }
 .soon__text {
   margin: 0;
   font-size: var(--fs-input);
-  color: #d4d4d8;
+  color: var(--board-text);
 }
 .soon__list {
   display: grid;
@@ -95,7 +95,7 @@ const { t } = useI18n()
   grid-template-columns: 2rem 1fr;
   gap: 0.75rem;
   align-items: start;
-  color: #b9b9be;
+  color: var(--board-text-soft);
 }
 .soon__list li > span:first-child {
   font-size: 1.375rem;

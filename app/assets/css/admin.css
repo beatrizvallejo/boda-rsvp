@@ -1,0 +1,189 @@
+/* Primitivas del panel de los novios (/admin): botones, campos, tarjetas, estados y aviso.
+   Acotadas con :where(.admin), que no suma especificidad: los estilos scoped de cada página mandan. */
+.admin {
+  /* Columnas de la tabla de invitaciones en escritorio (cabecera y filas) */
+  --admin-columns: minmax(0, 2fr) 7.5rem minmax(0, 1.4fr) minmax(0, 1.2fr) 23rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.admin-main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem var(--gutter) calc(2.5rem + env(safe-area-inset-bottom));
+}
+.admin h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: var(--fs-section);
+  font-weight: 800;
+  font-stretch: var(--stretch-tile);
+  line-height: 1.1;
+}
+.admin h2 {
+  margin: 0 0 0.75rem;
+  font-size: var(--fs-lead);
+  font-weight: 800;
+  font-stretch: var(--stretch-tile);
+}
+.admin .muted {
+  color: var(--muted);
+}
+
+:where(.admin) .card {
+  padding: 1.25rem;
+  background: var(--paper);
+  border-radius: var(--radius-pass);
+  box-shadow: var(--shadow-pass);
+}
+:where(.admin) .card + .card {
+  margin-top: 1rem;
+}
+
+/* Botones: 44px mínimo, amarillo señal solo para la acción principal */
+:where(.admin) .btn {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-button);
+}
+:where(.admin) .btn--primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--on-signal);
+}
+:where(.admin) .btn--ghost {
+  border-color: transparent;
+  background: transparent;
+}
+:where(.admin) .btn--danger {
+  color: var(--error);
+  border-color: var(--error);
+}
+:where(.admin) .btn--small {
+  min-height: 44px;
+  padding-inline: 0.75rem;
+  font-size: var(--fs-small);
+}
+:where(.admin) .btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+:where(.admin) .btn:focus-visible,
+:where(.admin) .input:focus-visible,
+:where(.admin) .chip:focus-visible,
+:where(.admin) .segmented button:focus-visible,
+.admin-nav__item:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+:where(.admin) .btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Campos: label real encima, 17px (sin zoom en iOS) */
+:where(.admin) .field {
+  display: grid;
+  gap: 0.375rem;
+}
+:where(.admin) .field + .field {
+  margin-top: 0.875rem;
+}
+:where(.admin) .input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.625rem 0.75rem;
+  font-size: var(--fs-input);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--input-line);
+  border-radius: var(--radius-control);
+}
+:where(.admin) textarea.input {
+  min-height: 8rem;
+  resize: vertical;
+  line-height: 1.45;
+}
+:where(.admin) .input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+:where(.admin) .field-error {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--error);
+}
+:where(.admin) .hint {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--muted);
+}
+
+/* Selector segmentado (ES / RO, Solo / Acompañado) */
+:where(.admin) .segmented {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--line);
+  border-radius: var(--radius-control);
+}
+:where(.admin) .segmented button {
+  min-width: 56px;
+  min-height: 42px;
+  padding: 0 0.875rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-inner);
+}
+:where(.admin) .segmented button[aria-pressed='true'] {
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+/* Estado de una invitación */
+:where(.admin) .status {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  font-stretch: var(--stretch-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+}
+:where(.admin) .status--confirmed {
+  color: var(--confirmed-ink);
+  background: var(--confirmed-bg);
+}
+:where(.admin) .status--pending {
+  color: var(--pending-ink);
+  background: var(--pending-bg);
+}
+
+/* Aviso breve tras una acción */
+:where(.admin) .toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: var(--z-toast);
+  max-width: calc(100vw - 2 * var(--gutter));
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  color: var(--board-ink);
+  background: var(--board);
+  border-radius: var(--radius-button);
+  transform: translateX(-50%);
+}
