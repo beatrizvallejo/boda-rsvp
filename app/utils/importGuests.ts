@@ -1,6 +1,6 @@
 // Importación de la lista de invitados: texto pegado desde Excel/Sheets (tabuladores) o un .csv
 // (`;` o `,`). Columnas: nombre, idioma, teléfono, etiqueta. Con cabecera se admite cualquier orden.
-import { invitationCreateSchema, type InvitationCreate } from '#shared/schemas'
+import { invitationCreateSchema, normalizePhone, type InvitationCreate } from '#shared/schemas'
 import { compareKey } from '#shared/text'
 
 export interface ImportRow {
@@ -38,6 +38,16 @@ const LOCALE_ALIASES: Record<string, 'es' | 'ro'> = {
   ro: 'ro',
   rumano: 'ro',
   romana: 'ro',
+}
+
+/**
+ * Teléfono tal como llega de una hoja de cálculo. Excel suele convertir `+34600111222` en el número
+ * `34600111222` (sin `+`), y algunos lo escriben con `00`: si empieza por el prefijo de España (34) o
+ * Rumanía (40) y tiene la longitud de un móvil, se le pone el `+`. Lo demás se valida tal cual.
+ */
+export function fixSpreadsheetPhone(value: string): string {
+  const phone = normalizePhone(value).replace(/^00/, '+')
+  return /^(34|40)\d{9}$/.test(phone) ? `+${phone}` : phone
 }
 
 /** Separador más probable de la primera línea: tabulador (pegado de hoja de cálculo), `;` o `,`. */
@@ -117,7 +127,7 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
     const parsed = invitationCreateSchema.safeParse({
       guestName: raw.nombre,
       locale,
-      phone: raw.telefono,
+      phone: fixSpreadsheetPhone(raw.telefono),
       label: raw.etiqueta,
     })
     if (!parsed.success) {
