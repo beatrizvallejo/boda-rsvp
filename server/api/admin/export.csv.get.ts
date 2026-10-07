@@ -4,6 +4,8 @@ import { requireAdmin } from '../../utils/admin'
 import { toCsv } from '../../utils/csv'
 import { listAdminInvitations } from '../../utils/invitations'
 
+const JOINT_FLIGHT = { yes: 'sí', no: 'no' } as const
+
 const HEADER = [
   'etiqueta',
   'invitado',
@@ -12,6 +14,7 @@ const HEADER = [
   'acompañante',
   'adultos',
   'niños',
+  'vuelo_conjunto',
   'email',
   'teléfono',
   'enlace',
@@ -38,6 +41,7 @@ export default defineEventHandler(async (event) => {
     rsvp?.companionName ?? '',
     rsvp ? (rsvp.companionName ? 2 : 1) : '',
     rsvp ? rsvp.children : '',
+    rsvp?.jointFlight ? JOINT_FLIGHT[rsvp.jointFlight] : '',
     rsvp?.email ?? '',
     invitation.phone ?? '',
     invitationLink(siteUrl, invitation.token),

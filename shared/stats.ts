@@ -11,6 +11,7 @@ export function computeStats(invitations: AdminInvitation[]): Stats {
     adults: 0,
     children: 0,
     whatsapp: { invitationsSent: 0, invitationsNotSent: 0, remindersSent: 0 },
+    jointFlight: { invitations: 0, people: 0 },
   }
 
   for (const invitation of invitations) {
@@ -24,6 +25,10 @@ export function computeStats(invitations: AdminInvitation[]): Stats {
       stats.adults += adults
       stats.children += rsvp.children
       stats.people.confirmed += adults + rsvp.children
+      if (rsvp.jointFlight === 'yes') {
+        stats.jointFlight.invitations++
+        stats.jointFlight.people += adults + rsvp.children
+      }
     }
 
     if (invitation.invitedSentAt) stats.whatsapp.invitationsSent++

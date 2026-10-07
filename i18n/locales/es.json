@@ -52,7 +52,12 @@
     "leadConfirmed": "Ya tenemos tu confirmación. Si algo cambia, edítalo aquí.",
     "confirmedNote": "Puedes cambiar los datos hasta el 1 de mayo.",
     "save": "Guardar cambios",
-    "sending": "Enviando tu tarjeta…"
+    "sending": "Enviando tu tarjeta…",
+    "jointFlight": "¿Te apuntamos a la reserva conjunta desde Madrid?",
+    "jointFlightYes": "Sí",
+    "jointFlightNo": "No",
+    "jointFlightHelp": "Sin compromiso: os escribiremos con el precio antes de reservar.",
+    "moreOptions": "Más opciones (opcional)"
   },
   "more": "Vuelos y alojamiento",
   "howto": {
@@ -75,7 +80,9 @@
     "hotelsText": "Dónde dormir cerca del lugar de la boda.",
     "transfers": "Traslados",
     "transfersText": "Cómo moverse el día de la boda.",
-    "foot": "Os avisaremos en cuanto esté listo."
+    "foot": "Os avisaremos en cuanto esté listo.",
+    "titleNoFlights": "Alojamiento y traslados",
+    "textNoFlights": "Muy pronto os daremos más información sobre el alojamiento y los traslados para quien lo necesite."
   },
   "crew": {
     "label": "Fotos de los novios",
@@ -109,5 +116,25 @@
     "network": "No hemos podido enviar tu tarjeta: parece que no hay conexión. Tus datos siguen aquí; vuelve a intentarlo.",
     "save": "Algo ha fallado al guardar tu tarjeta. Vuelve a intentarlo en un momento.",
     "closedWithRsvp": "Esta es tu tarjeta confirmada. Si necesitas cambiar algo, escríbenos."
+  },
+  "flights": {
+    "title": "Vuelos",
+    "board": "Salidas",
+    "boardAlt": "Plecări · Departures",
+    "route": "{from} → {to}",
+    "km": "a {km} km de Alba",
+    "status": {
+      "watching": "MIRANDO PRECIOS",
+      "open": "RESERVA ABIERTA",
+      "closed": "CERRADA"
+    },
+    "statusText": {
+      "watching": "Estamos siguiendo los precios desde Madrid para hacer una reserva conjunta cuando estén más baratos.",
+      "open": "La reserva conjunta desde Madrid está abierta hasta el {date}. Apúntate en tu tarjeta de embarque.",
+      "closed": "La reserva conjunta ya está cerrada. Si aún no tienes vuelo, búscalo aquí."
+    },
+    "lastPrice": "Último precio visto: {amount} € por persona, ida y vuelta ({date}).",
+    "dates": "Ida {outbound} · vuelta {inbound}",
+    "search": "Buscar vuelos a {city}"
   }
 }

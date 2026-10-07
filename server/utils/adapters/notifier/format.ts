@@ -9,10 +9,17 @@ const FIELD_LABELS: Record<RsvpField, string> = {
   companionName: 'Acompañante',
   children: 'Menores',
   email: 'Email',
+  jointFlight: 'Vuelo conjunto',
 }
 
-function formatValue(value: unknown): string {
+const JOINT_FLIGHT_LABELS: Record<string, string> = {
+  yes: 'Sí, desde Madrid',
+  no: 'No',
+}
+
+function formatValue(value: unknown, field?: RsvpField): string {
   if (value === null || value === undefined || value === '') return '—'
+  if (field === 'jointFlight') return JOINT_FLIGHT_LABELS[String(value)] ?? String(value)
   return String(value)
 }
 
@@ -41,7 +48,7 @@ export function formatRsvpNotification(
     lines.push('Qué ha cambiado:')
     for (const change of changes) {
       lines.push(
-        `  · ${FIELD_LABELS[change.field]}: ${formatValue(change.from)} → ${formatValue(change.to)}`,
+        `  · ${FIELD_LABELS[change.field]}: ${formatValue(change.from, change.field)} → ${formatValue(change.to, change.field)}`,
       )
     }
     lines.push('', `Respuesta actual (${formatPeople(rsvp)}):`)
@@ -49,7 +56,7 @@ export function formatRsvpNotification(
 
   const fields = [
     ...(Object.keys(FIELD_LABELS) as RsvpField[]).map(
-      (field) => [FIELD_LABELS[field], formatValue(rsvp[field])] as const,
+      (field) => [FIELD_LABELS[field], formatValue(rsvp[field], field)] as const,
     ),
     ['Idioma', invitation.locale.toUpperCase()] as const,
   ]

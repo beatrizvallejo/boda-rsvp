@@ -16,8 +16,8 @@ function id(n: number): string {
 interface FixtureInvitation {
   invitation: Omit<Invitation, 'id' | 'token' | 'reminderCount'> &
     Partial<Pick<Invitation, 'reminderCount'>>
-  rsvp?: Omit<Rsvp, 'invitationId' | 'createdAt' | 'updatedAt' | 'updatedBy'> &
-    Partial<Pick<Rsvp, 'createdAt' | 'updatedAt' | 'updatedBy'>>
+  rsvp?: Omit<Rsvp, 'invitationId' | 'createdAt' | 'updatedAt' | 'updatedBy' | 'jointFlight'> &
+    Partial<Pick<Rsvp, 'createdAt' | 'updatedAt' | 'updatedBy' | 'jointFlight'>>
 }
 
 const CREATED = '2026-09-20T18:00:00.000Z'
@@ -40,6 +40,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       companionName: 'Luis García Martín',
       children: 2,
       email: 'ana.garcia@example.com',
+      jointFlight: 'yes',
       createdAt: '2026-11-03T08:12:00.000Z',
       updatedAt: '2026-11-03T08:12:00.000Z',
     },
@@ -229,6 +230,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       companionName: 'Sergio Blanco',
       children: 0,
       email: null,
+      jointFlight: 'no',
     },
   },
   {
@@ -259,6 +261,7 @@ const fixtures: (FixtureInvitation & { slug: string })[] = [
       companionName: 'Íñigo Zubizarreta Arrieta',
       children: 1,
       email: 'nerea.etxe@example.com',
+      jointFlight: 'yes',
     },
   },
 ]
@@ -275,6 +278,7 @@ export const fixtureRsvps: Rsvp[] = fixtures.flatMap(({ rsvp }, index) => {
   const createdAt = rsvp.createdAt ?? '2026-11-04T12:00:00.000Z'
   return [
     {
+      jointFlight: null,
       ...rsvp,
       invitationId: id(index + 1),
       updatedBy: rsvp.updatedBy ?? 'guest',
@@ -309,6 +313,19 @@ export const fixtureTemplates: MessageTemplate[] = [
     kind: 'reminder',
     locale: 'ro',
     body: 'Bună, {nombre}! Ultimul apel la îmbarcare ✈️ Încă nu avem răspunsul tău pentru nunta noastră din 31 iulie. Ne confirmi până pe {fecha_limite}? Durează doar un minut: {enlace}\nKeko și Ro',
+    updatedAt: TEMPLATE_DATE,
+  },
+  // Aviso a los apuntados a la reserva conjunta de vuelos (Fase 6b).
+  {
+    kind: 'flights',
+    locale: 'es',
+    body: '¡Hola, {nombre}! ✈️ Novedades del vuelo conjunto Madrid → Rumanía para nuestra boda: tienes todos los detalles en tu tarjeta de embarque: {enlace}\nKeko y Ro',
+    updatedAt: TEMPLATE_DATE,
+  },
+  {
+    kind: 'flights',
+    locale: 'ro',
+    body: 'Bună, {nombre}! ✈️ Avem noutăți despre zborul comun Madrid → România pentru nunta noastră: găsești toate detaliile pe biletul tău de îmbarcare: {enlace}\nKeko și Ro',
     updatedAt: TEMPLATE_DATE,
   },
 ]

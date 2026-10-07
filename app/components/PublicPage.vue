@@ -5,6 +5,8 @@
  */
 const INTRO_KEY = 'kr-intro-visto'
 const { t } = useI18n()
+const { data: flights } = await useFlights()
+const flightsActive = computed(() => flights.value.status !== 'soon')
 const { siteUrl } = useRuntimeConfig().public
 
 // Metadatos en servidor (WhatsApp lee el HTML, no ejecuta JavaScript). Previsualización genérica.
@@ -44,9 +46,11 @@ function closeIntro() {
   }
 }
 
-// La flecha baja hasta "Próximamente" sin añadir #pronto a la dirección (el href queda para sin JS).
+// La flecha baja hasta los vuelos (o "Próximamente") sin añadir el ancla a la dirección (el href
+// queda para sin JS).
+const moreTarget = computed(() => (flightsActive.value ? 'vuelos' : 'pronto'))
 function goToSoon() {
-  document.getElementById('pronto')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  document.getElementById(moreTarget.value)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 // Píldora flotante en móvil hacia "Próximamente": solo mientras no se ha hecho scroll.
@@ -69,7 +73,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
     <main :inert="intro === 'visible'">
       <slot />
 
-      <a class="more" href="#pronto" @click.prevent="goToSoon">
+      <a class="more" :href="`#${moreTarget}`" @click.prevent="goToSoon">
         <span>{{ t('more') }}</span>
         <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
           <path
@@ -80,7 +84,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
       </a>
 
       <HowToGetThere />
-      <ComingSoon />
+      <FlightsBoard v-if="flightsActive" :flights="flights" />
+      <ComingSoon :without-flights="flightsActive" />
       <CrewPhotos />
     </main>
 
@@ -88,7 +93,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
     <a
       class="more-float"
       :class="{ 'is-hidden': !atTop || intro === 'visible' }"
-      href="#pronto"
+      :href="`#${moreTarget}`"
       aria-hidden="true"
       tabindex="-1"
       @click.prevent="goToSoon"

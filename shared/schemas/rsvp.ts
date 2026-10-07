@@ -8,6 +8,13 @@ const nullableEmailSchema = z.preprocess(
 )
 
 /**
+ * ¿Se apunta a la reserva conjunta de vuelos desde Madrid? `yes` o `no`. `null` = no ha contestado
+ * (la pregunta es opcional, va plegada y solo aparece con la reserva en marcha).
+ */
+export const jointFlightSchema = z.enum(['yes', 'no'])
+export type JointFlight = z.infer<typeof jointFlightSchema>
+
+/**
  * Lo que envía el invitado (o los novios desde el panel). Mismo esquema en cliente y servidor.
  * Solo se confirma asistencia: quien no viene no responde (ver docs/brief.md).
  */
@@ -17,6 +24,7 @@ export const rsvpInputSchema = z.strictObject({
   companionName: personNameSchema.nullable().default(null),
   children: z.int().min(0).max(10).default(0),
   email: nullableEmailSchema.default(null),
+  jointFlight: jointFlightSchema.nullable().default(null),
 })
 export type RsvpInput = z.input<typeof rsvpInputSchema>
 export type RsvpData = z.output<typeof rsvpInputSchema>
@@ -27,6 +35,8 @@ export const rsvpSchema = z.object({
   companionName: personNameSchema.nullable(),
   children: z.int().min(0).max(10),
   email: z.email().max(254).nullable(),
+  /** Las respuestas guardadas antes de la Fase 6b no tienen el campo: se leen como `null`. */
+  jointFlight: jointFlightSchema.nullable().default(null),
   /** Quién hizo el último cambio: el invitado desde su enlace o los novios desde el panel. */
   updatedBy: z.enum(['guest', 'admin']),
   createdAt: isoDateSchema,
@@ -34,7 +44,13 @@ export const rsvpSchema = z.object({
 })
 export type Rsvp = z.infer<typeof rsvpSchema>
 
-export const rsvpFieldSchema = z.enum(['guestName', 'companionName', 'children', 'email'])
+export const rsvpFieldSchema = z.enum([
+  'guestName',
+  'companionName',
+  'children',
+  'email',
+  'jointFlight',
+])
 export type RsvpField = z.infer<typeof rsvpFieldSchema>
 
 export const rsvpChangeSchema = z.object({

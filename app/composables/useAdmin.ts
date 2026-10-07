@@ -77,8 +77,12 @@ export function useSend() {
     return whatsappUrl(message(invitation, kind), invitation.phone)
   }
 
-  /** Registro orientativo: se marca al pulsar, sin confirmación real de entrega. */
+  /**
+   * Registro orientativo: se marca al pulsar, sin confirmación real de entrega. El aviso de vuelos es
+   * puntual y no se registra.
+   */
   async function record(invitation: AdminInvitation, kind: MessageKind) {
+    if (kind === 'flights') return
     await adminFetch(`/api/admin/invitations/${invitation.id}/sent`, {
       method: 'POST',
       body: { kind },

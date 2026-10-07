@@ -1,6 +1,6 @@
 import type { Storage } from 'unstorage'
 import type { z } from 'zod'
-import { invitationSchema, messageTemplateSchema, rsvpSchema } from '#shared/schemas'
+import { flightsSchema, invitationSchema, messageTemplateSchema, rsvpSchema } from '#shared/schemas'
 import { localKeys, LOCAL_STORAGE_MOUNT } from './local-keys'
 import type { DataAdapter } from './types'
 
@@ -104,6 +104,14 @@ export function createLocalDataAdapter(
 
     async saveTemplate(template) {
       await storage.setItem(localKeys.template(template.kind, template.locale), template)
+    },
+
+    getFlights() {
+      return readOne(localKeys.flights, flightsSchema)
+    },
+
+    async saveFlights(flights) {
+      await storage.setItem(localKeys.flights, flights)
     },
   }
 }

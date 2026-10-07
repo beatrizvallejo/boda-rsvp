@@ -19,6 +19,8 @@ const SLOTS: { kind: MessageKind; locale: 'es' | 'ro'; title: string; example: s
   { kind: 'invitation', locale: 'ro', title: 'Invitación · Română', example: 'Ioana' },
   { kind: 'reminder', locale: 'es', title: 'Recordatorio · Español', example: 'Ana' },
   { kind: 'reminder', locale: 'ro', title: 'Recordatorio · Română', example: 'Ioana' },
+  { kind: 'flights', locale: 'es', title: 'Aviso de vuelos · Español', example: 'Ana' },
+  { kind: 'flights', locale: 'ro', title: 'Aviso de vuelos · Română', example: 'Ioana' },
 ]
 const VARIABLE_HELP: Record<(typeof TEMPLATE_VARIABLES)[number], string> = {
   '{nombre}': 'nombre del invitado',

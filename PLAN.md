@@ -163,6 +163,28 @@ Referencia del modelo, a adaptar:
 
 ---
 
+## [x] Fase 6b — Vuelos y reserva conjunta
+
+Añadida el 07/10/2026 a petición del usuario, antes del traspaso a devops.
+
+**Preguntas de entrada** (resueltas)
+- Enlace libre para grupos: se deja como está (portada informativa; cada uno confirma con su enlace).
+- Vuelos: v1 sin APIs de precios (no hay ninguna pública utilizable), editable desde el panel.
+- Pregunta opcional en la tarjeta: «¿Te apuntamos a la reserva conjunta desde Madrid?» (Sí / No), en el plegable de opcionales junto al email.
+
+**Tareas**
+- Campo `jointFlight` en la respuesta y documento `settings:flights` (estado, nota ES/RO, último precio, fechas de búsqueda).
+- `GET /api/flights` (público) y `PUT /api/admin/flights`.
+- Pregunta en la tarjeta (solo si el estado no es «Próximamente»), panel de SALIDAS público con enlaces a Google Flights y Skyscanner; con «Próximamente», el banner actual.
+- Panel: pestaña «Vuelos», filtro «Vuelo conjunto», métrica y plantillas de WhatsApp «Vuelos» (ES/RO).
+- Aviso por email, CSV y documentación actualizados.
+
+**Revisión**: `security-reviewer` sobre los endpoints nuevos.
+
+**Terminado cuando**: los novios editan la sección de vuelos desde el panel, el invitado la ve y se apunta, y el panel filtra a los interesados y les envía el aviso por WhatsApp. e2e en verde y sin regresiones visuales con «Próximamente».
+
+---
+
 # Bloque B — Puesta en producción (con devops)
 
 ## [ ] Fase 7 — Traspaso a devops

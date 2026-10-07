@@ -24,6 +24,10 @@ WhatsApp es el canal principal por el que se compartirá el enlace. Todo lo de a
 - El filtro "Pendientes" muestra un botón de recordatorio por invitación, con una plantilla de recordatorio propia.
 - Los envíos se hacen uno a uno con `wa.me`. No hay envío masivo automático, porque sin la API oficial no es posible y además no conviene.
 
+## 3b. Aviso de vuelos — Fase 6b
+- Plantilla propia «Aviso de vuelos» (ES/RO), editable en «Mensajes», con las mismas variables.
+- En el panel, el filtro «Vuelo conjunto» muestra a quienes se apuntaron a la reserva conjunta y el botón principal pasa a ser «Aviso de vuelos». Es un aviso puntual: no se registra como envío.
+
 ## 4. Lado del invitado — Fase 4
 - Después de confirmar, se ofrecen:
   - **"Añadir al calendario"**, con un archivo `.ics` generado en servidor y un enlace a Google Calendar;

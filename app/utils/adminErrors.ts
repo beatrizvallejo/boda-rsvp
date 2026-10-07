@@ -25,3 +25,12 @@ export function firstFieldError(error: z.ZodError, messages: Record<string, stri
   const field = String(error.issues[0]?.path[0] ?? '')
   return { field, message: messages[field] ?? 'Revisa los datos.' }
 }
+
+export const FLIGHTS_MESSAGES: Record<string, string> = {
+  status: 'Elige un estado.',
+  openUntil: 'Con la reserva abierta, indica hasta qué día.',
+  note: 'La nota no puede pasar de 280 caracteres.',
+  lastPrice: 'Precio no válido: un número de euros (1–5000) y el día en que lo visteis.',
+  outbound: 'Indica la fecha de ida.',
+  inbound: 'La vuelta no puede ser antes que la ida.',
+}

@@ -13,13 +13,26 @@ test.describe('flujo completo', () => {
     // Modifica los datos: se ejecuta una sola vez, en el proyecto móvil de referencia.
     test.skip(test.info().project.name !== 'android-360', 'Solo en android-360')
 
+    // Los novios ponen en marcha la reserva conjunta de vuelos (con «Próximamente» no se pregunta)
+    const flights = await request.put('/api/admin/flights', {
+      data: {
+        status: 'watching',
+        openUntil: null,
+        note: { es: 'Precio de prueba', ro: 'Preț de test' },
+        lastPrice: null,
+        outbound: '2027-07-30',
+        inbound: '2027-08-02',
+      },
+    })
+    expect(flights.ok()).toBe(true)
+
     // ── Enlace personal: intro ──────────────────────────────────────────
     await page.goto(`/r/${TOKEN}`, HYDRATED)
-    const board = page.getByRole('button', { name: 'Embarcar' })
-    await expect(board).toBeVisible()
+    const embark = page.getByRole('button', { name: 'Embarcar' })
+    await expect(embark).toBeVisible()
     await expectMobileBasics(page, 'intro')
-    await board.click()
-    await expect(board).toBeHidden()
+    await embark.click()
+    await expect(embark).toBeHidden()
 
     // ── Tarjeta de embarque ─────────────────────────────────────────────
     const passenger = page.getByLabel('Pasajero')
@@ -36,6 +49,10 @@ test.describe('flujo completo', () => {
 
     await companion.fill('Marta López')
     await page.getByRole('button', { name: 'Añadir un menor' }).click()
+    // Opcionales plegados: email y vuelo conjunto (solo Sí / No)
+    await page.getByRole('button', { name: /Más opciones/ }).click()
+    await expect(page.getByRole('radio')).toHaveCount(4) // 2 del acompañante + Sí / No
+    await page.getByRole('radio', { name: 'Sí', exact: true }).click()
     await page.getByRole('button', { name: 'Confirmar asistencia' }).click()
 
     // ── Pantalla de éxito ───────────────────────────────────────────────
@@ -74,7 +91,26 @@ test.describe('flujo completo', () => {
     await expect(row.getByText('Confirmado')).toBeVisible()
     await expect(row).toContainText('2 adultos + 2 niños')
     await expect(row).toContainText('con Marta López')
+    await expect(row).toContainText('vuelo conjunto')
     await expectMobileBasics(page, 'panel')
+
+    // Sección pública de vuelos: panel de salidas con búsquedas ya rellenas
+    await page.goto(`/r/${TOKEN}`, HYDRATED)
+    const board = page.locator('#vuelos')
+    await expect(board.getByRole('heading', { name: 'Vuelos' })).toBeVisible()
+    await expect(board).toContainText('Precio de prueba')
+    await expect(board.getByRole('link', { name: /Sibiu · Skyscanner/ })).toHaveAttribute(
+      'href',
+      'https://www.skyscanner.es/transport/vuelos/mad/sbz/270730/270802/',
+    )
+    await expectMobileBasics(page, 'vuelos')
+
+    // Filtro «Vuelo conjunto»: aviso de vuelos por WhatsApp a los apuntados
+    await page.goto('/admin?f=flight', HYDRATED)
+    const flightRow = page.getByRole('row').filter({ hasText: GUEST })
+    const notice = flightRow.getByRole('link', { name: /Aviso de vuelos/ })
+    const noticeText = new URL((await notice.getAttribute('href'))!).searchParams.get('text') ?? ''
+    expect(noticeText).toContain('Novedades del vuelo conjunto Madrid → Rumanía')
 
     // Pendientes: recordatorio por WhatsApp con el mensaje bien codificado (emojis incluidos)
     await page.goto('/admin?f=pending', HYDRATED)

@@ -5,7 +5,7 @@
  * Valida con el mismo esquema Zod que el servidor y emite `confirm` con los datos ya válidos; el envío
  * lo hace la página. Con `readonly` (plazo cerrado) solo muestra la respuesta guardada.
  */
-import { rsvpInputSchema, type PublicRsvp, type RsvpData } from '#shared/schemas'
+import { rsvpInputSchema, type JointFlight, type PublicRsvp, type RsvpData } from '#shared/schemas'
 
 type Field = 'guestName' | 'companionName' | 'email'
 export interface FieldIssue {
@@ -20,6 +20,8 @@ const props = defineProps<{
   pending?: boolean
   /** Error general del envío (red, servidor), ya traducido. */
   submitError?: string | null
+  /** Pregunta por la reserva conjunta de vuelos (solo con la reserva en marcha). */
+  askJointFlight?: boolean
 }>()
 const emit = defineEmits<{ confirm: [data: RsvpData] }>()
 const { t } = useI18n()
@@ -29,8 +31,15 @@ const withCompanion = ref(Boolean(props.rsvp?.companionName))
 const companionName = ref(props.rsvp?.companionName ?? '')
 const children = ref(props.rsvp?.children ?? 0)
 const email = ref(props.rsvp?.email ?? '')
-// El email es opcional y va plegado: solo se despliega si el invitado quiere (o si ya lo dio).
-const showEmail = ref(Boolean(props.rsvp?.email))
+// Lo opcional va plegado (email y, con la reserva de vuelos en marcha, la pregunta del vuelo
+// conjunto): solo se despliega si el invitado quiere (o si ya lo había contestado).
+const showMore = ref(Boolean(props.rsvp?.email || props.rsvp?.jointFlight))
+// Opcional: sin respuesta (`null`) hasta que el invitado elige. Si no se pregunta, se conserva la guardada.
+const jointFlight = ref<JointFlight | null>(props.rsvp?.jointFlight ?? null)
+const JOINT_FLIGHT_OPTIONS = [
+  { value: 'yes', label: 'pass.jointFlightYes' },
+  { value: 'no', label: 'pass.jointFlightNo' },
+] as const
 
 const passengers = computed(() => 1 + (withCompanion.value ? 1 : 0) + children.value)
 
@@ -38,7 +47,8 @@ const input = computed(() => ({
   guestName: name.value,
   companionName: withCompanion.value ? companionName.value : null,
   children: children.value,
-  email: showEmail.value ? email.value : null,
+  email: showMore.value ? email.value : null,
+  jointFlight: jointFlight.value,
 }))
 
 // Con respuesta previa, "Guardar cambios" solo se activa si algo cambia respecto a lo guardado.
@@ -46,9 +56,10 @@ const dirty = computed(() => {
   if (!props.rsvp) return true
   const parsed = rsvpInputSchema.safeParse(input.value)
   if (!parsed.success) return true
-  const { guestName, companionName, children, email } = props.rsvp
+  const { guestName, companionName, children, email, jointFlight } = props.rsvp
   return (
-    JSON.stringify(parsed.data) !== JSON.stringify({ guestName, companionName, children, email })
+    JSON.stringify(parsed.data) !==
+    JSON.stringify({ guestName, companionName, children, email, jointFlight })
   )
 })
 
@@ -245,32 +256,56 @@ defineExpose({ showIssues })
         </div>
       </fieldset>
 
-      <div v-if="!readonly || showEmail" class="pass__email">
+      <div v-if="!readonly || showMore" class="pass__email">
         <button
-          v-if="!showEmail"
+          v-if="!showMore"
           type="button"
           class="pass__email-toggle"
-          :aria-expanded="showEmail"
-          @click="showEmail = true"
+          :aria-expanded="showMore"
+          @click="showMore = true"
         >
-          + {{ t('pass.addEmail') }}
+          + {{ askJointFlight ? t('pass.moreOptions') : t('pass.addEmail') }}
         </button>
-        <label v-else class="field">
-          <span class="label">{{ t('pass.email') }}</span>
-          <input
-            v-model="email"
-            class="field__input"
-            type="email"
-            inputmode="email"
-            autocomplete="email"
-            maxlength="254"
-            :disabled="readonly"
-            :aria-invalid="Boolean(errors.email)"
-            :aria-describedby="errors.email ? 'err-email' : 'email-help'"
-          />
-          <span v-if="errors.email" id="err-email" class="field__error">{{ errors.email }}</span>
-          <span id="email-help" class="field__help">{{ t('pass.emailHelp') }}</span>
-        </label>
+        <template v-else>
+          <label class="field">
+            <span class="label">{{ t('pass.email') }}</span>
+            <input
+              v-model="email"
+              class="field__input"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              maxlength="254"
+              :disabled="readonly"
+              :aria-invalid="Boolean(errors.email)"
+              :aria-describedby="errors.email ? 'err-email' : 'email-help'"
+            />
+            <span v-if="errors.email" id="err-email" class="field__error">{{ errors.email }}</span>
+            <span id="email-help" class="field__help">{{ t('pass.emailHelp') }}</span>
+          </label>
+          <div v-if="askJointFlight" class="field">
+            <span id="flight-label" class="label">{{ t('pass.jointFlight') }}</span>
+            <div
+              class="segmented"
+              role="radiogroup"
+              aria-labelledby="flight-label"
+              aria-describedby="flight-help"
+            >
+              <button
+                v-for="option in JOINT_FLIGHT_OPTIONS"
+                :key="option.value"
+                type="button"
+                role="radio"
+                :disabled="readonly"
+                :aria-checked="jointFlight === option.value"
+                @click="jointFlight = option.value"
+              >
+                {{ t(option.label) }}
+              </button>
+            </div>
+            <span id="flight-help" class="field__help">{{ t('pass.jointFlightHelp') }}</span>
+          </div>
+        </template>
       </div>
 
       <p class="pass__micro" aria-hidden="true">
@@ -402,6 +437,9 @@ defineExpose({ showIssues })
   gap: 1rem;
 }
 .pass__email {
+  margin-top: 1rem;
+}
+.pass__email .field + .field {
   margin-top: 1rem;
 }
 .pass__email-toggle {

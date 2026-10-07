@@ -2,14 +2,26 @@
 // Una invitación en el listado: tarjeta apilada en móvil, fila de tabla en escritorio.
 import type { AdminInvitation, MessageKind } from '#shared/schemas'
 
-const props = defineProps<{ invitation: AdminInvitation }>()
+const props = defineProps<{
+  invitation: AdminInvitation
+  /** Con el filtro «Vuelo conjunto», el botón principal es el aviso de vuelos. */
+  flightsMode?: boolean
+}>()
 
 /** Pendiente ya invitada → recordatorio; si no, la invitación (resaltada mientras no se haya enviado). */
 const kind = computed<MessageKind>(() =>
-  !props.invitation.rsvp && props.invitation.invitedSentAt ? 'reminder' : 'invitation',
+  props.flightsMode
+    ? 'flights'
+    : !props.invitation.rsvp && props.invitation.invitedSentAt
+      ? 'reminder'
+      : 'invitation',
 )
-const primary = computed(() => !props.invitation.rsvp)
+const primary = computed(() => props.flightsMode || !props.invitation.rsvp)
 const name = computed(() => props.invitation.rsvp?.guestName ?? props.invitation.guestName)
+const JOINT_FLIGHT_SHORT = {
+  yes: '✈ vuelo conjunto',
+  no: 'sin vuelo conjunto',
+}
 </script>
 
 <template>
@@ -32,6 +44,9 @@ const name = computed(() => props.invitation.rsvp?.guestName ?? props.invitation
         <span v-if="invitation.rsvp.companionName" class="row__meta"
           >con {{ invitation.rsvp.companionName }}</span
         >
+        <span v-if="invitation.rsvp.jointFlight" class="row__meta">{{
+          JOINT_FLIGHT_SHORT[invitation.rsvp.jointFlight]
+        }}</span>
       </template>
       <span v-else class="row__empty">—</span>
     </div>

@@ -52,7 +52,12 @@
     "leadConfirmed": "Avem deja confirmarea ta. Dacă se schimbă ceva, modifică aici.",
     "confirmedNote": "Poți modifica datele până pe 1 mai.",
     "save": "Salvează modificările",
-    "sending": "Se trimite biletul…"
+    "sending": "Se trimite biletul…",
+    "jointFlight": "Te înscriem la rezervarea comună din Madrid?",
+    "jointFlightYes": "Da",
+    "jointFlightNo": "Nu",
+    "jointFlightHelp": "Fără obligații: vă scriem cu prețul înainte să rezervăm.",
+    "moreOptions": "Mai multe opțiuni (opțional)"
   },
   "more": "Zboruri și cazare",
   "howto": {
@@ -75,7 +80,9 @@
     "hotelsText": "Unde puteți dormi aproape de locul nunții.",
     "transfers": "Transfer",
     "transfersText": "Cum vă deplasați în ziua nunții.",
-    "foot": "Vă anunțăm imediat ce e gata."
+    "foot": "Vă anunțăm imediat ce e gata.",
+    "titleNoFlights": "Cazare și transfer",
+    "textNoFlights": "Foarte curând vă vom da mai multe informații despre cazare și transfer, pentru cine are nevoie."
   },
   "crew": {
     "label": "Fotografii cu mirii",
@@ -109,5 +116,25 @@
     "network": "Nu am putut trimite biletul: se pare că nu ai conexiune. Datele tale sunt încă aici; încearcă din nou.",
     "save": "Ceva n-a mers la salvarea biletului. Încearcă din nou peste câteva momente.",
     "closedWithRsvp": "Acesta este biletul tău confirmat. Dacă trebuie să schimbi ceva, scrie-ne."
+  },
+  "flights": {
+    "title": "Zboruri",
+    "board": "Plecări",
+    "boardAlt": "Salidas · Departures",
+    "route": "{from} → {to}",
+    "km": "la {km} km de Alba",
+    "status": {
+      "watching": "URMĂRIM PREȚURI",
+      "open": "REZERVARE DESCHISĂ",
+      "closed": "ÎNCHISĂ"
+    },
+    "statusText": {
+      "watching": "Urmărim prețurile din Madrid ca să facem o rezervare comună când sunt mai ieftine.",
+      "open": "Rezervarea comună din Madrid e deschisă până pe {date}. Înscrie-te pe biletul tău de îmbarcare.",
+      "closed": "Rezervarea comună s-a închis. Dacă nu ai încă zbor, caută-l aici."
+    },
+    "lastPrice": "Ultimul preț văzut: {amount} € de persoană, dus-întors ({date}).",
+    "dates": "Dus {outbound} · întors {inbound}",
+    "search": "Caută zboruri spre {city}"
   }
 }

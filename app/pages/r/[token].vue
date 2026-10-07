@@ -12,6 +12,7 @@ const route = useRoute()
 const { t, setLocale } = useI18n()
 const token = String(route.params.token)
 
+const { data: flights } = await useFlights()
 const { data, error } = await useFetch<PublicInvitationResponse>(
   `/api/rsvp/${encodeURIComponent(token)}`,
 )
@@ -87,6 +88,7 @@ async function onConfirm(input: RsvpData) {
           :readonly="data.closed"
           :pending="pending"
           :submit-error="submitError"
+          :ask-joint-flight="flights.status === 'watching' || flights.status === 'open'"
           @confirm="onConfirm"
         />
       </section>

@@ -1,4 +1,4 @@
-import type { Invitation, MessageKind, MessageTemplate, Rsvp } from '#shared/schemas'
+import type { Flights, Invitation, MessageKind, MessageTemplate, Rsvp } from '#shared/schemas'
 
 /**
  * Persistencia. `local` (Nitro storage, driver `fs` en `.data/`) en desarrollo; `kv` en producción: el mismo código con un driver KV del hosting (Fase 8).
@@ -25,4 +25,8 @@ export interface DataAdapter {
   listTemplates(): Promise<MessageTemplate[]>
   getTemplate(kind: MessageKind, locale: MessageTemplate['locale']): Promise<MessageTemplate | null>
   saveTemplate(template: MessageTemplate): Promise<void>
+
+  /** Sección de vuelos; `null` si los novios aún no la han guardado nunca. */
+  getFlights(): Promise<Flights | null>
+  saveFlights(flights: Flights): Promise<void>
 }

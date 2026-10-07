@@ -6,6 +6,7 @@ import {
   rsvpInputSchema,
   type AdminInvitation,
   type InvitationUpdate,
+  type JointFlight,
 } from '#shared/schemas'
 import type { InvitationForm } from '~/components/admin/InvitationFields.vue'
 
@@ -83,7 +84,12 @@ const rsvpForm = reactive({
   companionName: '',
   children: 0,
   email: '',
+  jointFlight: '' as JointFlight | '',
 })
+const JOINT_FLIGHT_LABELS: Record<JointFlight, string> = {
+  yes: 'Sí, desde Madrid',
+  no: 'No',
+}
 const rsvpError = ref<FieldError | null>(null)
 const savingRsvp = ref(false)
 
@@ -96,6 +102,7 @@ function startRsvp() {
     companionName: r?.companionName ?? '',
     children: r?.children ?? 0,
     email: r?.email ?? '',
+    jointFlight: r?.jointFlight ?? '',
   })
   rsvpError.value = null
   editingRsvp.value = true
@@ -113,6 +120,7 @@ async function saveRsvp() {
     companionName: rsvpForm.withCompanion ? rsvpForm.companionName : null,
     children: rsvpForm.children,
     email: rsvpForm.email,
+    jointFlight: rsvpForm.jointFlight || null,
   })
   if (!parsed.success) {
     rsvpError.value = firstFieldError(parsed.error, RSVP_MESSAGES)
@@ -315,6 +323,15 @@ async function copy() {
                 rsvpError.message
               }}</span>
             </label>
+            <label class="field">
+              <span class="label">Vuelo conjunto desde Madrid</span>
+              <select v-model="rsvpForm.jointFlight" class="input">
+                <option value="">Sin respuesta</option>
+                <option v-for="(text, value) in JOINT_FLIGHT_LABELS" :key="value" :value="value">
+                  {{ text }}
+                </option>
+              </select>
+            </label>
             <p class="hint">
               Los cambios desde el panel no envían aviso por email y valen aunque haya pasado el
               plazo.
@@ -346,6 +363,16 @@ async function copy() {
               <div>
                 <dt class="label">Email</dt>
                 <dd>{{ invitation.rsvp.email ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt class="label">Vuelo conjunto</dt>
+                <dd>
+                  {{
+                    invitation.rsvp.jointFlight
+                      ? JOINT_FLIGHT_LABELS[invitation.rsvp.jointFlight]
+                      : 'Sin respuesta'
+                  }}
+                </dd>
               </div>
               <div>
                 <dt class="label">Última respuesta</dt>

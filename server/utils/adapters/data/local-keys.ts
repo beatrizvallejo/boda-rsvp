@@ -15,4 +15,6 @@ export const localKeys = {
   rsvpsPrefix: 'rsvps',
   template: (kind: string, locale: string) => `templates:${kind}-${locale}`,
   templatesPrefix: 'templates',
+  /** Documento único con la sección de vuelos (Fase 6b). */
+  flights: 'settings:flights',
 }

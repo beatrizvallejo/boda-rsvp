@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // "Próximamente": vuelos, alojamiento y traslados. Tarjeta negra de panel con el estado en fichas.
+// Con la sección de vuelos activa (`withoutFlights`), solo alojamiento y traslados.
+defineProps<{ withoutFlights?: boolean }>()
 const { t } = useI18n()
 </script>
 
@@ -10,10 +12,12 @@ const { t } = useI18n()
         <span class="soon__dot" aria-hidden="true" />
         <FlapText :text="t('soon.status')" :spins="[6, 12]" />
       </div>
-      <h2 id="soon-title" class="soon__title">{{ t('soon.title') }}</h2>
-      <p class="soon__text">{{ t('soon.text') }}</p>
+      <h2 id="soon-title" class="soon__title">
+        {{ withoutFlights ? t('soon.titleNoFlights') : t('soon.title') }}
+      </h2>
+      <p class="soon__text">{{ withoutFlights ? t('soon.textNoFlights') : t('soon.text') }}</p>
       <ul class="soon__list">
-        <li>
+        <li v-if="!withoutFlights">
           <span aria-hidden="true">✈️</span>
           <span
             ><b>{{ t('soon.flights') }}</b> {{ t('soon.flightsText') }}</span

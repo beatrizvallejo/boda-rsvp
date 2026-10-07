@@ -59,12 +59,13 @@ La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un doc
 | `companionName` | texto ≤80, nullable | `null` = sin acompañante |
 | `children` | entero 0–10 | |
 | `email` | texto ≤254, nullable | `replyTo` del aviso |
+| `jointFlight` | `yes` \| `no`, nullable | reserva conjunta de vuelos desde Madrid (Fase 6b). Las respuestas antiguas sin el campo se leen como `null` |
 | `updatedBy` | `guest` \| `admin` | los cambios de los novios desde el panel no generan aviso |
 | `createdAt`, `updatedAt` | fecha ISO | |
 
 Solo existen confirmaciones: una invitación sin documento en `rsvps:` está pendiente. No hay respuesta "no".
 
-**`templates`**: clave (`kind` `invitation`\|`reminder`, `locale` `es`\|`ro`), `body` texto ≤1000 que debe contener `{enlace}`, `updatedAt`. Se insertan las 4 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
+**`templates`**: clave (`kind` `invitation`\|`reminder`\|`flights`, `locale` `es`\|`ro`), `body` texto ≤1000 que debe contener `{enlace}`, `updatedAt`. Se insertan las 6 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
 
 **Interfaz del adaptador:** `server/utils/adapters/data/types.ts` (`DataAdapter`). El adaptador `kv` reutiliza la implementación de `local`. `insertInvitations` comprueba duplicados antes de escribir (no es transaccional; suficiente para este volumen), y `deleteInvitation` borra también la respuesta.
 
@@ -88,6 +89,8 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 | `GET /api/admin/stats` | auth | → métricas (ver `statsSchema`) |
 | `GET /api/admin/templates` | auth | → plantillas |
 | `PUT /api/admin/templates/:kind/:locale` | auth | `{body}` → plantilla |
+| `GET /api/flights` | público | → sección de vuelos (sin datos personales); por defecto, «Próximamente» |
+| `PUT /api/admin/flights` | auth | `{status, openUntil, note{es,ro}, lastPrice, outbound, inbound}` → sección de vuelos |
 | `GET /api/admin/export.csv` | auth | → CSV (`;`, UTF-8 con BOM), una fila por invitación, con fórmulas neutralizadas (prefijo `'`; por eso los teléfonos salen como `'+34…`) |
 
 - **Orden en `PUT /api/rsvp/:token`:** Zod → token → plazo → guardado → aviso. Un fallo del aviso se registra en el log y no revierte el guardado. Reenviar una respuesta idéntica no guarda nada ni genera aviso.
@@ -101,7 +104,13 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - Con `AUTH_ADAPTER=dev`, el servidor de producción lanza un error al arrancar (plugin `server/plugins/00.adapters.ts`). Está comprobado con `node .output/server/index.mjs`.
 - El adaptador `local` guarda en `.data/db` (Nitro storage `fs`). No sirve para serverless: en producción es obligatorio `DATA_ADAPTER=kv`.
 
-## Buscadores
+## Vuelos (Fase 6b)
+- **Documento `settings:flights`** en el KV (`flightsSchema` en `shared/schemas/flights.ts`): `status` (`soon`\|`watching`\|`open`\|`closed`), `openUntil` (día, solo con `open`), `note` `{es, ro}` ≤280, `lastPrice` `{amount € 1–5000, seenOn}` o `null`, `outbound`/`inbound` (días para las búsquedas) y `updatedAt`. Si no existe, se usan los valores por defecto de `shared/flights.ts` (`soon`): no hay que crearlo en producción.
+- **Sin servicios externos:** la web solo enlaza a búsquedas de Google Flights y Skyscanner (no hay APIs de precios). No hace falta ninguna credencial.
+- **CSV:** columna nueva `vuelo_conjunto` (`sí` / `no`). El aviso por email incluye «Vuelo conjunto».
+
+## Buscadores y Referer
+- `Referrer-Policy: strict-origin-when-cross-origin` (cabecera y meta): los enlaces externos (mapas, calendario, vuelos) reciben solo el dominio, nunca la ruta `/r/<token>`. Si el hosting añade su propia `Referrer-Policy`, que no sea más permisiva.
 - Toda la web lleva `X-Robots-Tag: noindex, nofollow` (`routeRules` en `nuxt.config.ts`) y la meta `robots` equivalente. `robots.txt` deja rastrear **a propósito**: un `Disallow` impediría a los buscadores leer el `noindex` y podría bloquear al rastreador de la previsualización de WhatsApp.
 
 ## Tests (Fase 6)

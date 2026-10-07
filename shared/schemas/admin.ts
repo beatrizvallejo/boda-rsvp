@@ -35,5 +35,7 @@ export const statsSchema = z.object({
     invitationsNotSent: z.int(),
     remindersSent: z.int(),
   }),
+  /** Apuntados a la reserva conjunta de vuelos: invitaciones y personas (adultos + niños). */
+  jointFlight: z.object({ invitations: z.int(), people: z.int() }),
 })
 export type Stats = z.infer<typeof statsSchema>

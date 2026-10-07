@@ -15,11 +15,13 @@ const send = useSend()
 const toast = useToast()
 
 const whatsappLabel = computed(() =>
-  props.kind === 'reminder'
-    ? 'Recordatorio'
-    : props.invitation.invitedSentAt
-      ? 'Reenviar'
-      : 'Enviar invitación',
+  props.kind === 'flights'
+    ? 'Aviso de vuelos'
+    : props.kind === 'reminder'
+      ? 'Recordatorio'
+      : props.invitation.invitedSentAt
+        ? 'Reenviar'
+        : 'Enviar invitación',
 )
 
 function onWhatsapp() {

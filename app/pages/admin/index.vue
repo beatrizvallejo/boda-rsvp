@@ -11,12 +11,13 @@ const { data: invitations, status, error } = useAdminInvitations()
 useAdminTemplates()
 const stats = computed(() => computeStats(invitations.value))
 
-type Filter = 'all' | 'confirmed' | 'pending' | 'unsent'
+type Filter = 'all' | 'confirmed' | 'pending' | 'unsent' | 'flight'
 const FILTERS: { value: Filter; label: string; test: (i: AdminInvitation) => boolean }[] = [
   { value: 'all', label: 'Todos', test: () => true },
   { value: 'confirmed', label: 'Confirmados', test: (i) => !!i.rsvp },
   { value: 'pending', label: 'Pendientes', test: (i) => !i.rsvp },
   { value: 'unsent', label: 'Sin enviar', test: (i) => !i.invitedSentAt },
+  { value: 'flight', label: 'Vuelo conjunto', test: (i) => i.rsvp?.jointFlight === 'yes' },
 ]
 const NO_LABEL = '__sin__'
 
@@ -126,7 +127,12 @@ const counts = computed(
           <span role="columnheader">Envíos</span>
           <span role="columnheader">Acciones</span>
         </div>
-        <AdminInvitationRow v-for="i in filtered" :key="i.id" :invitation="i" />
+        <AdminInvitationRow
+          v-for="i in filtered"
+          :key="i.id"
+          :invitation="i"
+          :flights-mode="filter === 'flight'"
+        />
       </div>
       <p v-if="!filtered.length" class="card muted">Ninguna invitación coincide con el filtro.</p>
     </template>

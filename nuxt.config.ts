@@ -20,7 +20,12 @@ export default defineNuxtConfig({
     // Web privada de una boda: fuera de buscadores con `noindex` (cabecera + meta `robots`). robots.txt
     // deja rastrear a propósito: un `Disallow` impediría leer el `noindex` y podría bloquear al
     // rastreador de la previsualización de WhatsApp.
-    '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/**': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
     // Panel de los novios: solo en el cliente (no hay nada que previsualizar). Sus datos solo salen
     // por `/api/admin/*`, protegido por el adaptador `auth`.
     '/admin': { ssr: false },
@@ -44,6 +49,9 @@ export default defineNuxtConfig({
       meta: [
         { name: 'theme-color', content: '#0e0f11' },
         { name: 'robots', content: 'noindex, nofollow' },
+        // Los enlaces externos (mapas, calendario, vuelos) solo reciben el dominio, nunca /r/<token>.
+        // Es el valor por defecto de los navegadores; se fija para no depender del hosting.
+        { name: 'referrer', content: 'strict-origin-when-cross-origin' },
       ],
     },
   },

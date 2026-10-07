@@ -65,8 +65,12 @@ export const invitationUpdateSchema = z
   .refine((patch) => Object.keys(patch).length > 0, { message: 'Sin cambios' })
 export type InvitationUpdate = z.infer<typeof invitationUpdateSchema>
 
-export const messageKindSchema = z.enum(['invitation', 'reminder'])
+/** Plantillas de WhatsApp: invitación, recordatorio y aviso de vuelos (reserva conjunta). */
+export const messageKindSchema = z.enum(['invitation', 'reminder', 'flights'])
 export type MessageKind = z.infer<typeof messageKindSchema>
 
-/** `POST /api/admin/invitations/:id/sent`: registra que el novio ha pulsado "Enviar por WhatsApp". */
-export const sendRecordSchema = z.strictObject({ kind: messageKindSchema })
+/**
+ * `POST /api/admin/invitations/:id/sent`: registra que el novio ha pulsado "Enviar por WhatsApp".
+ * Solo invitación y recordatorio: el aviso de vuelos es puntual y no se registra.
+ */
+export const sendRecordSchema = z.strictObject({ kind: z.enum(['invitation', 'reminder']) })
