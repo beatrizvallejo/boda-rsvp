@@ -117,6 +117,9 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - **Documento `settings:stay`** en el KV (`staySchema` en `shared/schemas/stay.ts`): `hotels` (hasta 6: `name` ≤80, `url` `https://` o vacía, `km` 0–200 o `null`, `note` `{es, ro}` ≤140), `hotelsNote` `{es, ro}` ≤280, `buses` (hasta 6: `place` ≤80, `time` `HH:MM` en hora de Rumanía), `transfersNote` `{es, ro}` ≤280 y `updatedAt`. Si no existe, se usa `DEFAULT_STAY` (`shared/stay.ts`, todo vacío): no hay que crearlo en producción.
 - **Aviso a confirmados:** plantillas `notice` (ES/RO). Es un mensaje general (lista de difusión o grupo de WhatsApp) con el enlace a la web pública: no cambia el modelo de datos ni se registra por persona.
 
+## Imagen de la previsualización (Open Graph)
+- `public/og.jpg` (1200×630) es un archivo estático del repo: se genera con `pnpm og` a partir de `app/pages/og.vue` y no hace falta nada en producción. La ruta `/og` solo existe en desarrollo (404 en producción).
+
 ## Buscadores y Referer
 - `Referrer-Policy: strict-origin-when-cross-origin` (cabecera y meta): los enlaces externos (mapas, calendario, vuelos, alojamientos) reciben solo el dominio, nunca la ruta `/r/<token>`. Si el hosting añade su propia `Referrer-Policy`, que no sea más permisiva.
 - Toda la web lleva `X-Robots-Tag: noindex, nofollow` (`routeRules` en `nuxt.config.ts`) y la meta `robots` equivalente. `robots.txt` deja rastrear **a propósito**: un `Disallow` impediría a los buscadores leer el `noindex` y podría bloquear al rastreador de la previsualización de WhatsApp.

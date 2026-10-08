@@ -18,7 +18,8 @@
     "format": "prettier --write .",
     "test:e2e": "playwright test",
     "seed": "tsx scripts/local-data.ts seed",
-    "reset": "tsx scripts/local-data.ts reset"
+    "reset": "tsx scripts/local-data.ts reset",
+    "og": "tsx scripts/og-image.ts"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.6.0",
