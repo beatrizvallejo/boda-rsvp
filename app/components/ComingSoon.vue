@@ -1,8 +1,27 @@
 <script setup lang="ts">
 // "Próximamente": vuelos, alojamiento y traslados. Tarjeta negra de panel con el estado en fichas.
-// Con la sección de vuelos activa (`withoutFlights`), solo alojamiento y traslados.
-defineProps<{ withoutFlights?: boolean }>()
-const { t } = useI18n()
+// Solo lista lo que aún no se ha publicado (`pending`); con todo o con alojamiento y traslados, los
+// textos aprobados de siempre, y si no, un título con lo que falta.
+const props = withDefaults(
+  defineProps<{ pending?: { flights: boolean; hotels: boolean; transfers: boolean } }>(),
+  { pending: () => ({ flights: true, hotels: true, transfers: true }) },
+)
+const { t, locale } = useI18n()
+
+const copy = computed(() => {
+  const { flights, hotels, transfers } = props.pending
+  if (flights && hotels && transfers) return { title: t('soon.title'), text: t('soon.text') }
+  if (hotels && transfers) return { title: t('soon.titleNoFlights'), text: t('soon.textNoFlights') }
+  const names = [
+    flights && t('soon.flights'),
+    hotels && t('soon.hotels'),
+    transfers && t('soon.transfers'),
+  ].filter((name): name is string => !!name)
+  const list = new Intl.ListFormat(locale.value === 'ro' ? 'ro-RO' : 'es-ES', {
+    type: 'conjunction',
+  }).format(names.map((name, index) => (index ? name.toLowerCase() : name)))
+  return { title: list, text: t('soon.textGeneric') }
+})
 </script>
 
 <template>
@@ -12,24 +31,22 @@ const { t } = useI18n()
         <span class="soon__dot" aria-hidden="true" />
         <FlapText :text="t('soon.status')" :spins="[6, 12]" />
       </div>
-      <h2 id="soon-title" class="soon__title">
-        {{ withoutFlights ? t('soon.titleNoFlights') : t('soon.title') }}
-      </h2>
-      <p class="soon__text">{{ withoutFlights ? t('soon.textNoFlights') : t('soon.text') }}</p>
+      <h2 id="soon-title" class="soon__title">{{ copy.title }}</h2>
+      <p class="soon__text">{{ copy.text }}</p>
       <ul class="soon__list">
-        <li v-if="!withoutFlights">
+        <li v-if="pending.flights">
           <span aria-hidden="true">✈️</span>
           <span
             ><b>{{ t('soon.flights') }}</b> {{ t('soon.flightsText') }}</span
           >
         </li>
-        <li>
+        <li v-if="pending.hotels">
           <span aria-hidden="true">🏨</span>
           <span
             ><b>{{ t('soon.hotels') }}</b> {{ t('soon.hotelsText') }}</span
           >
         </li>
-        <li>
+        <li v-if="pending.transfers">
           <span aria-hidden="true">🚌</span>
           <span
             ><b>{{ t('soon.transfers') }}</b> {{ t('soon.transfersText') }}</span

@@ -12,6 +12,7 @@ const nav = [
   { to: '/admin/nueva', label: 'Añadir' },
   { to: '/admin/plantillas', label: 'Mensajes' },
   { to: '/admin/vuelos', label: 'Vuelos' },
+  { to: '/admin/estancia', label: 'Estancia' },
 ]
 
 function isActive(to: string) {

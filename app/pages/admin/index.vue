@@ -119,6 +119,10 @@ const counts = computed(
       <p class="muted results" aria-live="polite">
         {{ filtered.length }} de {{ invitations.length }} invitaciones
       </p>
+      <AdminNoticeCard
+        v-if="filter === 'confirmed' && counts.confirmed"
+        :invitations="invitations"
+      />
       <div class="list" role="table" aria-label="Invitaciones">
         <div class="list__head" role="row">
           <span role="columnheader">Invitado</span>

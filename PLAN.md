@@ -205,6 +205,27 @@ Añadida el 07/10/2026 a petición del usuario, antes del traspaso a devops.
 
 ---
 
+## [x] Fase 6d — Alojamiento, traslados y aviso a confirmados
+
+Añadida el 08/10/2026 a petición del usuario, antes del traspaso a devops.
+
+**Preguntas de entrada** (resueltas)
+- Alojamiento: lista de hasta 6 alojamientos (nombre, enlace, km, nota corta ES/RO) y nota general.
+- Traslados: editable sin decidir aún: nota ES/RO y salidas de autobús opcionales (punto y hora).
+- Aviso a confirmados: mensaje general (lista de difusión o grupo de WhatsApp) con la web pública, sin registro por persona (cambiado durante la fase a petición del usuario).
+
+**Tareas**
+- Documento `settings:stay` con esquemas Zod, `GET /api/stay` público y `PUT /api/admin/stay`, siguiendo el modelo de `settings:flights`.
+- Paneles públicos «Dónde dormir» y «Cómo moverse» cuando tienen contenido; «Próximamente» solo con lo que falta.
+- Panel: pestaña «Estancia», plantillas «Aviso a confirmados» (ES/RO) y tarjeta con el mensaje general en el filtro de confirmados.
+- `docs/produccion.md` y e2e (`tests/e2e/estancia.spec.ts`).
+
+**Revisión**: `security-reviewer` sobre los endpoints nuevos (sin críticos ni medios).
+
+**Terminado cuando**: los novios editan alojamiento y traslados desde el panel, el invitado los ve a 360 y 1280px, el aviso a confirmados se envía de una vez con su plantilla y no hay regresiones visuales mientras no hay contenido. Validado por el usuario el 08/10/2026.
+
+---
+
 ## [ ] Fase 7 — Traspaso a devops
 
 **Tareas**

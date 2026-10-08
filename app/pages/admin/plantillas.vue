@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Plantillas de WhatsApp (invitación y recordatorio, en ES y RO) con variables y vista previa.
+// Plantillas de WhatsApp (invitación, recordatorio y avisos, en ES y RO) con variables y vista previa.
 import {
   TEMPLATE_VARIABLES,
   templateBodySchema,
@@ -21,6 +21,8 @@ const SLOTS: { kind: MessageKind; locale: 'es' | 'ro'; title: string; example: s
   { kind: 'reminder', locale: 'ro', title: 'Recordatorio · Română', example: 'Ioana' },
   { kind: 'flights', locale: 'es', title: 'Aviso de vuelos · Español', example: 'Ana' },
   { kind: 'flights', locale: 'ro', title: 'Aviso de vuelos · Română', example: 'Ioana' },
+  { kind: 'notice', locale: 'es', title: 'Aviso a confirmados · Español', example: 'Ana' },
+  { kind: 'notice', locale: 'ro', title: 'Aviso a confirmados · Română', example: 'Ioana' },
 ]
 const VARIABLE_HELP: Record<(typeof TEMPLATE_VARIABLES)[number], string> = {
   '{nombre}': 'nombre del invitado',
@@ -61,9 +63,11 @@ function changed(slot: (typeof SLOTS)[number]) {
 }
 
 function preview(slot: (typeof SLOTS)[number]) {
+  // El aviso a confirmados es un mensaje general: sin nombre y con la web pública.
+  const general = slot.kind === 'notice'
   return renderTemplate(drafts[key(slot.kind, slot.locale)] ?? '', {
-    nombre: slot.example,
-    enlace: invitationLink(siteUrl, `${slot.example.toLowerCase()}-k7f3q2`),
+    nombre: general ? '' : slot.example,
+    enlace: general ? siteUrl : invitationLink(siteUrl, `${slot.example.toLowerCase()}-k7f3q2`),
     fecha_limite: formatDeadline(slot.locale),
   })
 }
@@ -137,6 +141,10 @@ function undo(slot: (typeof SLOTS)[number]) {
         :aria-labelledby="`t-${key(slot.kind, slot.locale)}`"
       >
         <h2 :id="`t-${key(slot.kind, slot.locale)}`">{{ slot.title }}</h2>
+        <p v-if="slot.kind === 'notice'" class="hint">
+          Mensaje general para una lista de difusión o un grupo: {enlace} es la web pública y no
+          lleva {nombre}.
+        </p>
         <p v-if="slot.locale === 'ro'" class="hint ro-note">
           Pendiente de revisión por un hablante nativo antes de enviar.
         </p>

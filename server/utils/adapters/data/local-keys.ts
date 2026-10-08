@@ -17,4 +17,6 @@ export const localKeys = {
   templatesPrefix: 'templates',
   /** Documento único con la sección de vuelos (Fase 6b). */
   flights: 'settings:flights',
+  /** Documento único con alojamiento y traslados (Fase 6d). */
+  stay: 'settings:stay',
 }

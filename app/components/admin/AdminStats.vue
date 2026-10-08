@@ -17,12 +17,14 @@ defineProps<{ stats: Stats }>()
     <div class="stats__cell">
       <span class="stats__label">Personas a bordo</span>
       <span class="stats__value">{{ stats.people.confirmed }}</span>
-      <span class="stats__note">{{ stats.adults }} adultos · {{ stats.children }} niños</span>
+      <span class="stats__note"
+        >con acompañantes y niños: {{ stats.adults }} adultos · {{ stats.children }} niños</span
+      >
     </div>
     <div class="stats__cell">
       <span class="stats__label">Por confirmar</span>
       <span class="stats__value">{{ stats.people.pending }}</span>
-      <span class="stats__note">personas (sin contar acompañantes)</span>
+      <span class="stats__note">invitaciones sin respuesta</span>
     </div>
     <div class="stats__cell">
       <span class="stats__label">WhatsApp</span>

@@ -108,7 +108,20 @@ export function useSend() {
     }
   }
 
-  return { canShare, link, message, whatsapp, record, share, copyLink }
+  /**
+   * Mensaje general (aviso a confirmados): el mismo para todos, para una lista de difusión o un grupo.
+   * `{enlace}` es la web pública y `{nombre}` queda vacío.
+   */
+  function generalMessage(kind: MessageKind, locale: AdminInvitation['locale']): string {
+    const template = templates.value?.find((t) => t.kind === kind && t.locale === locale)
+    return renderTemplate(template?.body ?? '{enlace}', {
+      nombre: '',
+      enlace: siteUrl,
+      fecha_limite: formatDeadline(locale),
+    })
+  }
+
+  return { canShare, link, message, generalMessage, whatsapp, record, share, copyLink }
 }
 
 // Un único temporizador para todo el panel: un aviso nuevo no lo borra el de otro componente.

@@ -82,7 +82,8 @@
     "transfersText": "Cómo moverse el día de la boda.",
     "foot": "Os avisaremos en cuanto esté listo.",
     "titleNoFlights": "Alojamiento y traslados",
-    "textNoFlights": "Muy pronto os daremos más información sobre el alojamiento y los traslados para quien lo necesite."
+    "textNoFlights": "Muy pronto os daremos más información sobre el alojamiento y los traslados para quien lo necesite.",
+    "textGeneric": "Muy pronto os daremos más información para quien lo necesite."
   },
   "crew": {
     "label": "Fotos de los novios",
@@ -136,5 +137,18 @@
     "lastPrice": "Último precio visto: {amount} € por persona, ida y vuelta ({date}).",
     "dates": "Ida {outbound} · vuelta {inbound}",
     "search": "Buscar vuelos a {city}"
+  },
+  "stay": {
+    "hotelsBoard": "Alojamiento",
+    "hotelsBoardAlt": "Cazare · Hotels",
+    "hotelsTitle": "Dónde dormir",
+    "km": "a {km} km del Roots",
+    "visit": "Ver alojamiento",
+    "visitLabel": "Ver {name} (se abre en otra pestaña)",
+    "transfersBoard": "Traslados",
+    "transfersBoardAlt": "Transfer · Shuttle",
+    "transfersTitle": "Cómo moverse",
+    "busDay": "Autobús · sábado 31 de julio",
+    "timeNote": "Hora de Rumanía (una hora más que en España)."
   }
 }

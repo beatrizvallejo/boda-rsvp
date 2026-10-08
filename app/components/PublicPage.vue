@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { stayReady } from '#shared/stay'
+
 /**
  * Armazón de las páginas públicas (`/` y `/r/<token>`): intro (una vez por visita), cabecera, el
  * contenido principal (slot), la flecha hacia "Próximamente", las secciones y los metadatos OG.
  */
 const INTRO_KEY = 'kr-intro-visto'
 const { t } = useI18n()
-const { data: flights } = await useFlights()
+const [{ data: flights }, { data: stay }] = await Promise.all([useFlights(), useStay()])
 const flightsActive = computed(() => flights.value.status !== 'soon')
+const ready = computed(() => stayReady(stay.value))
+const pending = computed(() => ({
+  flights: !flightsActive.value,
+  hotels: !ready.value.hotels,
+  transfers: !ready.value.transfers,
+}))
+const anyPending = computed(() => Object.values(pending.value).some(Boolean))
 const { siteUrl } = useRuntimeConfig().public
 
 // Metadatos en servidor (WhatsApp lee el HTML, no ejecuta JavaScript). Previsualización genérica.
@@ -46,9 +55,17 @@ function closeIntro() {
   }
 }
 
-// La flecha baja hasta los vuelos (o "Próximamente") sin añadir el ancla a la dirección (el href
-// queda para sin JS).
-const moreTarget = computed(() => (flightsActive.value ? 'vuelos' : 'pronto'))
+// La flecha baja hasta la primera sección de viaje publicada (o "Próximamente") sin añadir el ancla a
+// la dirección (el href queda para sin JS).
+const moreTarget = computed(() =>
+  flightsActive.value
+    ? 'vuelos'
+    : ready.value.hotels
+      ? 'alojamiento'
+      : ready.value.transfers
+        ? 'traslados'
+        : 'pronto',
+)
 function goToSoon() {
   document.getElementById(moreTarget.value)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
@@ -85,7 +102,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
       <HowToGetThere />
       <FlightsBoard v-if="flightsActive" :flights="flights" />
-      <ComingSoon :without-flights="flightsActive" />
+      <StayBoard v-if="ready.hotels || ready.transfers" :stay="stay" />
+      <ComingSoon v-if="anyPending" :pending="pending" />
       <CrewPhotos />
     </main>
 

@@ -328,4 +328,18 @@ export const fixtureTemplates: MessageTemplate[] = [
     body: 'Bună, {nombre}! ✈️ Avem noutăți despre zborul comun Madrid → România pentru nunta noastră: găsești toate detaliile pe biletul tău de îmbarcare: {enlace}\nKeko și Ro',
     updatedAt: TEMPLATE_DATE,
   },
+  // Aviso a confirmados (Fase 6d): mensaje general para una lista de difusión o un grupo, así que no
+  // lleva {nombre} y {enlace} es la web pública.
+  {
+    kind: 'notice',
+    locale: 'es',
+    body: '¡Hola! 🛫 Información de embarque para nuestra boda del 31 de julio en Alba: alojamiento, traslados y horarios, todo aquí: {enlace}\nKeko y Ro',
+    updatedAt: TEMPLATE_DATE,
+  },
+  {
+    kind: 'notice',
+    locale: 'ro',
+    body: 'Bună! 🛫 Informații de îmbarcare pentru nunta noastră din 31 iulie, din Alba: cazare, transfer și program, totul aici: {enlace}\nKeko și Ro',
+    updatedAt: TEMPLATE_DATE,
+  },
 ]

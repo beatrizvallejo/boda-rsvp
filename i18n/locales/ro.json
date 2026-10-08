@@ -82,7 +82,8 @@
     "transfersText": "Cum vă deplasați în ziua nunții.",
     "foot": "Vă anunțăm imediat ce e gata.",
     "titleNoFlights": "Cazare și transfer",
-    "textNoFlights": "Foarte curând vă vom da mai multe informații despre cazare și transfer, pentru cine are nevoie."
+    "textNoFlights": "Foarte curând vă vom da mai multe informații despre cazare și transfer, pentru cine are nevoie.",
+    "textGeneric": "Foarte curând vă vom da mai multe informații, pentru cine are nevoie."
   },
   "crew": {
     "label": "Fotografii cu mirii",
@@ -136,5 +137,18 @@
     "lastPrice": "Ultimul preț văzut: {amount} € de persoană, dus-întors ({date}).",
     "dates": "Dus {outbound} · întors {inbound}",
     "search": "Caută zboruri spre {city}"
+  },
+  "stay": {
+    "hotelsBoard": "Cazare",
+    "hotelsBoardAlt": "Alojamiento · Hotels",
+    "hotelsTitle": "Unde puteți dormi",
+    "km": "la {km} km de Roots",
+    "visit": "Vezi cazarea",
+    "visitLabel": "Vezi {name} (se deschide într-o filă nouă)",
+    "transfersBoard": "Transfer",
+    "transfersBoardAlt": "Traslados · Shuttle",
+    "transfersTitle": "Cum ajungeți",
+    "busDay": "Autobuz · sâmbătă, 31 iulie",
+    "timeNote": "Ora României."
   }
 }

@@ -29,14 +29,14 @@ Este documento es para el compañero de devops. Describe qué necesita la web pa
 
 ## Requisitos derivados del brief (Fase 1)
 - **Acceso por enlace personal** (`/r/<token>`): no hace falta captcha ni rate limit: el token es el control de acceso.
-- **Bilingüe ES/RO** (`@nuxtjs/i18n`): cada invitación guarda su idioma. Las plantillas de WhatsApp existen en los dos idiomas (`invitation`/`reminder` × `es`/`ro`).
+- **Bilingüe ES/RO** (`@nuxtjs/i18n`): cada invitación guarda su idioma. Las plantillas de WhatsApp existen en los dos idiomas (`invitation`/`reminder`/`flights`/`notice` × `es`/`ro`).
 - **Aviso por email en cada respuesta y en cada edición.** En las ediciones se indica qué ha cambiado, así que el servidor necesita la versión anterior de la respuesta al guardar. Como `replyTo` se usa el email del invitado, si lo ha dado.
 - **Destinatarios y accesos:** las 2 cuentas de los novios en `NOTIFY_TO`; al panel se entra con la contraseña compartida. Las direcciones no están en el repo; se configuran en la Fase 9.
 - **Fecha límite de respuesta:** 01/05/2027 23:59 `Europe/Bucharest`. A partir de entonces el endpoint de RSVP rechaza respuestas y ediciones.
 - **Borrado de datos:** 31/10/2027. Incluye teléfonos y emails (vaciar el KV entero basta).
 
 ## Modelo de datos (Fase 2)
-La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un documento JSON en el KV y **se valida con su esquema al leerlo**: no hay SQL, migraciones ni `check`. Claves en `server/utils/adapters/data/local-keys.ts`: `invitations:<id>`, `tokens:<token>` (índice token → id), `rsvps:<invitationId>` y `templates:<kind>-<locale>`. Los nombres de campo de las tablas siguientes son los del JSON en camelCase (`guestName`, `invitedSentAt`…).
+La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un documento JSON en el KV y **se valida con su esquema al leerlo**: no hay SQL, migraciones ni `check`. Claves en `server/utils/adapters/data/local-keys.ts`: `invitations:<id>`, `tokens:<token>` (índice token → id), `rsvps:<invitationId>`, `templates:<kind>-<locale>` y los documentos únicos `settings:flights` y `settings:stay`. Los nombres de campo de las tablas siguientes son los del JSON en camelCase (`guestName`, `invitedSentAt`…).
 
 **`invitations`**
 | Campo | Tipo | Notas |
@@ -65,7 +65,7 @@ La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un doc
 
 Solo existen confirmaciones: una invitación sin documento en `rsvps:` está pendiente. No hay respuesta "no".
 
-**`templates`**: clave (`kind` `invitation`\|`reminder`\|`flights`, `locale` `es`\|`ro`), `body` texto ≤1000 que debe contener `{enlace}`, `updatedAt`. Se insertan las 6 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
+**`templates`**: clave (`kind` `invitation`\|`reminder`\|`flights`\|`notice`, `locale` `es`\|`ro`), `body` texto ≤1000 que debe contener `{enlace}`, `updatedAt`. Se insertan las 8 plantillas iniciales de `server/fixtures/index.ts` (`fixtureTemplates`) en la Fase 9.
 
 **Interfaz del adaptador:** `server/utils/adapters/data/types.ts` (`DataAdapter`). El adaptador `kv` reutiliza la implementación de `local`. `insertInvitations` comprueba duplicados antes de escribir (no es transaccional; suficiente para este volumen), y `deleteInvitation` borra también la respuesta.
 
@@ -93,6 +93,8 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 | `POST /api/game/:code/finish` | código secreto | `{ results[] }` → `{ password }` y cookie de sesión del panel si hay `target` coincidencias (las cuenta el servidor); si no, 403 (`not_enough_points`). Código incorrecto: 404 |
 | `GET /api/flights` | público | → sección de vuelos (sin datos personales); por defecto, «Próximamente» |
 | `PUT /api/admin/flights` | auth | `{status, openUntil, note{es,ro}, lastPrice, outbound, inbound}` → sección de vuelos |
+| `GET /api/stay` | público | → alojamiento y traslados (sin datos personales); por defecto, vacío («Próximamente») |
+| `PUT /api/admin/stay` | auth | `{hotels[], hotelsNote{es,ro}, buses[], transfersNote{es,ro}}` → alojamiento y traslados |
 | `GET /api/admin/export.csv` | auth | → CSV (`;`, UTF-8 con BOM), una fila por invitación, con fórmulas neutralizadas (prefijo `'`; por eso los teléfonos salen como `'+34…`) |
 
 - **Orden en `PUT /api/rsvp/:token`:** Zod → token → plazo → guardado → aviso. Un fallo del aviso se registra en el log y no revierte el guardado. Reenviar una respuesta idéntica no guarda nada ni genera aviso.
@@ -111,8 +113,12 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - **Sin servicios externos:** la web solo enlaza a búsquedas de Google Flights y Skyscanner (no hay APIs de precios). No hace falta ninguna credencial.
 - **CSV:** columna nueva `vuelo_conjunto` (`sí` / `no`). El aviso por email incluye «Vuelo conjunto».
 
+## Alojamiento, traslados y aviso a confirmados (Fase 6d)
+- **Documento `settings:stay`** en el KV (`staySchema` en `shared/schemas/stay.ts`): `hotels` (hasta 6: `name` ≤80, `url` `https://` o vacía, `km` 0–200 o `null`, `note` `{es, ro}` ≤140), `hotelsNote` `{es, ro}` ≤280, `buses` (hasta 6: `place` ≤80, `time` `HH:MM` en hora de Rumanía), `transfersNote` `{es, ro}` ≤280 y `updatedAt`. Si no existe, se usa `DEFAULT_STAY` (`shared/stay.ts`, todo vacío): no hay que crearlo en producción.
+- **Aviso a confirmados:** plantillas `notice` (ES/RO). Es un mensaje general (lista de difusión o grupo de WhatsApp) con el enlace a la web pública: no cambia el modelo de datos ni se registra por persona.
+
 ## Buscadores y Referer
-- `Referrer-Policy: strict-origin-when-cross-origin` (cabecera y meta): los enlaces externos (mapas, calendario, vuelos) reciben solo el dominio, nunca la ruta `/r/<token>`. Si el hosting añade su propia `Referrer-Policy`, que no sea más permisiva.
+- `Referrer-Policy: strict-origin-when-cross-origin` (cabecera y meta): los enlaces externos (mapas, calendario, vuelos, alojamientos) reciben solo el dominio, nunca la ruta `/r/<token>`. Si el hosting añade su propia `Referrer-Policy`, que no sea más permisiva.
 - Toda la web lleva `X-Robots-Tag: noindex, nofollow` (`routeRules` en `nuxt.config.ts`) y la meta `robots` equivalente. `robots.txt` deja rastrear **a propósito**: un `Disallow` impediría a los buscadores leer el `noindex` y podría bloquear al rastreador de la previsualización de WhatsApp.
 
 ## Tests (Fase 6)
