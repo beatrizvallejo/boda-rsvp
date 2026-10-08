@@ -99,13 +99,8 @@ export function useSend() {
     await record(invitation, kind)
   }
 
-  async function copyLink(invitation: AdminInvitation): Promise<boolean> {
-    try {
-      await navigator.clipboard.writeText(link(invitation))
-      return true
-    } catch {
-      return false
-    }
+  function copyLink(invitation: AdminInvitation): Promise<boolean> {
+    return copyText(link(invitation))
   }
 
   /**

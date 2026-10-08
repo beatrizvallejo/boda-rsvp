@@ -504,32 +504,40 @@ onBeforeUnmount(() => {
   color: var(--muted);
 }
 
-/* ── Móvil: más aire entre bloques (si la pantalla es baja, la intro hace scroll) ── */
+/* ── Móvil: los 9 espacios entre bloques se reparten a partes iguales la altura libre (`100dvh` menos
+   los ~31rem de contenido fijo), cada uno con su valor del diseño original como tope. Así, en
+   pantallas bajas todo cabe sin scroll, megafonía incluida, y en las altas queda como siempre. El
+   scroll queda solo como último recurso. ── */
 @media (max-width: 719px) {
   .intro {
+    --gap: clamp(0.125rem, (100dvh - 31rem) / 9, 2.5rem);
     overflow-y: auto;
   }
+  .intro__top {
+    padding-block: max(min(var(--gap), 0.875rem), env(safe-area-inset-top))
+      min(var(--gap), 0.875rem);
+  }
   .intro__hero {
-    gap: 1.75rem;
-    padding: 2.5rem 1.5rem 2.5rem;
+    gap: min(var(--gap), 1.75rem);
+    padding: var(--gap) 1.5rem;
   }
   .intro__title {
-    gap: 1rem;
+    gap: min(var(--gap), 1rem);
   }
   .intro__count {
-    row-gap: 0.875rem;
+    row-gap: min(var(--gap), 0.875rem);
   }
   .arrivals td {
-    padding-block: 0.7em;
+    padding-block: min(var(--gap) / 2, 0.7em);
   }
   .tracker {
-    margin-top: 2.25rem;
+    margin-top: min(var(--gap), 2.25rem);
   }
   .tracker__label {
-    margin-top: 0.875rem;
+    margin-top: min(var(--gap), 0.875rem);
   }
   .intro__action {
-    padding: 2.5rem 1rem 2rem;
+    padding: var(--gap) 1rem min(var(--gap), 2rem);
   }
 }
 
@@ -550,7 +558,8 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
 }
 .intro__couple {
-  height: 76px;
+  /* Móvil: encoge en pantallas bajas; en escritorio ocupa el alto del nombre (abajo) */
+  height: clamp(52px, 10dvh, 76px);
 }
 @media (min-width: 720px) {
   .intro__couple {

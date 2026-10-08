@@ -140,13 +140,10 @@ async function finish() {
 
 async function copyPassword() {
   if (!password.value) return
-  try {
-    await navigator.clipboard.writeText(password.value)
-    copied.value = true
-    setTimeout(() => (copied.value = false), 2000)
-  } catch {
-    // Sin permiso del portapapeles: la contraseña sigue a la vista para copiarla a mano.
-  }
+  // Si no se puede copiar, la contraseña sigue a la vista para copiarla a mano.
+  if (!(await copyText(password.value))) return
+  copied.value = true
+  setTimeout(() => (copied.value = false), 2000)
 }
 </script>
 

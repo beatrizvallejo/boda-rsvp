@@ -22,12 +22,8 @@ const confirmedBy = computed(() => {
 })
 
 async function copy(locale: 'es' | 'ro') {
-  try {
-    await navigator.clipboard.writeText(send.generalMessage('notice', locale))
-    toast.show('Mensaje copiado')
-  } catch {
-    toast.show('No se ha podido copiar.')
-  }
+  const ok = await copyText(send.generalMessage('notice', locale))
+  toast.show(ok ? 'Mensaje copiado' : 'No se ha podido copiar.')
 }
 
 async function share(locale: 'es' | 'ro') {
