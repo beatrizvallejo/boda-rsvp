@@ -70,7 +70,7 @@ Solo existen confirmaciones: una invitación sin documento en `rsvps:` está pen
 **Interfaz del adaptador:** `server/utils/adapters/data/types.ts` (`DataAdapter`). El adaptador `kv` reutiliza la implementación de `local`. `insertInvitations` comprueba duplicados antes de escribir (no es transaccional; suficiente para este volumen), y `deleteInvitation` borra también la respuesta.
 
 ## Contrato de la API (Fase 2)
-Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la forma `{ statusCode, data: { code, issues? } }` con `code` ∈ `not_found`, `deadline_closed`, `validation`, `unauthorized`. Las longitudes máximas de cada campo las fijan los esquemas; un JSON mal formado da 400.
+Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la forma `{ statusCode, data: { code, issues? } }` con `code` ∈ `not_found`, `deadline_closed`, `validation`, `unauthorized`, `not_enough_points`. Las longitudes máximas de cada campo las fijan los esquemas; un JSON mal formado da 400.
 
 | Método y ruta | Acceso | Entrada → salida |
 |---|---|---|
@@ -89,6 +89,8 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 | `GET /api/admin/stats` | auth | → métricas (ver `statsSchema`) |
 | `GET /api/admin/templates` | auth | → plantillas |
 | `PUT /api/admin/templates/:kind/:locale` | auth | `{body}` → plantilla |
+| `GET /api/game/:code` | código secreto | → `{ target, questions[] }` del juego de preguntas. Código incorrecto: 404 |
+| `POST /api/game/:code/finish` | código secreto | `{ results[] }` → `{ password }` y cookie de sesión del panel si hay `target` coincidencias (las cuenta el servidor); si no, 403 (`not_enough_points`). Código incorrecto: 404 |
 | `GET /api/flights` | público | → sección de vuelos (sin datos personales); por defecto, «Próximamente» |
 | `PUT /api/admin/flights` | auth | `{status, openUntil, note{es,ro}, lastPrice, outbound, inbound}` → sección de vuelos |
 | `GET /api/admin/export.csv` | auth | → CSV (`;`, UTF-8 con BOM), una fila por invitación, con fórmulas neutralizadas (prefijo `'`; por eso los teléfonos salen como `'+34…`) |
@@ -135,6 +137,14 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 - **Rutas `/admin/**`:** solo en el cliente (`ssr: false`) y con `X-Robots-Tag: noindex, nofollow`. Los datos solo salen por `/api/admin/*`.
 - **Enlaces de los mensajes:** `${NUXT_PUBLIC_SITE_URL}/r/<token>`. Solo en desarrollo se usa la URL del navegador (para probar con `dev:mobile`).
 - **Exportación CSV:** también sirve de copia de seguridad manual (ver P03).
+
+## Juego de preguntas (Fase 6c)
+- **Qué es:** `/juego/<GAME_CODE>` es un juego de pareja para los novios. Con 7 coincidencias de 10, el servidor abre la sesión del panel y les **devuelve `ADMIN_PASSWORD`**. Es la forma de entregarles la contraseña (afecta a P08).
+- **La llave es la URL:** `GAME_CODE` tiene que ser aleatorio, de 24+ caracteres y apto para URL (`A-Z a-z 0-9 _ -`; p. ej. `openssl rand -base64 18 | tr '+/' '-_'`). Sin él, o si no cumple el formato (se avisa en el log), el juego no existe (404) y el servidor arranca igual. El código `demo` solo vale en desarrollo con `AUTH_ADAPTER=dev`.
+- Quien tenga la URL puede llegar a la contraseña, así que se trata como la propia contraseña: no por WhatsApp ni email (la previsualización del enlace haría que sus servidores pidieran la URL). La URL queda además en el historial del navegador y en los logs de acceso del hosting.
+- **Rotación:** cuando los novios tengan la contraseña, quita `GAME_CODE` (o cámbialo) y el juego deja de existir.
+- `/juego/**` va sin SSR y `/api/game/**` con `Cache-Control: private, no-store`. Las preguntas están en `server/utils/game.ts` y no salen sin el código.
+- Con `AUTH_ADAPTER=dev` el premio no lleva contraseña (`password: null`).
 
 ## Variables de entorno de producción
 Ver la sección de producción en `.env.example`. Se completa en la Fase 7. `NUXT_PUBLIC_SITE_URL` (URL pública, sin barra final) es obligatoria: la usan los metadatos OG y `baseUrl` de i18n, y se lee al construir.

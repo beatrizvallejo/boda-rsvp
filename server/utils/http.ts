@@ -2,7 +2,8 @@ import type { H3Event } from 'h3'
 import type { z } from 'zod'
 
 /** Códigos de error estables del contrato (en `data.code`); el frontend traduce a partir de ellos. */
-export type ApiErrorCode = 'not_found' | 'deadline_closed' | 'validation' | 'unauthorized'
+export type ApiErrorCode =
+  'not_found' | 'deadline_closed' | 'validation' | 'unauthorized' | 'not_enough_points'
 
 export function apiError(
   statusCode: number,

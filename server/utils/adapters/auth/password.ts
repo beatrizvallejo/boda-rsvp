@@ -13,7 +13,7 @@ interface PanelSession {
 }
 
 /** Compara en tiempo constante: los dos lados se resumen con SHA-256 para igualar longitudes. */
-function samePassword(given: string, expected: string): boolean {
+export function samePassword(given: string, expected: string): boolean {
   const a = createHash('sha256').update(given).digest()
   const b = createHash('sha256').update(expected).digest()
   return timingSafeEqual(a, b)
@@ -63,6 +63,10 @@ export function createPasswordAuthAdapter(env: NodeJS.ProcessEnv = process.env):
       if (!samePassword(password, adminPassword)) return false
       await (await session(event)).update({ admin: true })
       return true
+    },
+    async loginFromGame(event) {
+      await (await session(event)).update({ admin: true })
+      return adminPassword
     },
     async logout(event) {
       await (await session(event)).clear()

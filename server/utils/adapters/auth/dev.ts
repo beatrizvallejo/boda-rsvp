@@ -13,6 +13,10 @@ export function createDevAuthAdapter(): AuthAdapter {
     async login() {
       return import.meta.dev
     },
+    // Sin contraseña que desvelar: el panel ya está abierto.
+    async loginFromGame() {
+      return null
+    },
     async logout() {},
   }
 }

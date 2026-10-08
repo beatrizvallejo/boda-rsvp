@@ -31,6 +31,9 @@ export default defineNuxtConfig({
     '/admin': { ssr: false },
     '/admin/**': { ssr: false },
     '/api/admin/**': { headers: { 'Cache-Control': 'private, no-store' } },
+    // Juego que desvela la contraseña del panel: solo en el cliente y sin caché (el premio es la contraseña).
+    '/juego/**': { ssr: false },
+    '/api/game/**': { headers: { 'Cache-Control': 'private, no-store' } },
   },
   app: {
     head: {

@@ -187,6 +187,24 @@ Añadida el 07/10/2026 a petición del usuario, antes del traspaso a devops.
 
 # Bloque B — Puesta en producción (con devops)
 
+## [x] Fase 6c — Juego de preguntas para desvelar la contraseña
+
+**Preguntas de entrada** (resueltas)
+- URL secreta `/juego/<GAME_CODE>` (la llave); un solo móvil por turnos; en las preguntas libres deciden ellos si coinciden y las de «¿Quién de los dos…?» se comparan solas.
+- 7 coincidencias de 10; si no llegan, pueden volver a jugar. Al ganar: se muestra la contraseña y se abre la sesión del panel.
+- Preguntas: borrador provisional en `server/utils/game.ts`, se cambian después.
+
+**Tareas**
+- Esquemas en `shared/schemas/game.ts`; endpoints `GET /api/game/:code` y `POST /api/game/:code/finish`; `loginFromGame` en el adaptador `auth`.
+- Vista `/juego/[code]`: portada, turno, «¡No mires!», revelación, puerta cerrada y premio.
+- `docs/produccion.md`, `.env.example` y P09 en `docs/devops-preguntas.md`.
+
+**Revisión**: `security-reviewer`, centrado en que la contraseña solo sale con el código y los puntos.
+
+**Terminado cuando**: el juego se completa a 360 y 1280px, ganar abre el panel y el usuario lo aprueba. Las preguntas pueden cambiar después en `server/utils/game.ts` sin reabrir la fase (validado por el usuario el 08/10/2026).
+
+---
+
 ## [ ] Fase 7 — Traspaso a devops
 
 **Tareas**

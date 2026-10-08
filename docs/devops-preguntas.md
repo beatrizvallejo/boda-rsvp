@@ -60,3 +60,10 @@ Formato de cada pregunta:
 - Opciones y recomendación: `ADMIN_PASSWORD` de 4–5 palabras al azar (fácil de teclear en el móvil, p. ej. generada con un gestor de contraseñas) y `NUXT_SESSION_PASSWORD` con `openssl rand -base64 32`. Entregarla en persona o por un gestor de contraseñas, no por WhatsApp ni email. Si se pierde un móvil con sesión abierta, se cambia `NUXT_SESSION_PASSWORD` y se cierran todas las sesiones.
 - Bloquea: Fase 9.
 - Respuesta:
+
+### [ABIERTA] P09 — Código secreto del juego de preguntas
+- Contexto: la contraseña del panel se entrega a los novios con un juego (`/juego/<GAME_CODE>`, ver «Juego de preguntas» en `docs/produccion.md`). Al ganar, el servidor les muestra `ADMIN_PASSWORD` y abre la sesión. La URL es la llave: quien la tenga puede llegar a la contraseña.
+- Pregunta: ¿generas `GAME_CODE` en el hosting? ¿Quién y cómo les hace llegar la URL a los novios (sustituye a entregarles la contraseña, ver P08)?
+- Opciones y recomendación: `GAME_CODE` con `openssl rand -base64 18 | tr '+/' '-_'` (24 caracteres). Entregar la URL igual que una contraseña: en persona o por un gestor de contraseñas. Si no se define, el juego no existe y se vuelve a entregar la contraseña a mano.
+- Bloquea: Fase 9.
+- Respuesta:
