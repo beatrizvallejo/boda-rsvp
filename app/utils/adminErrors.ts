@@ -17,7 +17,6 @@ export const RSVP_MESSAGES: Record<string, string> = {
   guestName: 'Escribe el nombre del invitado.',
   companionName: 'Falta el nombre del acompañante (o marca «Solo/a»).',
   children: 'El número de niños va de 0 a 10.',
-  email: 'Email no válido.',
 }
 
 /** Primer error de Zod como `{ campo, mensaje }`, con el mensaje del mapa correspondiente. */

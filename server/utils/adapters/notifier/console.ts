@@ -6,9 +6,8 @@ export function createConsoleNotifierAdapter(siteUrl: string): NotifierAdapter {
   return {
     async notifyRsvp(notification) {
       const { subject, text } = formatRsvpNotification(notification, siteUrl)
-      const replyTo = notification.replyTo ? `\nReply-To: ${notification.replyTo}` : ''
       console.info(
-        `\n──── [notifier:console] ────${replyTo}\nAsunto: ${subject}\n\n${text}\n────────────────────────────\n`,
+        `\n──── [notifier:console] ────\nAsunto: ${subject}\n\n${text}\n────────────────────────────\n`,
       )
     },
   }

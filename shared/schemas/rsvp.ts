@@ -2,14 +2,9 @@ import { z } from 'zod'
 import { isoDateSchema, personNameSchema } from './common'
 import { invitationSchema } from './invitation'
 
-const nullableEmailSchema = z.preprocess(
-  (value) => (typeof value === 'string' && value.trim() === '' ? null : value),
-  z.email().trim().max(254).nullable(),
-)
-
 /**
  * ¿Se apunta a la reserva conjunta de vuelos desde Madrid? `yes` o `no`. `null` = no ha contestado
- * (la pregunta es opcional, va plegada y solo aparece con la reserva en marcha).
+ * (la pregunta es opcional y solo aparece con la reserva en marcha).
  */
 export const jointFlightSchema = z.enum(['yes', 'no'])
 export type JointFlight = z.infer<typeof jointFlightSchema>
@@ -23,18 +18,17 @@ export const rsvpInputSchema = z.strictObject({
   /** `null` = sin acompañante. Si se marca acompañante, el nombre es obligatorio. */
   companionName: personNameSchema.nullable().default(null),
   children: z.int().min(0).max(10).default(0),
-  email: nullableEmailSchema.default(null),
   jointFlight: jointFlightSchema.nullable().default(null),
 })
 export type RsvpInput = z.input<typeof rsvpInputSchema>
 export type RsvpData = z.output<typeof rsvpInputSchema>
 
+/** Las respuestas guardadas con el antiguo campo `email` se leen sin él (`z.object` lo descarta). */
 export const rsvpSchema = z.object({
   invitationId: z.uuid(),
   guestName: personNameSchema,
   companionName: personNameSchema.nullable(),
   children: z.int().min(0).max(10),
-  email: z.email().max(254).nullable(),
   /** Las respuestas guardadas antes de la Fase 6b no tienen el campo: se leen como `null`. */
   jointFlight: jointFlightSchema.nullable().default(null),
   /** Quién hizo el último cambio: el invitado desde su enlace o los novios desde el panel. */
@@ -44,13 +38,7 @@ export const rsvpSchema = z.object({
 })
 export type Rsvp = z.infer<typeof rsvpSchema>
 
-export const rsvpFieldSchema = z.enum([
-  'guestName',
-  'companionName',
-  'children',
-  'email',
-  'jointFlight',
-])
+export const rsvpFieldSchema = z.enum(['guestName', 'companionName', 'children', 'jointFlight'])
 export type RsvpField = z.infer<typeof rsvpFieldSchema>
 
 export const rsvpChangeSchema = z.object({

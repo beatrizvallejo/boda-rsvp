@@ -83,7 +83,6 @@ const rsvpForm = reactive({
   withCompanion: false,
   companionName: '',
   children: 0,
-  email: '',
   jointFlight: '' as JointFlight | '',
 })
 const JOINT_FLIGHT_LABELS: Record<JointFlight, string> = {
@@ -101,7 +100,6 @@ function startRsvp() {
     withCompanion: !!r?.companionName,
     companionName: r?.companionName ?? '',
     children: r?.children ?? 0,
-    email: r?.email ?? '',
     jointFlight: r?.jointFlight ?? '',
   })
   rsvpError.value = null
@@ -119,7 +117,6 @@ async function saveRsvp() {
     guestName: rsvpForm.guestName,
     companionName: rsvpForm.withCompanion ? rsvpForm.companionName : null,
     children: rsvpForm.children,
-    email: rsvpForm.email,
     jointFlight: rsvpForm.jointFlight || null,
   })
   if (!parsed.success) {
@@ -311,19 +308,6 @@ async function copy() {
               }}</span>
             </label>
             <label class="field">
-              <span class="label">Email (opcional)</span>
-              <input
-                v-model="rsvpForm.email"
-                class="input"
-                type="email"
-                autocomplete="off"
-                :aria-invalid="rsvpError?.field === 'email' || undefined"
-              />
-              <span v-if="rsvpError?.field === 'email'" class="field-error" role="alert">{{
-                rsvpError.message
-              }}</span>
-            </label>
-            <label class="field">
               <span class="label">Vuelo conjunto desde Madrid</span>
               <select v-model="rsvpForm.jointFlight" class="input">
                 <option value="">Sin respuesta</option>
@@ -359,10 +343,6 @@ async function copy() {
               <div>
                 <dt class="label">Personas</dt>
                 <dd>{{ formatPeople(invitation.rsvp) }}</dd>
-              </div>
-              <div>
-                <dt class="label">Email</dt>
-                <dd>{{ invitation.rsvp.email ?? '—' }}</dd>
               </div>
               <div>
                 <dt class="label">Vuelo conjunto</dt>

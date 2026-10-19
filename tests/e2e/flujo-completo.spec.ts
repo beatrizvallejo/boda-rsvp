@@ -49,8 +49,8 @@ test.describe('flujo completo', () => {
 
     await companion.fill('Marta López')
     await page.getByRole('button', { name: 'Añadir un menor' }).click()
-    // Opcionales plegados: email y vuelo conjunto (solo Sí / No)
-    await page.getByRole('button', { name: /Más opciones/ }).click()
+    // Cupón del vuelo conjunto, siempre visible con la reserva en marcha (solo Sí / No)
+    await expect(page.getByText('Reserva conjunta · Opcional')).toBeVisible()
     await expect(page.getByRole('radio')).toHaveCount(4) // 2 del acompañante + Sí / No
     await page.getByRole('radio', { name: 'Sí', exact: true }).click()
     await page.getByRole('button', { name: 'Confirmar asistencia' }).click()

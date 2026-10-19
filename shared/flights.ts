@@ -37,6 +37,23 @@ export function skyscannerUrl(to: string, outbound: string, inbound: string, lan
   return `${host}/${FLIGHT_ORIGIN.code.toLowerCase()}/${to.toLowerCase()}/${day(outbound)}/${day(inbound)}/`
 }
 
+/**
+ * Búsqueda en Wizz Air, ida y vuelta para 1 adulto (`/adultos/niños/bebés/null`). El formato no está
+ * documentado: es el de la propia web, comprobado el 19/10/2026. Vuela MAD → SBZ; MAD → CLJ sin
+ * confirmar (si no hay vuelo ese día, la web ofrece el próximo disponible).
+ */
+export function wizzAirUrl(to: string, outbound: string, inbound: string, lang: Locale) {
+  const site = lang === 'es' ? 'es-es' : 'ro-ro'
+  return `https://wizzair.com/${site}/booking/select-flight/${FLIGHT_ORIGIN.code}/${to}/${outbound}/${inbound}/1/0/0/null`
+}
+
+/** Buscadores enlazados en cada ruta, en este orden. */
+export const FLIGHT_SEARCHES = [
+  { name: 'Google Flights', url: googleFlightsUrl },
+  { name: 'Skyscanner', url: skyscannerUrl },
+  { name: 'Wizz Air', url: wizzAirUrl },
+] as const
+
 /** Día de una fecha `AAAA-MM-DD` en el idioma del invitado: "15 de marzo" / "15 martie". */
 export function formatFlightDay(day: string, locale: string, withYear = false): string {
   return new Intl.DateTimeFormat(locale === 'ro' ? 'ro-RO' : 'es-ES', {

@@ -7,8 +7,6 @@ export interface RsvpNotification {
   rsvp: Rsvp
   /** Vacío en `new`. */
   changes: RsvpChange[]
-  /** Email del invitado, si lo ha dado. Se usa como `replyTo`. */
-  replyTo: string | null
 }
 
 /** `console` (imprime en el log) en desarrollo; `gmail` (nodemailer + SMTP) en la Fase 8. */

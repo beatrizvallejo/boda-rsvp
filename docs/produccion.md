@@ -30,10 +30,10 @@ Este documento es para el compañero de devops. Describe qué necesita la web pa
 ## Requisitos derivados del brief (Fase 1)
 - **Acceso por enlace personal** (`/r/<token>`): no hace falta captcha ni rate limit: el token es el control de acceso.
 - **Bilingüe ES/RO** (`@nuxtjs/i18n`): cada invitación guarda su idioma. Las plantillas de WhatsApp existen en los dos idiomas (`invitation`/`reminder`/`flights`/`notice` × `es`/`ro`).
-- **Aviso por email en cada respuesta y en cada edición.** En las ediciones se indica qué ha cambiado, así que el servidor necesita la versión anterior de la respuesta al guardar. Como `replyTo` se usa el email del invitado, si lo ha dado.
+- **Aviso por email en cada respuesta y en cada edición.** En las ediciones se indica qué ha cambiado, así que el servidor necesita la versión anterior de la respuesta al guardar. El aviso no lleva `replyTo`: no se pide el email del invitado (19/10/2026).
 - **Destinatarios y accesos:** las 2 cuentas de los novios en `NOTIFY_TO`; al panel se entra con la contraseña compartida. Las direcciones no están en el repo; se configuran en la Fase 9.
 - **Fecha límite de respuesta:** 01/02/2027 23:59 `Europe/Bucharest`. A partir de entonces el endpoint de RSVP rechaza respuestas y ediciones.
-- **Borrado de datos:** 31/10/2027. Incluye teléfonos y emails (vaciar el KV entero basta).
+- **Borrado de datos:** 31/10/2027. Incluye teléfonos (vaciar el KV entero basta).
 
 ## Modelo de datos (Fase 2)
 La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un documento JSON en el KV y **se valida con su esquema al leerlo**: no hay SQL, migraciones ni `check`. Claves en `server/utils/adapters/data/local-keys.ts`: `invitations:<id>`, `tokens:<token>` (índice token → id), `rsvps:<invitationId>`, `templates:<kind>-<locale>` y los documentos únicos `settings:flights` y `settings:stay`. Los nombres de campo de las tablas siguientes son los del JSON en camelCase (`guestName`, `invitedSentAt`…).
@@ -58,7 +58,6 @@ La única fuente es `shared/schemas/` (Zod). Cada registro se guarda como un doc
 | `guestName` | texto ≤80 | editable por el invitado |
 | `companionName` | texto ≤80, nullable | `null` = sin acompañante |
 | `children` | entero 0–10 | |
-| `email` | texto ≤254, nullable | `replyTo` del aviso |
 | `jointFlight` | `yes` \| `no`, nullable | reserva conjunta de vuelos desde Madrid (Fase 6b). Las respuestas antiguas sin el campo se leen como `null` |
 | `updatedBy` | `guest` \| `admin` | los cambios de los novios desde el panel no generan aviso |
 | `createdAt`, `updatedAt` | fecha ISO | |
@@ -110,7 +109,7 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 
 ## Vuelos (Fase 6b)
 - **Documento `settings:flights`** en el KV (`flightsSchema` en `shared/schemas/flights.ts`): `status` (`soon`\|`watching`\|`open`\|`closed`), `openUntil` (día, solo con `open`), `note` `{es, ro}` ≤280, `lastPrice` `{amount € 1–5000, seenOn}` o `null`, `outbound`/`inbound` (días para las búsquedas) y `updatedAt`. Si no existe, se usan los valores por defecto de `shared/flights.ts` (`soon`): no hay que crearlo en producción.
-- **Sin servicios externos:** la web solo enlaza a búsquedas de Google Flights y Skyscanner (no hay APIs de precios). No hace falta ninguna credencial.
+- **Sin servicios externos:** la web solo enlaza a búsquedas de Google Flights, Skyscanner y Wizz Air (no hay APIs de precios). No hace falta ninguna credencial.
 - **CSV:** columna nueva `vuelo_conjunto` (`sí` / `no`). El aviso por email incluye «Vuelo conjunto».
 
 ## Alojamiento, traslados y aviso a confirmados (Fase 6d)
@@ -138,7 +137,7 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 ## Formulario y confirmación (Fase 4)
 - **Ruta `GET /boda.ics?lang=es|ro`** (`server/routes/boda.ics.ts`, pública): evento de calendario con `TZID=Europe/Bucharest` y `VTIMEZONE`, del 31/07/2027 13:00 al 01/08/2027 03:00 (hora de Rumanía). `Content-Disposition: attachment` y `Cache-Control: public, max-age=3600`. Se sirve desde el servidor porque las descargas de blobs fallan en el navegador de WhatsApp.
 - **Google Calendar:** enlace directo a `calendar.google.com` con `ctz=Europe/Bucharest`, sin API ni credenciales.
-- **Aviso a los novios** (`server/utils/adapters/notifier/format.ts`): texto plano, en español. Asunto `✈️ <nombre> confirma · N adultos + N niños` (respuesta nueva) o `✏️ Cambio · <nombre>` (edición), con la lista de cambios, la respuesta completa y el enlace `${NUXT_PUBLIC_SITE_URL}/admin`. El adaptador `gmail` debe usar el mismo `formatRsvpNotification(notification, siteUrl)` y el email del invitado como `replyTo`.
+- **Aviso a los novios** (`server/utils/adapters/notifier/format.ts`): texto plano, en español. Asunto `✈️ <nombre> confirma · N adultos + N niños` (respuesta nueva) o `✏️ Cambio · <nombre>` (edición), con la lista de cambios, la respuesta completa y el enlace `${NUXT_PUBLIC_SITE_URL}/admin`. El adaptador `gmail` debe usar el mismo `formatRsvpNotification(notification, siteUrl)`, sin `replyTo`.
 
 ## Panel de los novios (Fase 5)
 - **Login (`AUTH_ADAPTER=password`, `server/utils/adapters/auth/password.ts`):** contraseña compartida `ADMIN_PASSWORD` (mínimo 16 caracteres), comparada en tiempo constante (SHA-256 + `timingSafeEqual`). Sesión sellada con `useSession` de h3 y `NUXT_SESSION_PASSWORD` (≥32 caracteres): cookie `boda_panel`, `HttpOnly`, `Secure`, `SameSite=Lax`, 30 días, sin cabecera alternativa. Si falta alguna de las dos variables, o no llega al mínimo, **el servidor no arranca**. Cambiar `NUXT_SESSION_PASSWORD` cierra todas las sesiones: es lo que hay que hacer si se pierde un móvil con el panel abierto (la sesión no se guarda en servidor, así que el logout solo borra la cookie de ese navegador).
@@ -159,7 +158,7 @@ Entradas validadas con los esquemas de `shared/schemas/`. Los errores tienen la 
 Ver la sección de producción en `.env.example`. Se completa en la Fase 7. `NUXT_PUBLIC_SITE_URL` (URL pública, sin barra final) es obligatoria: la usan los metadatos OG y `baseUrl` de i18n, y se lee al construir.
 
 ## Datos personales
-- Se guardan nombres, respuestas, el teléfono por invitación (opcional, lo introducen los novios) y el email del invitado (opcional).
+- Se guardan nombres, respuestas, el teléfono por invitación (opcional, lo introducen los novios).
 - No se piden datos de salud ni hay campos libres (sin comentarios ni mensajes desde la Fase 3). Tampoco se piden documentos de identidad.
 - Borrado previsto el 31/10/2027 (ver `docs/brief.md`).
 - Por ahora no hay aviso de privacidad (decisión de los novios). Se revisa en la Fase 6.

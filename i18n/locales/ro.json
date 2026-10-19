@@ -43,9 +43,6 @@
     "kids": "Minori la bord",
     "kidsLess": "Scade un minor",
     "kidsMore": "Adaugă un minor",
-    "email": "Emailul tău",
-    "emailHelp": "Doar ca să-ți putem răspunde dacă e nevoie.",
-    "addEmail": "Adaugă emailul meu (opțional)",
     "passengers": "Pasageri",
     "confirm": "Confirmă prezența",
     "airline": "Linii aeriene",
@@ -53,11 +50,11 @@
     "confirmedNote": "Poți modifica datele până pe 1 februarie.",
     "save": "Salvează modificările",
     "sending": "Se trimite biletul…",
+    "jointFlightTag": "Rezervare comună · Opțional",
     "jointFlight": "Te înscriem la rezervarea comună din Madrid?",
     "jointFlightYes": "Da",
     "jointFlightNo": "Nu",
-    "jointFlightHelp": "Fără obligații: vă scriem cu prețul înainte să rezervăm.",
-    "moreOptions": "Mai multe opțiuni (opțional)"
+    "jointFlightHelp": "Fără obligații: vă scriem cu prețul înainte să rezervăm."
   },
   "more": "Zboruri și cazare",
   "howto": {
@@ -113,7 +110,6 @@
     "guestName": "Lipsește numele tău. Scrie-l așa cum vrei să apară.",
     "companionName": "Lipsește numele însoțitorului. Scrie-l sau alege „Călătoresc singur/ă”.",
     "nameTooLong": "Numele e prea lung: cel mult 80 de caractere.",
-    "email": "Adresa de email nu pare corectă. Verific-o sau las-o goală.",
     "network": "Nu am putut trimite biletul: se pare că nu ai conexiune. Datele tale sunt încă aici; încearcă din nou.",
     "save": "Ceva n-a mers la salvarea biletului. Încearcă din nou peste câteva momente.",
     "closedWithRsvp": "Acesta este biletul tău confirmat. Dacă trebuie să schimbi ceva, scrie-ne."

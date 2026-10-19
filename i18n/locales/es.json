@@ -43,9 +43,6 @@
     "kids": "Menores a bordo",
     "kidsLess": "Quitar un menor",
     "kidsMore": "Añadir un menor",
-    "email": "Tu email",
-    "emailHelp": "Solo para poder responderte si hace falta.",
-    "addEmail": "Añadir mi email (opcional)",
     "passengers": "Pasajeros",
     "confirm": "Confirmar asistencia",
     "airline": "Líneas aéreas",
@@ -53,11 +50,11 @@
     "confirmedNote": "Puedes cambiar los datos hasta el 1 de febrero.",
     "save": "Guardar cambios",
     "sending": "Enviando tu tarjeta…",
+    "jointFlightTag": "Reserva conjunta · Opcional",
     "jointFlight": "¿Te apuntamos a la reserva conjunta desde Madrid?",
     "jointFlightYes": "Sí",
     "jointFlightNo": "No",
-    "jointFlightHelp": "Sin compromiso: os escribiremos con el precio antes de reservar.",
-    "moreOptions": "Más opciones (opcional)"
+    "jointFlightHelp": "Sin compromiso: os escribiremos con el precio antes de reservar."
   },
   "more": "Vuelos y alojamiento",
   "howto": {
@@ -113,7 +110,6 @@
     "guestName": "Falta tu nombre. Escríbelo tal y como quieres que aparezca.",
     "companionName": "Falta el nombre de tu acompañante. Escríbelo o elige «Viajo solo/a».",
     "nameTooLong": "Este nombre es demasiado largo: como mucho, 80 caracteres.",
-    "email": "Este email no parece correcto. Revísalo o déjalo en blanco.",
     "network": "No hemos podido enviar tu tarjeta: parece que no hay conexión. Tus datos siguen aquí; vuelve a intentarlo.",
     "save": "Algo ha fallado al guardar tu tarjeta. Vuelve a intentarlo en un momento.",
     "closedWithRsvp": "Esta es tu tarjeta confirmada. Si necesitas cambiar algo, escríbenos."

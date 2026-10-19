@@ -1,13 +1,7 @@
 import type { Invitation, Rsvp, RsvpChange, RsvpData, RsvpField } from '#shared/schemas'
 import { useDataAdapter, useNotifierAdapter } from './adapters'
 
-const COMPARED_FIELDS: RsvpField[] = [
-  'guestName',
-  'companionName',
-  'children',
-  'email',
-  'jointFlight',
-]
+const COMPARED_FIELDS: RsvpField[] = ['guestName', 'companionName', 'children', 'jointFlight']
 
 export function diffRsvp(previous: Rsvp | null, next: Rsvp): RsvpChange[] {
   if (!previous) return []
@@ -57,7 +51,6 @@ export async function saveRsvp(
         invitation: { id: invitation.id, label: invitation.label, locale: invitation.locale },
         rsvp,
         changes,
-        replyTo: rsvp.email,
       })
     } catch (error) {
       console.error(

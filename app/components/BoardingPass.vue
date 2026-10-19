@@ -7,7 +7,7 @@
  */
 import { rsvpInputSchema, type JointFlight, type PublicRsvp, type RsvpData } from '#shared/schemas'
 
-type Field = 'guestName' | 'companionName' | 'email'
+type Field = 'guestName' | 'companionName'
 export interface FieldIssue {
   path: string[]
   code: string
@@ -30,10 +30,6 @@ const name = ref(props.rsvp?.guestName ?? props.guestName)
 const withCompanion = ref(Boolean(props.rsvp?.companionName))
 const companionName = ref(props.rsvp?.companionName ?? '')
 const children = ref(props.rsvp?.children ?? 0)
-const email = ref(props.rsvp?.email ?? '')
-// Lo opcional va plegado (email y, con la reserva de vuelos en marcha, la pregunta del vuelo
-// conjunto): solo se despliega si el invitado quiere (o si ya lo había contestado).
-const showMore = ref(Boolean(props.rsvp?.email || props.rsvp?.jointFlight))
 // Opcional: sin respuesta (`null`) hasta que el invitado elige. Si no se pregunta, se conserva la guardada.
 const jointFlight = ref<JointFlight | null>(props.rsvp?.jointFlight ?? null)
 const JOINT_FLIGHT_OPTIONS = [
@@ -47,7 +43,6 @@ const input = computed(() => ({
   guestName: name.value,
   companionName: withCompanion.value ? companionName.value : null,
   children: children.value,
-  email: showMore.value ? email.value : null,
   jointFlight: jointFlight.value,
 }))
 
@@ -56,10 +51,10 @@ const dirty = computed(() => {
   if (!props.rsvp) return true
   const parsed = rsvpInputSchema.safeParse(input.value)
   if (!parsed.success) return true
-  const { guestName, companionName, children, email, jointFlight } = props.rsvp
+  const { guestName, companionName, children, jointFlight } = props.rsvp
   return (
     JSON.stringify(parsed.data) !==
-    JSON.stringify({ guestName, companionName, children, email, jointFlight })
+    JSON.stringify({ guestName, companionName, children, jointFlight })
   )
 })
 
@@ -72,7 +67,6 @@ function messageFor(issue: FieldIssue): [Field, string] | null {
     return [field, t(issue.code === 'too_big' ? 'errors.nameTooLong' : 'errors.guestName')]
   if (field === 'companionName')
     return [field, t(issue.code === 'too_big' ? 'errors.nameTooLong' : 'errors.companionName')]
-  if (field === 'email') return [field, t('errors.email')]
   return null
 }
 
@@ -256,56 +250,31 @@ defineExpose({ showIssues })
         </div>
       </fieldset>
 
-      <div v-if="!readonly || showMore" class="pass__email">
-        <button
-          v-if="!showMore"
-          type="button"
-          class="pass__email-toggle"
-          :aria-expanded="showMore"
-          @click="showMore = true"
+      <!-- Cupón de la reserva conjunta: recuadro punteado para que se vea sin salir del papel. -->
+      <div v-if="askJointFlight || (readonly && jointFlight)" class="pass__coupon">
+        <span class="pass__coupon-tag label" aria-hidden="true">
+          <PlaneIcon class="pass__coupon-plane" />{{ t('pass.jointFlightTag') }}
+        </span>
+        <span id="flight-label" class="pass__coupon-question">{{ t('pass.jointFlight') }}</span>
+        <div
+          class="segmented"
+          role="radiogroup"
+          aria-labelledby="flight-label"
+          aria-describedby="flight-help"
         >
-          + {{ askJointFlight ? t('pass.moreOptions') : t('pass.addEmail') }}
-        </button>
-        <template v-else>
-          <label class="field">
-            <span class="label">{{ t('pass.email') }}</span>
-            <input
-              v-model="email"
-              class="field__input"
-              type="email"
-              inputmode="email"
-              autocomplete="email"
-              maxlength="254"
-              :disabled="readonly"
-              :aria-invalid="Boolean(errors.email)"
-              :aria-describedby="errors.email ? 'err-email' : 'email-help'"
-            />
-            <span v-if="errors.email" id="err-email" class="field__error">{{ errors.email }}</span>
-            <span id="email-help" class="field__help">{{ t('pass.emailHelp') }}</span>
-          </label>
-          <div v-if="askJointFlight" class="field">
-            <span id="flight-label" class="label">{{ t('pass.jointFlight') }}</span>
-            <div
-              class="segmented"
-              role="radiogroup"
-              aria-labelledby="flight-label"
-              aria-describedby="flight-help"
-            >
-              <button
-                v-for="option in JOINT_FLIGHT_OPTIONS"
-                :key="option.value"
-                type="button"
-                role="radio"
-                :disabled="readonly"
-                :aria-checked="jointFlight === option.value"
-                @click="jointFlight = option.value"
-              >
-                {{ t(option.label) }}
-              </button>
-            </div>
-            <span id="flight-help" class="field__help">{{ t('pass.jointFlightHelp') }}</span>
-          </div>
-        </template>
+          <button
+            v-for="option in JOINT_FLIGHT_OPTIONS"
+            :key="option.value"
+            type="button"
+            role="radio"
+            :disabled="readonly"
+            :aria-checked="jointFlight === option.value"
+            @click="jointFlight = option.value"
+          >
+            {{ t(option.label) }}
+          </button>
+        </div>
+        <span id="flight-help" class="field__help">{{ t('pass.jointFlightHelp') }}</span>
       </div>
 
       <p class="pass__micro" aria-hidden="true">
@@ -436,10 +405,29 @@ defineExpose({ showIssues })
   display: grid;
   gap: 1rem;
 }
-.pass__email {
-  margin-top: 1rem;
+.pass__coupon {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0.875rem 1rem 1rem;
+  border: 1.5px dashed var(--ink);
+  border-radius: var(--radius-control);
 }
-.pass__email .field + .field {
+.pass__coupon-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.pass__coupon-plane {
+  width: 16px;
+  height: 16px;
+}
+.pass__coupon-question {
+  font-size: var(--fs-input);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.field {
   margin-top: 1rem;
 }
 .pass__email-toggle {
@@ -735,7 +723,7 @@ defineExpose({ showIssues })
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem 1.5rem;
   }
-  .pass__email {
+  .pass__coupon {
     max-width: calc(50% - 0.75rem);
   }
   .perf {

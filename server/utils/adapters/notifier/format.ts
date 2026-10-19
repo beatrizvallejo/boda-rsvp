@@ -8,7 +8,6 @@ const FIELD_LABELS: Record<RsvpField, string> = {
   guestName: 'Pasajero',
   companionName: 'Acompañante',
   children: 'Menores',
-  email: 'Email',
   jointFlight: 'Vuelo conjunto',
 }
 

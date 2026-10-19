@@ -16,8 +16,8 @@
 
 ## Logística de viaje
 - ¿De dónde viajan los invitados?: de España y de Rumanía (por eso la web es bilingüe).
-- Campos de logística: solo uno, opcional, desde la Fase 6b (07/10/2026): «¿Te apuntamos a la reserva conjunta desde Madrid?» (Sí / No). Va en el plegable de opcionales de la tarjeta («+ Más opciones (opcional)», junto al email) y solo aparece con la reserva conjunta en marcha. No se pregunta la ciudad de origen, la fecha de llegada, el traslado ni el alojamiento. El "Desde" del billete es decorativo.
-- Vuelos (Fase 6b): los novios quieren gestionar una reserva conjunta desde Madrid cuando el precio sea bueno. Sin APIs de precios (no hay ninguna pública utilizable: Google Flights no tiene API, Skyscanner es solo para socios con 100.000 usuarios al mes y Amadeus Self-Service cerró el 17/07/2026). Sección pública editable desde el panel: estado (Próximamente / Mirando precios / Reserva abierta hasta… / Cerrada), nota ES/RO, último precio visto y enlaces de búsqueda a Google Flights y Skyscanner para MAD → Sibiu (SBZ, 70 km) y MAD → Cluj (CLJ, 100 km). Las alertas de precio las configuran los novios en Google Flights con su cuenta. Las reservas de grupo de Wizz Air empiezan en 16 pasajeros.
+- Campos de logística: solo uno, opcional, desde la Fase 6b (07/10/2026): «¿Te apuntamos a la reserva conjunta desde Madrid?» (Sí / No). Va siempre visible en la tarjeta, en un cupón punteado («Reserva conjunta · Opcional»; desde el 19/10/2026), y solo aparece con la reserva conjunta en marcha. No se pregunta la ciudad de origen, la fecha de llegada, el traslado ni el alojamiento. El "Desde" del billete es decorativo.
+- Vuelos (Fase 6b): los novios quieren gestionar una reserva conjunta desde Madrid cuando el precio sea bueno. Sin APIs de precios (no hay ninguna pública utilizable: Google Flights no tiene API, Skyscanner es solo para socios con 100.000 usuarios al mes y Amadeus Self-Service cerró el 17/07/2026). Sección pública editable desde el panel: estado (Próximamente / Mirando precios / Reserva abierta hasta… / Cerrada), nota ES/RO, último precio visto y enlaces de búsqueda a Google Flights, Skyscanner y Wizz Air (este desde el 19/10/2026) para MAD → Sibiu (SBZ, 70 km) y MAD → Cluj (CLJ, 100 km). Las alertas de precio las configuran los novios en Google Flights con su cuenta. Las reservas de grupo de Wizz Air empiezan en 16 pasajeros.
 
 ## Modelo de acceso
 - Modo: invitación con enlace personal (`/r/<token>`). El nombre va precargado, se puede editar la respuesta, no hay duplicados y no hace falta captcha. Los novios cargan la lista de invitados en el panel.
@@ -28,8 +28,7 @@
 | Nombre del invitado | Sí | Una invitación = una persona. Precargado y editable (por ejemplo, para corregir una tilde o un diacrítico) |
 | Acompañante (sí / no) + nombre | No | Siempre permitido: un acompañante por invitación. Si se marca, el nombre es obligatorio |
 | Número de niños | No (0 por defecto) | Se cuentan aparte de los adultos para el catering |
-| Email del invitado | No | Sirve de `replyTo` en el aviso a los novios |
-| Reserva conjunta de vuelos | No | Sí / No, en el plegable de opcionales. Solo con la reserva en marcha (Fase 6b) |
+| Reserva conjunta de vuelos | No | Sí / No, en el cupón de la tarjeta. Solo con la reserva en marcha (Fase 6b) |
 | Idioma | — | Viene de la invitación y no se pregunta en el formulario |
 
 - Menú: único, sin elección.
@@ -70,8 +69,8 @@
 
 ## Privacidad
 - Responsable: por ahora no habrá aviso de privacidad (decisión de los novios). Se revisa en la Fase 6.
-- Fecha de borrado de datos: 31/10/2027. Incluye teléfonos, emails y comentarios.
-- Decisión sobre alergias e intolerancias: no se piden. Tampoco hay campos de comentarios ni de mensaje (decisión del 06/10/2026: el formulario se queda en nombre, acompañante, niños y email opcional).
+- Fecha de borrado de datos: 31/10/2027. Incluye teléfonos.
+- Decisión sobre alergias e intolerancias: no se piden. Tampoco hay campos de comentarios ni de mensaje (decisión del 06/10/2026: el formulario se queda en nombre, acompañante y niños; el email opcional se quitó el 19/10/2026).
 
 ## Diseño
 - Concepto: el formulario es un billete de avión, una tarjeta de embarque que rellena el invitado (idea de los novios). Ver `.claude/skills/wedding-design/references/concepto-billete.md`.

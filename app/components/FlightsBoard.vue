@@ -6,9 +6,8 @@ import type { Flights } from '#shared/schemas'
 import {
   FLIGHT_DESTINATIONS,
   FLIGHT_ORIGIN,
+  FLIGHT_SEARCHES,
   formatFlightDay,
-  googleFlightsUrl,
-  skyscannerUrl,
 } from '#shared/flights'
 
 const props = defineProps<{ flights: Flights }>()
@@ -65,20 +64,14 @@ const cityName = (city: string) => city.charAt(0) + city.slice(1).toLowerCase()
           </p>
           <div class="route__links">
             <a
+              v-for="s in FLIGHT_SEARCHES"
+              :key="s.name"
               class="route__link"
-              :href="googleFlightsUrl(d.code, flights.outbound, flights.inbound, lang)"
+              :href="s.url(d.code, flights.outbound, flights.inbound, lang)"
               target="_blank"
               rel="noopener"
-              :aria-label="`${t('flights.search', { city: cityName(d.city) })} · Google Flights`"
-              >Google Flights</a
-            >
-            <a
-              class="route__link"
-              :href="skyscannerUrl(d.code, flights.outbound, flights.inbound, lang)"
-              target="_blank"
-              rel="noopener"
-              :aria-label="`${t('flights.search', { city: cityName(d.city) })} · Skyscanner`"
-              >Skyscanner</a
+              :aria-label="`${t('flights.search', { city: cityName(d.city) })} · ${s.name}`"
+              >{{ s.name }}</a
             >
           </div>
         </li>
