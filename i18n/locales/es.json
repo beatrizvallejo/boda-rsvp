@@ -5,7 +5,7 @@
   },
   "meta": {
     "title": "Keko y Ro · 31 de julio de 2027",
-    "description": "Nos casamos en Alba (Rumanía). Tu tarjeta de embarque está lista: confírmanos antes del 1 de mayo."
+    "description": "Nos casamos en Alba (Rumanía). Tu tarjeta de embarque está lista: confírmanos antes del 1 de febrero."
   },
   "intro": {
     "arrivals": "Llegadas",
@@ -50,7 +50,7 @@
     "confirm": "Confirmar asistencia",
     "airline": "Líneas aéreas",
     "leadConfirmed": "Ya tenemos tu confirmación. Si algo cambia, edítalo aquí.",
-    "confirmedNote": "Puedes cambiar los datos hasta el 1 de mayo.",
+    "confirmedNote": "Puedes cambiar los datos hasta el 1 de febrero.",
     "save": "Guardar cambios",
     "sending": "Enviando tu tarjeta…",
     "jointFlight": "¿Te apuntamos a la reserva conjunta desde Madrid?",
@@ -108,7 +108,7 @@
     "notFoundTitle": "Tarjeta no encontrada",
     "notFound": "Este enlace no corresponde a ninguna tarjeta de embarque. Revisa el mensaje que te enviamos.",
     "closedTitle": "Embarque cerrado",
-    "closed": "El embarque se cerró el 1 de mayo. Si necesitas cambiar algo, escríbenos.",
+    "closed": "El embarque se cerró el 1 de febrero. Si necesitas cambiar algo, escríbenos.",
     "generic": "Algo ha fallado al cargar tu tarjeta. Vuelve a intentarlo en un momento.",
     "guestName": "Falta tu nombre. Escríbelo tal y como quieres que aparezca.",
     "companionName": "Falta el nombre de tu acompañante. Escríbelo o elige «Viajo solo/a».",

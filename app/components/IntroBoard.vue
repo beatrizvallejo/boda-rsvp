@@ -136,7 +136,13 @@ onBeforeUnmount(() => {
       </h2>
       <div class="intro__title">
         <BrickCouple class="intro__couple" />
-        <FlapText class="intro__names" :text="t('intro.names')" :delay="200" :spins="[10, 18]" />
+        <FlapText
+          class="intro__names"
+          :style="{ '--tiles': t('intro.names').length }"
+          :text="t('intro.names')"
+          :delay="200"
+          :spins="[10, 18]"
+        />
       </div>
       <div class="intro__count" aria-hidden="true">
         <span class="intro__count-label">{{ t('intro.countdown') }}</span>
@@ -358,7 +364,9 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 .intro__names {
-  font-size: min(4.5rem, calc((100cqi - 3rem) / 9.3));
+  /* Que quepan todas las fichas en el ancho: cada una mide 0.92em + 0.1em de separación. «KEKO ȘI RO»
+     (rumano) tiene una ficha más que «KEKO Y RO». */
+  font-size: min(4.5rem, calc((100cqi - 3rem) / (var(--tiles, 9) * 1.02 + 0.2)));
 }
 .intro__count {
   display: flex;

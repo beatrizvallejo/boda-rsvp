@@ -7,7 +7,7 @@ export function invitationLink(siteUrl: string, token: string): string {
   return `${siteUrl.replace(/\/+$/, '')}/r/${token}`
 }
 
-/** Fecha límite en el idioma del invitado y en hora de Rumanía: "1 de mayo" / "1 mai". */
+/** Fecha límite en el idioma del invitado y en hora de Rumanía: "1 de febrero" / "1 februarie". */
 export function formatDeadline(locale: Invitation['locale']): string {
   return new Intl.DateTimeFormat(locale === 'ro' ? 'ro-RO' : 'es-ES', {
     day: 'numeric',

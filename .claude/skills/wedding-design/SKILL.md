@@ -48,7 +48,7 @@ barra LLEGADAS · Sosiri · Arrivals con relojes Madrid/Alba → muñequitos (en
 ## Tres principios
 1. **El panel informa, el billete se rellena.** Nada editable en lo oscuro; nada que gire en lo blanco.
 2. **Un movimiento con sentido a la vez.** Las fichas giran para contar algo (cambio de idioma, cuenta atrás); no hay animaciones decorativas de entrada en cada sección.
-3. **Señalética = claridad.** Rótulos cortos, flechas que llevan a algún sitio, datos reales (13:00, Roots, 1 de mayo) en lugar de adornos.
+3. **Señalética = claridad.** Rótulos cortos, flechas que llevan a algún sitio, datos reales (13:00, Roots, 1 de febrero) en lugar de adornos.
 
 ## Copy y tono
 Cercano, con guiños de viaje y humor; emojis puntuales (🪩 ✈️ 🏨 🚌). Ejemplos aprobados:
@@ -58,7 +58,7 @@ Cercano, con guiños de viaje y humor; emojis puntuales (🪩 ✈️ 🏨 🚌).
 - Próximamente: "Muy pronto os daremos más información sobre la gestión de los vuelos y el alojamiento para quien lo necesite."
 - Error de campo: "Falta el nombre de tu acompañante. Escríbelo o elige «Viajo solo/a»."
 - Enlace inválido: "Este enlace no corresponde a ninguna tarjeta de embarque. Revisa el mensaje que te enviamos."
-- Plazo cerrado: "El embarque se cerró el 1 de mayo. Si necesitas cambiar algo, escríbenos."
+- Plazo cerrado: "El embarque se cerró el 1 de febrero. Si necesitas cambiar algo, escríbenos."
 - Los botones dicen lo que hacen. Los errores explican qué pasa y cómo arreglarlo.
 - Lo decorativo puede ser bilingüe (Salidas/Plecări, Embarque/Îmbarcare); el contenido va en el idioma del invitado. El rumano está pendiente de revisión nativa.
 

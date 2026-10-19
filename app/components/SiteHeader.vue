@@ -1,13 +1,16 @@
 <script setup lang="ts">
 // Cabecera de la página: monograma, nombres y selector de idioma (ES/RO). Elegir idioma aquí lo marca
-// como elección del invitado (`LOCALE_CHOSEN_COOKIE`): a partir de ahí manda sobre el de la invitación.
+// como elección del invitado en su enlace (`LOCALE_CHOSEN_COOKIE`): ahí manda sobre el de la invitación.
 // `inert` mientras la intro tapa la página.
 defineProps<{ inert?: boolean }>()
 const { t, locale, locales, setLocale } = useI18n()
 const chosen = useCookie(LOCALE_CHOSEN_COOKIE, { maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
 
+const route = useRoute()
+
 async function choose(code: (typeof locales.value)[number]['code']) {
-  chosen.value = '1'
+  // Solo en un enlace personal: en la portada basta con la cookie de idioma de i18n.
+  if (route.params.token) chosen.value = `${String(route.params.token)}:${code}`
   await setLocale(code)
 }
 </script>

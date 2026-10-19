@@ -11,7 +11,7 @@
   - Mapa: https://www.google.com/maps/place/Roots+Wedding+Venue/@46.1158452,23.4344662,15z (coordenadas 46.1158452, 23.4344662).
   - Instagram del lugar: https://www.instagram.com/roots_weddingvenue
 - Horario (hora local de Rumanía, `Europe/Bucharest`): a partir de las 13:00, "y hasta que el cuerpo aguante". No hay programa por momentos (ceremonia, cóctel…): todo es en el mismo lugar. Se usa en la cuenta atrás (`WEDDING_START` en `shared/config.ts`) y en el `.ics` (Fase 4).
-- Fecha límite de confirmación: sábado 1 de mayo de 2027 (23:59, hora de Rumanía). Hasta esa fecha se puede responder y editar. Después, el formulario muestra "plazo cerrado".
+- Fecha límite de confirmación: lunes 1 de febrero de 2027 (23:59, hora de Rumanía). Hasta esa fecha se puede responder y editar. Después, el formulario muestra "plazo cerrado".
 - Idiomas: español y rumano (`@nuxtjs/i18n` desde la Fase 2). Cada invitación tiene un idioma preferido (ES/RO), que se usa en la web y en el mensaje de WhatsApp. El invitado puede cambiar de idioma en la web.
 
 ## Logística de viaje

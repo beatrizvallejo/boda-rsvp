@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Página personal de cada invitado (/r/<token>): la tarjeta de embarque con su nombre precargado.
- * El idioma es el de la invitación, salvo que el invitado haya elegido otro con el selector.
+ * El idioma es el de la invitación, salvo que el invitado haya elegido otro con el selector en este enlace.
  * La identificación va solo en la URL: volver al mismo enlace permite editar la respuesta.
  */
 import type { PublicInvitationResponse, RsvpData, RsvpSaveResponse } from '#shared/schemas'
@@ -17,9 +17,13 @@ const { data, error } = await useFetch<PublicInvitationResponse>(
   `/api/rsvp/${encodeURIComponent(token)}`,
 )
 
-// El idioma de la invitación manda salvo que el invitado haya elegido otro con el selector.
+// El idioma de la invitación manda salvo que el invitado haya elegido otro con el selector en este
+// mismo enlace.
 const localeChosen = useCookie(LOCALE_CHOSEN_COOKIE)
-if (data.value && !localeChosen.value) await setLocale(data.value.invitation.locale)
+if (data.value) {
+  const chosen = chosenLocaleFor(localeChosen.value, token)
+  await setLocale(chosen === 'es' || chosen === 'ro' ? chosen : data.value.invitation.locale)
+}
 
 const notFound = computed(() => error.value?.statusCode === 404)
 // El aviso se muestra igual, pero la respuesta HTTP es 404 (no indexable, coherente con la API).

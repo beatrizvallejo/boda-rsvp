@@ -10,6 +10,14 @@ export interface ImportRow {
   data: InvitationCreate | null
   /** Motivo por el que la fila no se importa. */
   error: string | null
+  /** Aviso que no impide importarla (p. ej., otro invitado con el mismo nombre y otro teléfono). */
+  warning: string | null
+}
+
+/** Invitación ya guardada o fila anterior, para detectar duplicados. */
+export interface KnownGuest {
+  guestName: string
+  phone: string | null
 }
 
 type Column = keyof ImportRow['raw']
@@ -89,7 +97,11 @@ function parseDelimited(text: string, delimiter: string): string[][] {
   return rows
 }
 
-export function parseGuestList(text: string, existingNames: string[] = []): ImportRow[] {
+/**
+ * Duplicado = mismo nombre y mismo teléfono (o ninguno de los dos lo tiene). Con apodos es normal que
+ * se repita el nombre («Cris» de Keko y «Cris» de Ro): con otro teléfono se importa con un aviso.
+ */
+export function parseGuestList(text: string, existing: KnownGuest[] = []): ImportRow[] {
   const clean = text.replace(/^\uFEFF/, '')
   const firstLine = clean.split(/\r?\n/, 1)[0] ?? ''
   const table = parseDelimited(clean, detectDelimiter(firstLine))
@@ -102,7 +114,7 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
     start = 1
   }
 
-  const seen = new Set(existingNames.map(compareKey))
+  const seen = existing.map((g) => ({ key: compareKey(g.guestName), phone: g.phone }))
   const rows: ImportRow[] = []
   for (let index = start; index < table.length; index++) {
     const cells = table[index]!
@@ -112,7 +124,7 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
       if (column) raw[column] = (cells[i] ?? '').trim()
     })
 
-    const row: ImportRow = { line: index + 1, raw, data: null, error: null }
+    const row: ImportRow = { line: index + 1, raw, data: null, error: null, warning: null }
     rows.push(row)
 
     const locale = raw.idioma ? LOCALE_ALIASES[compareKey(raw.idioma)] : 'es'
@@ -135,11 +147,17 @@ export function parseGuestList(text: string, existingNames: string[] = []): Impo
       continue
     }
     const key = compareKey(parsed.data.guestName)
-    if (seen.has(key)) {
-      row.error = 'Ya hay una invitación con este nombre: no se importa.'
+    const namesakes = seen.filter((g) => g.key === key)
+    if (namesakes.some((g) => g.phone === parsed.data.phone)) {
+      row.error = parsed.data.phone
+        ? 'Ya hay una invitación con este nombre y este teléfono: no se importa.'
+        : 'Ya hay una invitación con este nombre (sin teléfono para distinguirlas): no se importa.'
       continue
     }
-    seen.add(key)
+    if (namesakes.length) {
+      row.warning = 'Ya hay otro invitado con este nombre (otro teléfono): se importa igualmente.'
+    }
+    seen.push({ key, phone: parsed.data.phone })
     row.data = parsed.data
   }
   return rows

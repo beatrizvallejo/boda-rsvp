@@ -5,7 +5,7 @@
   },
   "meta": {
     "title": "Keko și Ro · 31 iulie 2027",
-    "description": "Ne căsătorim în Alba (România). Biletul tău de îmbarcare e gata: confirmă-ne până pe 1 mai."
+    "description": "Ne căsătorim în Alba (România). Biletul tău de îmbarcare e gata: confirmă-ne până pe 1 februarie."
   },
   "intro": {
     "arrivals": "Sosiri",
@@ -19,7 +19,7 @@
   },
   "pass": {
     "title": "Biletul tău de îmbarcare",
-    "lead": "Verifică datele și confirmă-ne până pe 1 mai 2027.",
+    "lead": "Verifică datele și confirmă-ne până pe 1 februarie 2027.",
     "band": "Card de îmbarcare",
     "from": "De la",
     "fromValue": "Oriunde ai fi",
@@ -50,7 +50,7 @@
     "confirm": "Confirmă prezența",
     "airline": "Linii aeriene",
     "leadConfirmed": "Avem deja confirmarea ta. Dacă se schimbă ceva, modifică aici.",
-    "confirmedNote": "Poți modifica datele până pe 1 mai.",
+    "confirmedNote": "Poți modifica datele până pe 1 februarie.",
     "save": "Salvează modificările",
     "sending": "Se trimite biletul…",
     "jointFlight": "Te înscriem la rezervarea comună din Madrid?",
@@ -108,7 +108,7 @@
     "notFoundTitle": "Bilet negăsit",
     "notFound": "Acest link nu corespunde niciunui bilet de îmbarcare. Verifică mesajul pe care ți l-am trimis.",
     "closedTitle": "Îmbarcare închisă",
-    "closed": "Îmbarcarea s-a închis pe 1 mai. Dacă trebuie să schimbi ceva, scrie-ne.",
+    "closed": "Îmbarcarea s-a închis pe 1 februarie. Dacă trebuie să schimbi ceva, scrie-ne.",
     "generic": "Ceva n-a mers la încărcarea biletului. Încearcă din nou peste un moment.",
     "guestName": "Lipsește numele tău. Scrie-l așa cum vrei să apară.",
     "companionName": "Lipsește numele însoțitorului. Scrie-l sau alege „Călătoresc singur/ă”.",

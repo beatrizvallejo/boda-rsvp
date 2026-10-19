@@ -46,10 +46,7 @@ const valid = computed(() => rows.value?.filter((r) => r.data) ?? [])
 const invalid = computed(() => rows.value?.filter((r) => !r.data) ?? [])
 
 function review() {
-  rows.value = parseGuestList(
-    pasted.value,
-    invitations.value.map((i) => i.guestName),
-  )
+  rows.value = parseGuestList(pasted.value, invitations.value)
 }
 
 async function onFile(event: Event) {
@@ -145,6 +142,7 @@ async function runImport() {
                   ><template v-if="r.data.label"> · {{ r.data.label }}</template>
                 </span>
                 <span v-else class="field-error preview__error">{{ r.error }}</span>
+                <span v-if="r.warning" class="preview__warning">{{ r.warning }}</span>
               </span>
             </li>
           </ul>
@@ -223,6 +221,11 @@ async function runImport() {
 }
 .preview__error {
   display: block;
+}
+.preview__warning {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--pending-ink);
 }
 @media (min-width: 960px) {
   .new__grid {

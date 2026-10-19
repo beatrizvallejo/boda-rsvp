@@ -123,6 +123,6 @@ test.describe('flujo completo', () => {
     const text = decodeURIComponent(new URL(href!).searchParams.get('text') ?? '')
     expect(text).toContain('¡Hola, Lucía Sánchez Moreno! Última llamada para embarcar ✈️')
     expect(text).toContain('/r/lucia-sanchez-moreno-demo09')
-    expect(text).toContain('1 de mayo')
+    expect(text).toContain('1 de febrero')
   })
 })
